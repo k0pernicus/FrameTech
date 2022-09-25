@@ -44,11 +44,7 @@ std::optional<uint64_t> FrameTech::Pipeline::readFile(const char* filepath,
         uint64_t length = opt_length.value();
 
         // do not read more than enough
-        // TODO: make the size check optional ?
-        if (length < buffer_length)
-        {
-            length = (int)buffer_length;
-        }
+        length = buffer_length < length ? (int)buffer_length : length;
 
         // read data as a block, close, and return
         // the length of the file
