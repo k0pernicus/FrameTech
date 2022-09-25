@@ -9,6 +9,7 @@
 #include "../application.hpp"
 #include "../debug_tools.h"
 #include "../project.hpp"
+#include "../result.h"
 #include "project.hpp"
 #include <vulkan/vulkan.h>
 
@@ -32,29 +33,48 @@ static VkApplicationInfo createApplicationInfo()
     return application_info;
 }
 
-static void getSupportedExtensions(const char*** extension_names, uint32_t* extension_count)
+static void getRequiredExtensions(const char*** extension_names, uint32_t* extension_count)
 {
     (*extension_names) = glfwGetRequiredInstanceExtensions(extension_count);
     if ((*extension_count) == 0)
     {
         // Is this really an error?
-        LogE("> no supported extension found...");
+        LogE("> No required extension found...");
         return;
     }
+    Log("> Required extensions:");
     for (int i = 0; i < (*extension_count); i++)
-        Log("> supported extension %d -> %s", i, (*extension_names)[i]);
+        Log("\t* %d -> %s", i, (*extension_names)[i]);
+}
+
+static void listSupportedExtensions()
+{
+    uint32_t supported_extension_count{};
+    vkEnumerateInstanceExtensionProperties(nullptr, &supported_extension_count, nullptr);
+    if (supported_extension_count == 0)
+    {
+        Log("> No supported extension found...");
+        return;
+    }
+    std::vector<VkExtensionProperties> supported_extensions(supported_extension_count);
+    vkEnumerateInstanceExtensionProperties(nullptr, &supported_extension_count, supported_extensions.data());
+    Log("> Supported extensions:");
+    for (int i = 0; i < supported_extension_count; i++)
+        Log("\t* %d -> %s", i, supported_extensions[i].extensionName);
 }
 
 FrameTech::Engine* FrameTech::Engine::m_instance{nullptr};
 
 FrameTech::Engine::Engine()
 {
-    m_state = State::UNINITIALIZED;
+    m_state = UNINITIALIZED;
 }
 
 FrameTech::Engine::~Engine()
 {
     Log("< Closing the Engine object...");
+    if (m_graphics_instance)
+        vkDestroyInstance(m_graphics_instance, nullptr);
     m_instance = nullptr;
 }
 
@@ -62,8 +82,8 @@ void FrameTech::Engine::initialize()
 {
     if (m_state == INITIALIZED)
         return;
-    createGraphicsInstance();
-    m_state = INITIALIZED;
+    const auto result = createGraphicsInstance();
+    m_state = result.IsError() ? ERROR : INITIALIZED;
 }
 
 FrameTech::Engine* FrameTech::Engine::getInstance()
@@ -76,12 +96,18 @@ FrameTech::Engine* FrameTech::Engine::getInstance()
     return m_instance;
 }
 
-void FrameTech::Engine::createGraphicsInstance()
+FrameTech::Engine::State FrameTech::Engine::getState()
 {
+    return m_state;
+}
+
+Result<int> FrameTech::Engine::createGraphicsInstance()
+{
+    listSupportedExtensions();
     // Get the supported extensions
     uint32_t extension_count = 0;
     const char** extension_names = nullptr;
-    getSupportedExtensions(&extension_names, &extension_count);
+    getRequiredExtensions(&extension_names, &extension_count);
 
     VkApplicationInfo application_info = createApplicationInfo();
 
@@ -93,6 +119,7 @@ void FrameTech::Engine::createGraphicsInstance()
     create_info.ppEnabledExtensionNames = extension_names;
     create_info.enabledLayerCount = 0; // TODO: change
 
+    Result<int> result{};
     VkResult instance_creation_result;
     instance_creation_result = vkCreateInstance(&create_info, nullptr, &m_graphics_instance);
     if (instance_creation_result != VK_SUCCESS)
@@ -120,7 +147,10 @@ void FrameTech::Engine::createGraphicsInstance()
             default:
                 LogE("> failed to create an instance, undocumented error (code 0x%08x)", instance_creation_result);
         }
-        return;
+        result.Error(-1, "failed to create an instance");
+        return result;
     }
-    Log("> the graphics instance has been successfully created");
+    Log("> The graphics instance has been successfully created");
+    result.Ok(RESULT_OK);
+    return result;
 }

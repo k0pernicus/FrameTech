@@ -9,6 +9,7 @@
 #ifndef engine_hpp
 #define engine_hpp
 
+#include "../result.h"
 #include "pipeline.hpp"
 #include "vulkan/vulkan.h"
 #include <cstdlib>
@@ -18,14 +19,21 @@ namespace FrameTech
 
     class Engine
     {
-
+    public:
         /// @brief Internal state of the Engine object,
         /// to know if the unique object needs
         /// to be initialized or not
         enum State
         {
+            /// Not initialized
             UNINITIALIZED,
+            /// The graphics pipeline and state
+            /// machine have been initialized - it is
+            /// now ready to use
             INITIALIZED,
+            /// An error happened during the initialization,
+            /// the application should not run
+            ERROR,
         };
 
     private:
@@ -37,10 +45,10 @@ namespace FrameTech
         /// @brief The single internal instance of the Engine object
         static Engine* m_instance;
         /// @brief Creates the Vulkan instance of the Engine
-        void createGraphicsInstance();
+        Result<int> createGraphicsInstance();
         /// @brief Stores the internal state of the unique
         /// Engine object
-        State m_state;
+        FrameTech::Engine::State m_state;
         /// @brief The graphics pipeline
         FrameTech::Pipeline m_pipeline;
         /// @brief The engine instance
@@ -54,6 +62,9 @@ namespace FrameTech
         /// only if the Engine object is in
         /// UNINITIALIZED state
         void initialize();
+        /// @brief Returns the internal state of the unique
+        /// Engine object
+        FrameTech::Engine::State getState();
         ~Engine();
     };
 
