@@ -147,7 +147,7 @@ Result<int> FrameTech::Engine::createGraphicsInstance()
             default:
                 LogE("> failed to create an instance, undocumented error (code 0x%08x)", instance_creation_result);
         }
-        result.Error(-1, "failed to create an instance");
+        result.Error(-1, (char*)"failed to create an instance");
         return result;
     }
     Log("> The graphics instance has been successfully created");
