@@ -39,16 +39,16 @@ namespace FrameTech
         /// @brief Defines the current state of the application
         enum State
         {
-            /// The default and starting state of the app
+            /// @brief The default and starting state of the app
             UNINITIALIZED,
-            /// The app is running (foreground, background),
+            /// @brief The app is running (foreground, background),
             RUNNING,
-            /// The app is paused and the draw (or input) events should **not** be listened.
+            /// @brief The app is paused and the draw (or input) events should **not** be listened.
             PAUSED,
-            /// The app is not in a correct state (error in treatment for example),
+            /// @brief The app is not in a correct state (error in treatment for example),
             /// and should be closed
             SHOULD_BE_CLOSED,
-            /// Last step: the app is closing
+            /// @brief The last state of the internal states machine
             CLOSING
         };
         static Application* m_instance;

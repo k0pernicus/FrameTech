@@ -25,13 +25,13 @@ namespace FrameTech
         /// to be initialized or not
         enum State
         {
-            /// Not initialized
+            /// @brief The starting state
             UNINITIALIZED,
-            /// The graphics pipeline and state
+            /// @brief The graphics pipeline and state
             /// machine have been initialized - it is
             /// now ready to use
             INITIALIZED,
-            /// An error happened during the initialization,
+            /// @brief An error happened during the initialization,
             /// the application should not run
             ERROR,
         };

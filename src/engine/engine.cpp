@@ -13,7 +13,18 @@
 #include "project.hpp"
 #include <vulkan/vulkan.h>
 
-static VkApplicationInfo createApplicationInfo()
+#ifdef DEBUG
+const std::vector<const char*> VALIDATION_LAYERS = {
+    "VK_LAYER_KHRONOS_validation"};
+const std::vector<const char*> REQUIRED_LAYERS_TO_CHECK = {
+    "VK_EXT_debug_utils"};
+#else
+const std::vector<const char*> VALIDATION_LAYERS = {};
+const std::vector<const char*> REQUIRED_LAYERS_TO_CHECK = {};
+#endif
+
+static VkApplicationInfo
+createApplicationInfo()
 {
     // The instance is the connection between the application
     // and the Vulkan library
@@ -42,9 +53,30 @@ static void getRequiredExtensions(const char*** extension_names, uint32_t* exten
         LogE("> No required extension found...");
         return;
     }
-    Log("> Required extensions:");
+    // List the system required extensions
+    Log("> %d required extension(s):", *extension_count);
     for (int i = 0; i < (*extension_count); i++)
         Log("\t* %d -> %s", i, (*extension_names)[i]);
+    // Look for a required extension not present as
+    // system wide
+    for (const auto& required_layer : REQUIRED_LAYERS_TO_CHECK)
+    {
+        bool layer_found = false;
+        for (int i = 0; i < (*extension_count); i++)
+        {
+            const auto extension_name = (*extension_names)[i];
+            if (strcmp(extension_name, required_layer) == 0)
+            {
+                layer_found = true;
+                break;
+            }
+        }
+        if (!layer_found)
+        {
+            LogW("> Layer '%s' has not been found!", extension_name);
+            LogW("> This may throw an 'VK_ERROR_EXTENSION_NOT_PRESENT' error creating the Vulkan instance");
+        }
+    }
 }
 
 static void listSupportedExtensions()
@@ -58,7 +90,7 @@ static void listSupportedExtensions()
     }
     std::vector<VkExtensionProperties> supported_extensions(supported_extension_count);
     vkEnumerateInstanceExtensionProperties(nullptr, &supported_extension_count, supported_extensions.data());
-    Log("> Supported extensions:");
+    Log("> %d supported extension(s):", supported_extension_count);
     for (int i = 0; i < supported_extension_count; i++)
         Log("\t* %d -> %s", i, supported_extensions[i].extensionName);
 }
@@ -117,7 +149,18 @@ Result<int> FrameTech::Engine::createGraphicsInstance()
     create_info.pApplicationInfo = &application_info;
     create_info.enabledExtensionCount = extension_count;
     create_info.ppEnabledExtensionNames = extension_names;
-    create_info.enabledLayerCount = 0; // TODO: change
+    if (VALIDATION_LAYERS.size() == 0)
+    {
+        create_info.enabledLayerCount = 0;
+    }
+    else
+    {
+        Log("> Enabling %d validation layer(s):", VALIDATION_LAYERS.size());
+        for (int i = 0; i < VALIDATION_LAYERS.size(); i++)
+            Log("\t* %s", VALIDATION_LAYERS[i]);
+        create_info.enabledLayerCount = VALIDATION_LAYERS.size();
+        create_info.ppEnabledLayerNames = VALIDATION_LAYERS.data();
+    }
 
     Result<int> result{};
     VkResult instance_creation_result;

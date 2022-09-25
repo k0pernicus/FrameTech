@@ -9,6 +9,7 @@
 #ifndef pipeline_hpp
 #define pipeline_hpp
 
+#include "../result.h"
 #include <cstdlib>
 #include <optional>
 
@@ -24,7 +25,7 @@ namespace FrameTech
         /// @brief Read each shader file passed as parameter, if those exist.
         /// **Warning**: this function is **not** data-race conditons bullet-proof.
         /// TODO: Real return type.
-        void create(const char* vertex_shader_filepath, const char* fragment_shader_filepath);
+        Result<int> create(const char* vertex_shader_filepath, const char* fragment_shader_filepath);
 
     private:
         /// @brief Returns the size, as a `uint64_t` type, of a file located at `filepath`.

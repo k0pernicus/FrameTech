@@ -10,6 +10,7 @@
 #define result_h
 
 #define RESULT_OK 0
+#define RESULT_ERROR 0
 
 /// @brief A very simple Result type for the Engine
 /// @tparam T The result that is contained in the container

@@ -7,6 +7,7 @@
 
 #include "pipeline.hpp"
 #include "../debug_tools.h"
+#include "../result.h"
 #include <filesystem>
 #include <fstream>
 
@@ -55,9 +56,10 @@ std::optional<uint64_t> FrameTech::Pipeline::readFile(const char* filepath,
     return std::nullopt;
 }
 
-void FrameTech::Pipeline::create(const char* vertex_shader_filepath,
-                                 const char* fragment_shader_filepath)
+Result<int> FrameTech::Pipeline::create(const char* vertex_shader_filepath,
+                                        const char* fragment_shader_filepath)
 {
+    Result<int> result;
     // Get the length
     const auto vs_file_size_opt = fileSize(vertex_shader_filepath);
     assert(vs_file_size_opt != std::nullopt);
@@ -67,7 +69,8 @@ void FrameTech::Pipeline::create(const char* vertex_shader_filepath,
     if (vs_file_size_opt == std::nullopt || fs_file_size_opt == std::nullopt)
     {
         LogE("< Cannot create the program");
-        return;
+        result.Error(RESULT_ERROR, (char*)"vertex or fragment shader is NULL");
+        return result;
     }
     // Get the content of the VS
     const auto vs_file_size = vs_file_size_opt.value();
@@ -82,4 +85,6 @@ void FrameTech::Pipeline::create(const char* vertex_shader_filepath,
     // TODO: return the buffers?
     delete[] vs_buffer;
     delete[] fs_buffer;
+    result.Ok(RESULT_OK);
+    return result;
 }

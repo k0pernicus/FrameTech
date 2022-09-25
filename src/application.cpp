@@ -36,6 +36,7 @@ void FrameTech::Application::clean()
 {
     Log("< Cleaning the Application object");
     m_app_title = nullptr;
+    m_engine = nullptr;
     glfwDestroyWindow(m_app_window);
     m_app_window = nullptr;
     glfwTerminate();
