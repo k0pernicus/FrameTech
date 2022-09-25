@@ -2,7 +2,12 @@
     "makefile.launchConfigurations": [
         {
             "cwd": "/Users/antonin/Develop/FrameTech",
-            "binaryPath": "/Users/antonin/Develop/FrameTech/FrameTech-Debug",
+            "binaryPath": "/Users/antonin/Develop/FrameTech/bin/debug/FrameTech",
+            "binaryArgs": []
+        },
+        {
+            "cwd": "/Users/antonin/Develop/FrameTech/bin/debug",
+            "binaryPath": "/Users/antonin/Develop/FrameTech/bin/debug/FrameTech",
             "binaryArgs": []
         }
     ]
