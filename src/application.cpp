@@ -81,14 +81,30 @@ void FrameTech::Application::drawFrame()
 
 void FrameTech::Application::loop()
 {
-    Log("> Beginning the Application loop");
-    m_state = FrameTech::State::RUNNING;
-    // TODO: Record the duration in the loop
-    while (!glfwWindowShouldClose(m_app_window) && m_state == FrameTech::State::RUNNING)
+    switch (m_engine->getState())
     {
-        glfwPollEvents();
-        drawFrame();
+        case FrameTech::Engine::State::UNINITIALIZED:
+        {
+            LogE("< Running the application if the engine is uninitialized is forbidden!");
+        }
+        case FrameTech::Engine::State::ERROR: // Used by UNINITIALIZED as well
+        {
+            m_state = FrameTech::Application::State::SHOULD_BE_CLOSED;
+        }
+        break;
+        case FrameTech::Engine::State::INITIALIZED:
+        {
+            Log("> Beginning the Application loop");
+            m_state = FrameTech::Application::State::RUNNING;
+            // TODO: Record the duration in the loop
+            while (!glfwWindowShouldClose(m_app_window) && m_state == FrameTech::Application::State::RUNNING)
+            {
+                glfwPollEvents();
+                drawFrame();
+            }
+            Log("< Ending the Application loop");
+        }
+        break;
     }
-    m_state = FrameTech::State::CLOSING;
-    Log("< Ending the Application loop");
+    m_state = FrameTech::Application::State::CLOSING;
 }

@@ -22,22 +22,6 @@ namespace FrameTech
     /// The default width, in pixels, of the window application
     constexpr uint32_t const DEFAULT_WINDOW_WIDTH = 700;
 
-    /// Defines the current state of the application
-    enum State
-    {
-        /// The default and starting state of the app
-        UNINITIALIZED,
-        /// The app is running (foreground, background),
-        RUNNING,
-        /// The app is paused and the draw (or input) events should **not** be listened.
-        PAUSED,
-        /// The app is not in a correct state (error in treatment for example),
-        /// and should be closed
-        SHOULD_BE_CLOSED,
-        /// Last step: the app is closing
-        CLOSING
-    };
-
     /// `Application` handles the entire application / engine.
     /// This class is **not** thread-safe!
     /// Do not execute any preliminar `GetInstance` methods
@@ -46,6 +30,21 @@ namespace FrameTech
     class Application
     {
     private:
+        /// Defines the current state of the application
+        enum State
+        {
+            /// The default and starting state of the app
+            UNINITIALIZED,
+            /// The app is running (foreground, background),
+            RUNNING,
+            /// The app is paused and the draw (or input) events should **not** be listened.
+            PAUSED,
+            /// The app is not in a correct state (error in treatment for example),
+            /// and should be closed
+            SHOULD_BE_CLOSED,
+            /// Last step: the app is closing
+            CLOSING
+        };
         static Application* m_instance;
         /// App window
         GLFWwindow* m_app_window = nullptr;
@@ -54,7 +53,7 @@ namespace FrameTech
         /// Constructor of the Application - should be private as Application is a Singleton
         Application(const char* app_title);
         /// The internal state of the current Application object
-        FrameTech::State m_state = FrameTech::State::UNINITIALIZED;
+        State m_state = UNINITIALIZED;
         /// The frame that is being draw
         uint64_t m_current_frame = 1;
         /// The current FPS limit per second to draw
@@ -83,9 +82,9 @@ namespace FrameTech
         /// Draw the frame x
         void drawFrame();
         /// Update the internal state of the Application object
-        void setState(FrameTech::State new_state);
+        void setState(State new_state);
         /// Returns the internal state of the Application object
-        FrameTech::State getState();
+        State getState();
         /// Force the renderer to run `FPS_limit` frames per second.
         /// The renderer is not limited by default.
         /// Set `new_limit` to `0` in order to disable the existing limit,
