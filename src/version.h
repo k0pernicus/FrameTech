@@ -29,7 +29,7 @@ private:
     u_int8_t m_bug_fix;
 
 public:
-    /// The default constructor for a Version object.
+    /// @brief The default constructor for a Version object.
     Version(u_int8_t bug_fix, u_int8_t minor, u_int8_t major)
     {
         this->m_major = major;
@@ -37,28 +37,27 @@ public:
         this->m_bug_fix = bug_fix;
     }
 
-    /// A default Version class: bug fix number is set to 0.
+    /// @brief A default Version class: bug fix number is set to 0.
     Version(u_int8_t minor, u_int8_t major)
     {
         Version(0, minor, major);
     }
 
-    /// A default Version class: bug fix, and minor numbers are set to 0.
+    /// @brief A default Version class: bug fix, and minor numbers are set to 0.
     Version(u_int8_t major)
     {
         Version(0, 0, major);
     }
 
-    /// A default Version class: bug fix, minor and major numbers are set to 0.
+    /// @brief A default Version class: bug fix, minor and major numbers are set to 0.
     Version()
     {
         Version(0, 0, 0);
     }
 
-    /**
-     * Parses a string and returns a Version object.
-     * Throws an error if the string is NULL or empty, and another one if it does not match the criteria.
-     */
+    /// @brief Parses a string and returns a Version object.
+    /// Throws an error if the string is NULL or empty, and another one if it does not match the criteria.
+    /// @param from A string that represens a Version
     Version(std::string from)
     {
         if (from.empty())
@@ -88,7 +87,8 @@ public:
         }
     }
 
-    /// Formats a Version class as a raw string.
+    /// @brief Formats a Version class as a raw string.
+    /// @param version A string to save the Version representation in it.
     void toString(char* version) const
     {
         sprintf(version, "%d.%d.%d", this->m_major, this->m_minor, this->m_bug_fix);

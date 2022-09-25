@@ -14,15 +14,21 @@
 #include <GLFW/glfw3.h>
 #include <optional>
 
+#ifdef NO_AVG_FPS_RECORDS
+#define FPS_RECORDS 1
+#else
+#define FPS_RECORDS 10
+#endif
+
 namespace FrameTech
 {
 
-    /// The default height, in pixels, of the window application
+    /// @brief The default height, in pixels, of the window application
     constexpr uint32_t const DEFAULT_WINDOW_HEIGHT = 580;
-    /// The default width, in pixels, of the window application
+    /// @brief The default width, in pixels, of the window application
     constexpr uint32_t const DEFAULT_WINDOW_WIDTH = 700;
 
-    /// `Application` handles the entire application / engine.
+    /// @brief `Application` handles the entire application / engine.
     /// This class is **not** thread-safe!
     /// Do not execute any preliminar `GetInstance` methods
     /// in threads at first, as `GetInstance` returns a
@@ -30,7 +36,7 @@ namespace FrameTech
     class Application
     {
     private:
-        /// Defines the current state of the application
+        /// @brief Defines the current state of the application
         enum State
         {
             /// The default and starting state of the app
@@ -46,48 +52,56 @@ namespace FrameTech
             CLOSING
         };
         static Application* m_instance;
-        /// App window
+        /// @brief App window
         GLFWwindow* m_app_window = nullptr;
-        /// App title
+        /// @brief App title
         const char* m_app_title = nullptr;
-        /// Constructor of the Application - should be private as Application is a Singleton
+        /// @brief Constructor of the Application - should be private as Application is a Singleton
         Application(const char* app_title);
-        /// The internal state of the current Application object
+        /// @brief The internal state of the current Application object
         State m_state = UNINITIALIZED;
-        /// The frame that is being draw
+        /// @brief The frame that is being draw
         uint64_t m_current_frame = 1;
-        /// The current FPS limit per second to draw
+        /// @brief The current FPS limit per second to draw
         /// Optional value as the default value is NULL
         std::optional<uint8_t> m_FPS_limit = std::nullopt;
-        /// The Engine
+        /// @brief The unique instance of the Engine object
         std::unique_ptr<FrameTech::Engine> m_engine;
+        /// @brief Recorded frames to make
+        /// FPS stats on latest records
+        uint8_t recorded_frames[FPS_RECORDS];
+        /// @brief The index to record the current FPS
+        /// record
+        uint8_t recorded_frames_index = 0;
 
     public:
-        /// Private destructor
+        /// @brief Private destructor
         ~Application();
-        /// Application should not be cloneable
+        /// @brief Application should not be cloneable
         Application(Application& other) = delete;
-        /// Application should not be assignable
+        /// @brief Application should not be assignable
         void operator=(const Application& other) = delete;
-        /// The static / single instance of an Application object
+        /// @brief The static / single instance of an Application object
+        /// @param app_title The application title / name
         static Application* getInstance(const char* app_title);
-        /// Init the clean process to destroy internal instances
+        /// @brief Init the clean process to destroy internal instances
         void clean();
-        /// Initialize the app window
+        /// @brief Initialize the app window
         void initWindow();
-        /// Initialize the app's graphics engine
+        /// @brief Initialize the app's graphics engine
         void initEngine();
-        /// Run the app and wait until the user close it
+        /// @brief Run the app and wait until the user close it
         void run();
-        /// Draw the frame x
+        /// @brief Draw the frame x
         void drawFrame();
-        /// Update the internal state of the Application object
+        /// @brief Update the internal state of the Application object
+        /// @param new_state The new state of the object
         void setState(State new_state);
-        /// Returns the internal state of the Application object
+        /// @brief Returns the internal state of the Application object
         State getState();
-        /// Force the renderer to run `FPS_limit` frames per second.
+        /// @brief Force the renderer to run `FPS_limit` frames per second.
         /// The renderer is not limited by default.
-        /// Set `new_limit` to `0` in order to disable the existing limit,
+        /// @param new_limit Set `new_limit` to `0` in order to disable the existing limit,
         /// and put it as default state.
         void forceRendererFPSLimit(uint8_t new_limit);
     };

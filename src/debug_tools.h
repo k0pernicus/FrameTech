@@ -16,11 +16,8 @@
 #include <string>
 #include <time.h>
 
-/**
- * Build and prints a log statement.
- * The prefix argument is optional.
- * TODO: specify the stdout / stderr
- */
+/// @brief Build and prints a log statement.
+/// The prefix argument is optional.
 template <typename... Args>
 void build_log(const char* prefix, Args... message)
 {

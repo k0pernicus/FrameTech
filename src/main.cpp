@@ -14,6 +14,8 @@
 #include <stdio.h>
 
 #ifdef DEBUG
+// TODO: should be defined elsewhere
+// (proper preprocessor for example)
 #define ENABLE_EXCEPTIONS
 #endif
 

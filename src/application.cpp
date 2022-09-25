@@ -97,6 +97,8 @@ void FrameTech::Application::run()
             Log("> Beginning the Application loop");
             m_state = FrameTech::Application::State::RUNNING;
             // TODO: Record the duration in the loop
+            // TODO: Each second, added the FPS number in recorded_frames
+            // TODO: Increase the index : recorded_frames_index = (recorded_frames_index + 1) % FPS_RECORDS;
             while (!glfwWindowShouldClose(m_app_window) && m_state == FrameTech::Application::State::RUNNING)
             {
                 glfwPollEvents();
