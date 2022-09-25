@@ -14,15 +14,27 @@ BIN = FrameTech
 OUTPUT_DEBUG = $(OUTPUT_BASE)/debug/$(BIN)
 OUTPUT_RELEASE = $(OUTPUT_BASE)/release/$(BIN)
 
-debug: $(ALL_SOURCES)
+SHADERS_DIR = shaders
+
+debug: shaders $(ALL_SOURCES)
 	$(MKDIR_P) $(OUTPUT_BASE)/debug
 	clang++ $(CFLAGS_DEBUG) -o $(OUTPUT_DEBUG) $(SOURCES) $(LDFLAGS)
 
-release: $(ALL_SOURCES)
+release: shaders $(ALL_SOURCES)
 	$(MKDIR_P) $(OUTPUT_BASE)/release
 	clang++ $(CFLAGS_RELEASE) -o $(OUTPUT_RELEASE) $(SOURCES) $(LDFLAGS)
 
-.PHONY: clean
+.PHONY: shaders clean clean_shaders clean_sources
 
-clean:
+shaders: $(SHADERS_DIR)/*
+	for file in $^; do \
+		glslc $${file} -o $${file}.spv; \
+	done
+
+clean: clean_shaders clean_sources
+
+clean_shaders:
+	rm -rf $(SHADERS_DIR)/*.spv
+
+clean_sources:
 	rm -rf $(OUTPUT_BASE)
