@@ -1,6 +1,6 @@
 CFLAGS = -std=c++17 -I. -I$(VULKAN_SDK)/include -I/usr/local/include -I/opt/homebrew/include
 CFLAGS_DEBUG = $(CFLAGS) -g -DDEBUG
-CFLAGS_RELEASE = $(CFLAGS) -O2
+CFLAGS_RELEASE = $(CFLAGS) -O2 -DNDEBUG
 
 LDFLAGS = -L$(VULKAN_SDK)/lib `pkg-config --static --libs glfw3` -lvulkan
 
@@ -16,11 +16,13 @@ OUTPUT_RELEASE = $(OUTPUT_BASE)/release/$(BIN)
 
 SHADERS_DIR = shaders
 
-debug: shaders $(ALL_SOURCES)
+debug: $(ALL_SOURCES)
+	export VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation
 	$(MKDIR_P) $(OUTPUT_BASE)/debug
 	clang++ $(CFLAGS_DEBUG) -o $(OUTPUT_DEBUG) $(SOURCES) $(LDFLAGS)
 
-release: shaders $(ALL_SOURCES)
+release: $(ALL_SOURCES)
+	export VK_INSTANCE_LAYERS=None
 	$(MKDIR_P) $(OUTPUT_BASE)/release
 	clang++ $(CFLAGS_RELEASE) -o $(OUTPUT_RELEASE) $(SOURCES) $(LDFLAGS)
 
