@@ -124,30 +124,33 @@ Result<int> FrameTech::Engine::createGraphicsInstance()
     instance_creation_result = vkCreateInstance(&create_info, nullptr, &m_graphics_instance);
     if (instance_creation_result != VK_SUCCESS)
     {
+        char* error_msg;
         switch (instance_creation_result)
         {
             case VK_ERROR_OUT_OF_HOST_MEMORY:
-                LogE("> failed to create a graphics instance: out of host memory");
+                error_msg = (char*)"out of host memory";
                 break;
             case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-                LogE("> failed to create a graphics instance: out of device memory");
+                error_msg = (char*)"out of device memory";
                 break;
             case VK_ERROR_INITIALIZATION_FAILED:
-                LogE("> failed to create a graphics instance: initialization memory");
+                error_msg = (char*)"initialization memory";
                 break;
             case VK_ERROR_LAYER_NOT_PRESENT:
-                LogE("> failed to create a graphics instance: layer is not present");
+                error_msg = (char*)"layer is not present";
                 break;
             case VK_ERROR_EXTENSION_NOT_PRESENT:
-                LogE("> failed to create a graphics instance: extension not present");
+                error_msg = (char*)"extension not present";
                 break;
             case VK_ERROR_INCOMPATIBLE_DRIVER:
-                LogE("> failed to create a graphics instance: incompatible driver");
+                error_msg = (char*)"incompatible driver";
                 break;
             default:
-                LogE("> failed to create an instance, undocumented error (code 0x%08x)", instance_creation_result);
+                Log("> vkCreateInstance: error 0x%08x", instance_creation_result);
+                error_msg = (char*)"undocumented error";
         }
-        result.Error(-1, (char*)"failed to create an instance");
+        LogE("> vkCreateInstance: %s", error_msg);
+        result.Error(-1, error_msg);
         return result;
     }
     Log("> The graphics instance has been successfully created");
