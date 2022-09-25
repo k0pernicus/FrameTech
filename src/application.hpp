@@ -78,7 +78,7 @@ namespace FrameTech
         /// Initialize the app's graphics engine
         void initEngine();
         /// Run the app and wait until the user close it
-        void loop();
+        void run();
         /// Draw the frame x
         void drawFrame();
         /// Update the internal state of the Application object

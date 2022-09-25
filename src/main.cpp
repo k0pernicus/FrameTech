@@ -35,9 +35,8 @@ int main(int argc, const char* argv[])
     try
     {
         app->initWindow();
-        // app->initGraphicsPipeline();
         app->initEngine();
-        app->loop();
+        app->run();
     }
     catch (const std::exception& e)
     {
@@ -46,9 +45,8 @@ int main(int argc, const char* argv[])
     }
 #else
     app->initWindow();
-    // app->initGraphicsPipeline();
     app->initEngine();
-    app->loop();
+    app->run();
 #endif
     return EXIT_SUCCESS;
 }

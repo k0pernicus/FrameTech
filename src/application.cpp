@@ -79,7 +79,7 @@ void FrameTech::Application::drawFrame()
     m_current_frame++;
 }
 
-void FrameTech::Application::loop()
+void FrameTech::Application::run()
 {
     switch (m_engine->getState())
     {
