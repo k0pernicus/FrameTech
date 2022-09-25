@@ -12,4 +12,4 @@ release: src/*.cpp src/*.h src/*.hpp src/engine/*.cpp src/engine/*.hpp
 .PHONY: clean
 
 clean:
-	rm -rf FrameTech-Debug FrameTech-Release
+	rm -rf FrameTech-Debug* FrameTech-Release*
