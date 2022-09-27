@@ -124,12 +124,17 @@ void FrameTech::Engine::initialize()
         m_state = ERROR;
         return;
     }
-    if (const auto result = m_physical_device.get_queue_families(); result.IsError())
+    if (const auto result = m_physical_device.getQueueFamilies(); result.IsError())
     {
         m_state = ERROR;
         return;
     }
-    assert(m_physical_device.is_initialized());
+    if (const auto result = m_physical_device.createLogicalDevice(); result.IsError())
+    {
+        m_state = ERROR;
+        return;
+    }
+    assert(m_physical_device.isInitialized());
     m_state = INITIALIZED;
 }
 
@@ -151,7 +156,7 @@ FrameTech::Engine::State FrameTech::Engine::getState()
 Result<int> FrameTech::Engine::pickPhysicalDevice()
 {
     m_physical_device = FrameTech::Device();
-    return m_physical_device.list_devices();
+    return m_physical_device.listDevices();
 }
 
 Result<int> FrameTech::Engine::createGraphicsInstance()

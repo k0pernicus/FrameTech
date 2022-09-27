@@ -11,9 +11,20 @@
 #include "engine.hpp"
 #include <vector>
 
+#ifdef DEBUG
+const std::vector<const char*> VALIDATION_LAYERS = {
+    "VK_LAYER_KHRONOS_validation"};
+#else
+const std::vector<const char*> VALIDATION_LAYERS = {};
+#endif
+
 /// @brief The name of the Apple M1 chip, which is the
 /// only exception choosing a physical device
 const char* APPLE_M1_NAME = (char*)"Apple M1";
+
+/// @brief Boolean flag to know if the physical graphical device
+/// needs to support geometry shaders
+#define NEEDS_GEOMETRY_SHADER 0
 
 static bool isDeviceSuitable(const VkPhysicalDevice& device)
 {
@@ -25,25 +36,31 @@ static bool isDeviceSuitable(const VkPhysicalDevice& device)
     VkPhysicalDeviceProperties properties;
     vkGetPhysicalDeviceProperties(device, &properties);
 
-    VkPhysicalDeviceFeatures features;
-    vkGetPhysicalDeviceFeatures(device, &features);
-
     Log("> checking device '%s' (with ID '%d')", properties.deviceName, properties.deviceID);
-
-    const bool is_discrete_gpu = properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
-    Log("\t* is discrete gpu? %s", is_discrete_gpu ? "true!" : "false...");
-
-    const bool supports_geometry_shader = features.geometryShader;
-    Log("\t* supports geometry shader? %s", supports_geometry_shader ? "true!" : "false...");
 
     const bool is_apple_silicon = strcmp(properties.deviceName, APPLE_M1_NAME) == 0;
     Log("\t* is Apple Silicon? %s", is_apple_silicon ? "true!" : "false...");
 
+    const bool is_discrete_gpu = properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
+    Log("\t* is discrete gpu? %s", is_discrete_gpu ? "true!" : "false...");
+
+#if defined(NEEDS_GEOMETRY_SHADER) && NEEDS_GEOMETRY_SHADER == 1
+    VkPhysicalDeviceFeatures features;
+    vkGetPhysicalDeviceFeatures(device, &features);
+
+    const bool supports_geometry_shader = features.geometryShader;
+    Log("\t* supports geometry shader? %s", supports_geometry_shader ? "true!" : "false...");
+
     return is_apple_silicon || (is_discrete_gpu && supports_geometry_shader);
+#endif
+
+    return is_apple_silicon || is_discrete_gpu;
 }
 
 FrameTech::Device::~Device()
 {
+    m_queue_states.clear();
+    vkDestroyDevice(m_logical_device, nullptr);
     m_physical_device = VK_NULL_HANDLE;
 }
 
@@ -92,7 +109,7 @@ Result<uint32_t> FrameTech::Device::getQueueFamilies()
     assert(isInitialized());
     if (!isInitialized())
     {
-        result.Error(RESULT_ERROR, "No physical device");
+        result.Error(RESULT_ERROR, "The physical device has not been setup");
         return result;
     }
     uint32_t queue_families_number = 0;
@@ -105,7 +122,7 @@ Result<uint32_t> FrameTech::Device::getQueueFamilies()
         return result;
     }
     std::vector<VkQueueFamilyProperties> found_queue_families(queue_families_number);
-    m_queues_states.resize((size_t)queue_families_number);
+    m_queue_states.resize((size_t)queue_families_number);
     vkGetPhysicalDeviceQueueFamilyProperties(m_physical_device, &queue_families_number, found_queue_families.data());
 
     // Check if there is at least one queue that supports graphics
@@ -114,8 +131,65 @@ Result<uint32_t> FrameTech::Device::getQueueFamilies()
         Log("\t> checking queue family %d", i);
         const bool is_supported = (found_queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT);
         Log("\t\t* is supported? %s", is_supported ? "true!" : "false...");
-        m_queues_states[i] = is_supported ? QueueState::READY : QueueState::UNSUPPORTED;
+        m_queue_states[i] = is_supported ? QueueState::READY : QueueState::UNSUPPORTED;
     }
     result.Ok(queue_families_number);
+    return result;
+}
+
+Result<int> FrameTech::Device::createLogicalDevice()
+{
+    assert(m_physical_device);
+    Result<int> result;
+    if (m_physical_device == VK_NULL_HANDLE)
+    {
+        result.Error(RESULT_ERROR, "The physical device has not been setup");
+        return result;
+    }
+    uint32_t first_index = 0;
+    for (int i = 0; i < m_queue_states.size(); i++)
+    {
+        first_index = i;
+        if (m_queue_states[i] == QueueState::READY)
+            break;
+    }
+    if (first_index >= m_queue_states.size())
+    {
+        result.Error(RESULT_ERROR, "No any READY queue for the physical device");
+        return result;
+    }
+    // Set the first indexed queue as USED
+    m_queue_states[first_index] = QueueState::USED;
+    // Create the Queue information
+    VkDeviceQueueCreateInfo queue_create_info{};
+    queue_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    queue_create_info.queueFamilyIndex = first_index; // The first READY queue
+    queue_create_info.queueCount = 1;                 // Enable one queue - low-overhead calls using multithreading
+    // Influences the scheduling of command buffer execution (1.0 is the max priority value)
+    // Required, even for a single queue
+    float queue_priority = 1.0;
+    queue_create_info.pQueuePriorities = &queue_priority;
+
+    // Specify GRAPHICS feature - set everyone
+    // to VK_FALSE for the moment
+    VkPhysicalDeviceFeatures device_features{};
+
+    // Initializes the logical device
+    VkDeviceCreateInfo logical_device_create_info{};
+    logical_device_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    logical_device_create_info.pQueueCreateInfos = &queue_create_info;
+    logical_device_create_info.queueCreateInfoCount = 1;
+    logical_device_create_info.pEnabledFeatures = &device_features;
+    logical_device_create_info.enabledExtensionCount = 0;
+    logical_device_create_info.enabledLayerCount = static_cast<uint32_t>(VALIDATION_LAYERS.size());
+    if (VALIDATION_LAYERS.size() > 0)
+        logical_device_create_info.ppEnabledLayerNames = VALIDATION_LAYERS.data();
+    if (vkCreateDevice(m_physical_device, &logical_device_create_info, nullptr, &m_logical_device) != VK_SUCCESS)
+    {
+        result.Error(RESULT_ERROR, "Cannot create the logical device");
+        return result;
+    }
+    Log("Logical device has been created");
+    result.Ok(RESULT_OK);
     return result;
 }
