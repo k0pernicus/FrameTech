@@ -9,6 +9,8 @@
 #ifndef result_h
 #define result_h
 
+#include "debug_tools.h"
+
 #define RESULT_OK 0
 #define RESULT_ERROR 0
 
@@ -54,6 +56,7 @@ public:
     /// @param error_msg An error message.
     void Error(int error_code, char* error_msg)
     {
+        LogE("%s", error_msg);
         m_error = error_code;
         m_error_exp = error_msg;
     }
