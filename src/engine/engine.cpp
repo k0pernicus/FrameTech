@@ -23,8 +23,7 @@ const std::vector<const char*> VALIDATION_LAYERS = {};
 const std::vector<const char*> REQUIRED_LAYERS_TO_CHECK = {};
 #endif
 
-static VkApplicationInfo
-createApplicationInfo()
+static VkApplicationInfo createApplicationInfo()
 {
     // The instance is the connection between the application
     // and the Vulkan library
@@ -73,7 +72,7 @@ static void getRequiredExtensions(const char*** extension_names, uint32_t* exten
         }
         if (!layer_found)
         {
-            LogW("> Layer '%s' has not been found!", extension_name);
+            LogW("> Layer '%s' has not been found!", required_layer);
             LogW("> This may throw an 'VK_ERROR_EXTENSION_NOT_PRESENT' error creating the Vulkan instance");
         }
     }
@@ -114,8 +113,24 @@ void FrameTech::Engine::initialize()
 {
     if (m_state == INITIALIZED)
         return;
-    const auto result = createGraphicsInstance();
-    m_state = result.IsError() ? ERROR : INITIALIZED;
+    if (const auto result = createGraphicsInstance(); result.IsError())
+    {
+        m_state = ERROR;
+        return;
+    }
+    assert(m_graphics_instance != nullptr);
+    if (const auto result = pickPhysicalDevice(); result.IsError())
+    {
+        m_state = ERROR;
+        return;
+    }
+    if (const auto result = m_physical_device.get_queue_families(); result.IsError())
+    {
+        m_state = ERROR;
+        return;
+    }
+    assert(m_physical_device.is_initialized());
+    m_state = INITIALIZED;
 }
 
 FrameTech::Engine* FrameTech::Engine::getInstance()
@@ -131,6 +146,12 @@ FrameTech::Engine* FrameTech::Engine::getInstance()
 FrameTech::Engine::State FrameTech::Engine::getState()
 {
     return m_state;
+}
+
+Result<int> FrameTech::Engine::pickPhysicalDevice()
+{
+    m_physical_device = FrameTech::Device();
+    return m_physical_device.list_devices();
 }
 
 Result<int> FrameTech::Engine::createGraphicsInstance()

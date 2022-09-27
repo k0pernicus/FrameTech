@@ -10,6 +10,7 @@
 #define engine_hpp
 
 #include "../result.h"
+#include "device.hpp"
 #include "pipeline.hpp"
 #include "vulkan/vulkan.h"
 #include <cstdlib>
@@ -46,13 +47,11 @@ namespace FrameTech
         static Engine* m_instance;
         /// @brief Creates the Vulkan instance of the Engine
         Result<int> createGraphicsInstance();
+        /// @brief Choose and picks a physical device
+        Result<int> pickPhysicalDevice();
         /// @brief Stores the internal state of the unique
         /// Engine object
         FrameTech::Engine::State m_state;
-        /// @brief The graphics pipeline
-        FrameTech::Pipeline m_pipeline;
-        /// @brief The engine instance
-        VkInstance m_graphics_instance;
 
     public:
         /// @brief Get the singleton Engine object
@@ -66,6 +65,13 @@ namespace FrameTech
         /// Engine object
         FrameTech::Engine::State getState();
         ~Engine();
+
+        /// @brief The graphics pipeline
+        FrameTech::Pipeline m_pipeline;
+        /// @brief The engine instance
+        VkInstance m_graphics_instance = NULL;
+        /// @brief The physical device
+        FrameTech::Device m_physical_device;
     };
 
 } // namespace FrameTech
