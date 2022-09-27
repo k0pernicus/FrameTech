@@ -13,12 +13,6 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
-#ifdef DEBUG
-// TODO: should be defined elsewhere
-// (proper preprocessor for example)
-#define ENABLE_EXCEPTIONS
-#endif
-
 int main(int argc, const char* argv[])
 {
     {

@@ -16,6 +16,10 @@
 #include <string>
 #include <time.h>
 
+// TODO: should be defined elsewhere
+// (proper preprocessor for example)
+#define ENABLE_EXCEPTIONS
+
 /// @brief Build and prints a log statement.
 /// The prefix argument is optional.
 template <typename... Args>
