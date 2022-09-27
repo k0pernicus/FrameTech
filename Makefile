@@ -16,12 +16,12 @@ OUTPUT_RELEASE = $(OUTPUT_BASE)/release/$(BIN)
 
 SHADERS_DIR = shaders
 
-debug: $(ALL_SOURCES)
+debug: clean_sources $(ALL_SOURCES)
 	export VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation
 	$(MKDIR_P) $(OUTPUT_BASE)/debug
 	clang++ $(CFLAGS_DEBUG) -o $(OUTPUT_DEBUG) $(SOURCES) $(LDFLAGS)
 
-release: $(ALL_SOURCES)
+release: clean_sources $(ALL_SOURCES)
 	export VK_INSTANCE_LAYERS=None
 	$(MKDIR_P) $(OUTPUT_BASE)/release
 	clang++ $(CFLAGS_RELEASE) -o $(OUTPUT_RELEASE) $(SOURCES) $(LDFLAGS)
