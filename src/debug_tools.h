@@ -23,7 +23,7 @@
 /// @brief Build and prints a log statement.
 /// The prefix argument is optional.
 template <typename... Args>
-void build_log(const char* prefix, Args... message)
+void build_log(FILE* stream, const char* prefix, Args... message)
 {
     // Get timestamp
     time_t ltime;
@@ -35,17 +35,17 @@ void build_log(const char* prefix, Args... message)
         time[strlen(time) - 1] = '\0';
     // Print the date and the prefix
     if (prefix == nullptr)
-        printf("[%s] ", time);
+        fprintf(stream, "[%s] ", time);
     else
-        printf("[%s] %s: ", time, prefix);
+        fprintf(stream, "[%s] %s: ", time, prefix);
     // Print the full message
-    printf(message...);
-    printf("\n");
+    fprintf(stream, message...);
+    fprintf(stream, "\n");
 }
 
-#define Log(...) build_log(nullptr, __VA_ARGS__)
-#define LogE(...) build_log("Error", __VA_ARGS__)
-#define LogW(...) build_log("Warning", __VA_ARGS__)
+#define Log(...) build_log(stdout, nullptr, __VA_ARGS__)
+#define LogE(...) build_log(stderr, "Error", __VA_ARGS__)
+#define LogW(...) build_log(stderr, "Warning", __VA_ARGS__)
 #define WARN_RT_UNIMPLEMENTED assert(0)
 #define WARN_CT_UNIMPLEMENTED static_assert(0)
 
@@ -55,8 +55,12 @@ void build_log(const char* prefix, Args... message)
 #define Log(...)
 #define LogE(...)
 #define LogW(...)
-#define WARN_RT_UNIMPLEMENTED ()
-#define WARN_CT_UNIMPLEMENTED ()
+#define WARN_RT_UNIMPLEMENTED \
+    {                         \
+    }
+#define WARN_CT_UNIMPLEMENTED \
+    {                         \
+    }
 
 #endif
 
