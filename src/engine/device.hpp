@@ -41,7 +41,7 @@ namespace FrameTech
         /// 3. Supports geometry shader.
         /// The device **must** follows the rule 1, or (2 and 3).
         /// @return If the device follows the previously explicited rules.
-        inline bool isInitialized() const;
+        bool isInitialized() const;
         /// @brief Find supported queues on the device
         Result<uint32_t> getQueueFamilies();
         /// @brief Returns if any queue is available to use
