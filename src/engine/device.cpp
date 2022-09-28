@@ -13,9 +13,16 @@
 
 #ifdef DEBUG
 const std::vector<const char*> VALIDATION_LAYERS = {
-    "VK_LAYER_KHRONOS_validation"};
+    "VK_LAYER_KHRONOS_validation",
+};
+const std::vector<const char*> REQUIRED_LAYERS_TO_CHECK = {
+    "VK_KHR_portability_subset",
+};
 #else
 const std::vector<const char*> VALIDATION_LAYERS = {};
+const std::vector<const char*> REQUIRED_LAYERS_TO_CHECK = {
+    "VK_KHR_portability_subset",
+};
 #endif
 
 /// @brief The name of the Apple M1 chip, which is the
@@ -57,10 +64,20 @@ static bool isDeviceSuitable(const VkPhysicalDevice& device)
     return is_apple_silicon || is_discrete_gpu;
 }
 
+void FrameTech::Device::Destroy()
+{
+    if (m_logical_device)
+    {
+        vkDestroyDevice(m_logical_device, nullptr);
+        m_logical_device = VK_NULL_HANDLE;
+    }
+}
+
 FrameTech::Device::~Device()
 {
+    Destroy();
     m_queue_states.clear();
-    vkDestroyDevice(m_logical_device, nullptr);
+    m_logical_device = VK_NULL_HANDLE;
     m_physical_device = VK_NULL_HANDLE;
 }
 
@@ -180,12 +197,39 @@ Result<int> FrameTech::Device::createLogicalDevice()
     logical_device_create_info.pQueueCreateInfos = &queue_create_info;
     logical_device_create_info.queueCreateInfoCount = 1;
     logical_device_create_info.pEnabledFeatures = &device_features;
-    logical_device_create_info.enabledExtensionCount = 0;
-    logical_device_create_info.enabledLayerCount = static_cast<uint32_t>(VALIDATION_LAYERS.size());
-    if (VALIDATION_LAYERS.size() > 0)
-        logical_device_create_info.ppEnabledLayerNames = VALIDATION_LAYERS.data();
-    if (vkCreateDevice(m_physical_device, &logical_device_create_info, nullptr, &m_logical_device) != VK_SUCCESS)
+    logical_device_create_info.enabledExtensionCount = REQUIRED_LAYERS_TO_CHECK.size();
+    logical_device_create_info.ppEnabledExtensionNames = REQUIRED_LAYERS_TO_CHECK.data();
+    if (const auto result_status = vkCreateDevice(m_physical_device, &logical_device_create_info, nullptr, &m_logical_device); result_status != VK_SUCCESS)
     {
+        char* error_msg;
+        switch (result_status)
+        {
+            case VK_ERROR_OUT_OF_HOST_MEMORY:
+                error_msg = (char*)"out of host memory";
+                break;
+            case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+                error_msg = (char*)"out of device memory";
+                break;
+            case VK_ERROR_INITIALIZATION_FAILED:
+                error_msg = (char*)"initialization memory";
+                break;
+            case VK_ERROR_EXTENSION_NOT_PRESENT:
+                error_msg = (char*)"extension not present";
+                break;
+            case VK_ERROR_FEATURE_NOT_PRESENT:
+                error_msg = (char*)"feature not present";
+                break;
+            case VK_ERROR_TOO_MANY_OBJECTS:
+                error_msg = (char*)"too many objects";
+                break;
+            case VK_ERROR_DEVICE_LOST:
+                error_msg = (char*)"device lost";
+                break;
+            default:
+                Log("> vkCreateInstance: error 0x%08x", result_status);
+                error_msg = (char*)"undocumented error";
+        }
+        LogE("> vkCreateInstance: %s", error_msg);
         result.Error(RESULT_ERROR, "Cannot create the logical device");
         return result;
     }

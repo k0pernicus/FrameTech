@@ -15,12 +15,19 @@
 
 #ifdef DEBUG
 const std::vector<const char*> VALIDATION_LAYERS = {
-    "VK_LAYER_KHRONOS_validation"};
+    "VK_LAYER_KHRONOS_validation",
+    // "VK_KHR_portability_subset",
+    //    "VK_KHR_get_physical_device_properties2",
+};
 const std::vector<const char*> REQUIRED_LAYERS_TO_CHECK = {
-    "VK_EXT_debug_utils"};
+    "VK_EXT_debug_utils",
+    "VK_KHR_portability_subset",
+};
 #else
 const std::vector<const char*> VALIDATION_LAYERS = {};
-const std::vector<const char*> REQUIRED_LAYERS_TO_CHECK = {};
+const std::vector<const char*> REQUIRED_LAYERS_TO_CHECK = {
+    "VK_KHR_portability_subset",
+};
 #endif
 
 static VkApplicationInfo createApplicationInfo()
@@ -104,6 +111,7 @@ FrameTech::Engine::Engine()
 FrameTech::Engine::~Engine()
 {
     Log("< Closing the Engine object...");
+    m_physical_device.Destroy();
     if (m_graphics_instance)
         vkDestroyInstance(m_graphics_instance, nullptr);
     m_instance = nullptr;
@@ -181,7 +189,7 @@ Result<int> FrameTech::Engine::createGraphicsInstance()
     }
     else
     {
-        Log("> Enabling %d validation layer(s):", VALIDATION_LAYERS.size());
+        Log("> Enabling %d validation layer(s) for the overall engine:", VALIDATION_LAYERS.size());
         for (int i = 0; i < VALIDATION_LAYERS.size(); i++)
             Log("\t* %s", VALIDATION_LAYERS[i]);
         create_info.enabledLayerCount = VALIDATION_LAYERS.size();
@@ -219,7 +227,7 @@ Result<int> FrameTech::Engine::createGraphicsInstance()
                 error_msg = (char*)"undocumented error";
         }
         LogE("> vkCreateInstance: %s", error_msg);
-        result.Error(-1, error_msg);
+        result.Error(RESULT_ERROR, error_msg);
         return result;
     }
     Log("> The graphics instance has been successfully created");

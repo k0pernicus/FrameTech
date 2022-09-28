@@ -45,7 +45,10 @@ namespace FrameTech
         Result<uint32_t> getQueueFamilies();
         /// @brief Returns if any queue is available to use
         bool isAnyQueueAvailable() const;
+        /// @brief Creates a logical device based on the setted physical device
         Result<int> createLogicalDevice();
+        /// @brief Clean and destroy the logical device, if it has been set
+        void Destroy();
 
     private:
         /// @brief The physical device that has been picked
@@ -54,7 +57,9 @@ namespace FrameTech
         /// physical device
         std::vector<QueueState> m_queue_states;
         /// @brief The logical device associated to the physical device
-        VkDevice m_logical_device;
+        VkDevice m_logical_device = VK_NULL_HANDLE;
+        /// @brief Interface to the graphics queue
+        VkQueue m_graphics_queue = VK_NULL_HANDLE;
     };
 } // namespace FrameTech
 
