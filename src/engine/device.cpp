@@ -234,6 +234,8 @@ Result<int> FrameTech::Device::createLogicalDevice()
         return result;
     }
     Log("Logical device has been created");
+    // Let's use 0 by default for queue index as we create one queue per logical device
+    vkGetDeviceQueue(m_logical_device, first_index, 0, &m_graphics_queue);
     result.Ok(RESULT_OK);
     return result;
 }
