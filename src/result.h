@@ -13,7 +13,7 @@
 #include <cstdint>
 
 constexpr int8_t RESULT_OK = 0;
-constexpr int8_t RESULT_ERROR = 0;
+constexpr int8_t RESULT_ERROR = -1;
 
 /// @brief A very simple Result type for the Engine
 /// @tparam T The result that is contained in the container
@@ -55,28 +55,34 @@ public:
     /// @brief Initializes the Result type, as an error.
     /// Puts `RESULT_ERROR` as default error code.
     /// @param error_msg An error message.
-    void Error(char* error_msg)
+    static Result Error(char* error_msg)
     {
         LogE("%s", error_msg);
-        m_error = RESULT_ERROR;
-        m_error_exp = error_msg;
+        Result result;
+        result.m_error = RESULT_ERROR;
+        result.m_error_exp = error_msg;
+        return result;
     }
     /// @brief Initializes the Result type, as an error.
     /// @param error_code An error code.
     /// @param error_msg An error message.
-    void Error(int8_t error_code, char* error_msg)
+    static Result Error(int8_t error_code, char* error_msg)
     {
         LogE("%s", error_msg);
-        m_error = error_code;
-        m_error_exp = error_msg;
+        Result result;
+        result.m_error = error_code;
+        result.m_error_exp = error_msg;
+        return result;
     }
     /// @brief Initializes the Result type, as an Ok type.
     /// @param result The result value, which is not an error.
-    void Ok(T result)
+    static Result Ok(T c_result)
     {
-        m_error = RESULT_OK;
-        m_error_exp = nullptr;
-        m_result = result;
+        Result result;
+        result.m_error = RESULT_OK;
+        result.m_error_exp = nullptr;
+        result.m_result = c_result;
+        return result;
     }
 };
 
