@@ -100,7 +100,7 @@ void FrameTech::Application::run()
         break;
         case FrameTech::Engine::State::INITIALIZED:
         {
-            Log("> Beginning the Application loop");
+            Log("> Application loop...");
             m_state = FrameTech::Application::State::RUNNING;
             // TODO: Record the duration in the loop
             // TODO: Each second, added the FPS number in recorded_frames
@@ -110,7 +110,7 @@ void FrameTech::Application::run()
                 glfwPollEvents();
                 drawFrame();
             }
-            Log("< Ending the Application loop");
+            Log("< ...Application loop");
         }
         break;
     }
