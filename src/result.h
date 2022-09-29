@@ -11,8 +11,8 @@
 
 #include "debug_tools.h"
 
-#define RESULT_OK 0
-#define RESULT_ERROR 0
+constexpr int8_t RESULT_OK = 0;
+constexpr int8_t RESULT_ERROR = 0;
 
 /// @brief A very simple Result type for the Engine
 /// @tparam T The result that is contained in the container
@@ -23,7 +23,7 @@ struct Result
 private:
     /// @brief The error code, if it exists.
     /// If there is no error, should be `RESULT_OK`.
-    int m_error;
+    int8_t m_error;
     /// @brief The error message, if the container
     /// does contain an error.
     char* m_error_exp;
@@ -52,9 +52,18 @@ public:
     /// @return The error value, as a characters array, if there is one.
     const char* GetError() { return m_error_exp; }
     /// @brief Initializes the Result type, as an error.
+    /// Puts `RESULT_ERROR` as default error code.
+    /// @param error_msg An error message.
+    void Error(char* error_msg)
+    {
+        LogE("%s", error_msg);
+        m_error = RESULT_ERROR;
+        m_error_exp = error_msg;
+    }
+    /// @brief Initializes the Result type, as an error.
     /// @param error_code An error code.
     /// @param error_msg An error message.
-    void Error(int error_code, char* error_msg)
+    void Error(int8_t error_code, char* error_msg)
     {
         LogE("%s", error_msg);
         m_error = error_code;
@@ -64,7 +73,7 @@ public:
     /// @param result The result value, which is not an error.
     void Ok(T result)
     {
-        m_error = 0;
+        m_error = RESULT_OK;
         m_error_exp = nullptr;
         m_result = result;
     }
