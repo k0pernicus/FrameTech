@@ -58,7 +58,7 @@ namespace FrameTech
             /// @brief Creates the Vulkan swapchain object
             /// This function should not be called before `queryDetails`
             /// and `checkDetails` functions!
-            Result<int> createSwapChain();
+            Result<int> create();
 
         private:
             SwapChain();

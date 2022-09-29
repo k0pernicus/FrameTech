@@ -221,5 +221,5 @@ Result<int> FrameTech::Engine::createSwapChain()
     if (m_swapchain == nullptr)
         m_swapchain = std::unique_ptr<FrameTech::Graphics::SwapChain>(FrameTech::Graphics::SwapChain::getInstance());
     m_swapchain->queryDetails();
-    return m_swapchain->checkDetails();
+    m_swapchain->create();
 }

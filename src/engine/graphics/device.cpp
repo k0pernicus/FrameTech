@@ -236,8 +236,6 @@ Result<int> FrameTech::Graphics::Device::createLogicalDevice()
     // Influences the scheduling of command buffer execution (1.0 is the max priority value)
     // Required, even for a single queue
     float queue_priority = 1.0f;
-    uint32_t graphics_queue_family_index = 0;
-    uint32_t presents_queue_family_index = 0;
 
     size_t queue_index = 0;
     // TODO: initialize and set the present queue here
@@ -272,11 +270,11 @@ Result<int> FrameTech::Graphics::Device::createLogicalDevice()
         switch (supported_flag)
         {
             case SupportFeatures::GRAPHICS:
-                graphics_queue_family_index = first_index;
+                m_graphics_queue_family_index = first_index;
                 Log("> Graphics family queue index is %d", first_index);
                 break;
             case SupportFeatures::PRESENTS:
-                presents_queue_family_index = first_index;
+                m_presents_queue_family_index = first_index;
                 Log("> Presents family queue index is %d", first_index);
                 break;
             default:
@@ -334,11 +332,11 @@ Result<int> FrameTech::Graphics::Device::createLogicalDevice()
 
     // Create the graphics queue
     // Let's use 0 by default for queue index as we create one queue per logical device
-    vkGetDeviceQueue(m_logical_device, graphics_queue_family_index, 0, &m_graphics_queue);
+    vkGetDeviceQueue(m_logical_device, m_graphics_queue_family_index, 0, &m_graphics_queue);
 
     // Create the present queue
     // Let's use 0 by default for queue index as we create one queue per logical device
-    vkGetDeviceQueue(m_logical_device, presents_queue_family_index, 0, &m_presents_queue);
+    vkGetDeviceQueue(m_logical_device, m_presents_queue_family_index, 0, &m_presents_queue);
 
     return Result<int>::Ok(RESULT_OK);
 }

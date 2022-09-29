@@ -63,6 +63,10 @@ namespace FrameTech
             VkPhysicalDevice getPhysicalDevice() const;
             /// @brief Clean and destroy the logical device, if it has been set
             void Destroy();
+            /// @brief Store the index of the graphics queue family
+            uint32_t m_graphics_queue_family_index = 0;
+            /// @brief Store the index of the presents queue family
+            uint32_t m_presents_queue_family_index = 0;
 
         private:
             /// @brief The physical device that has been picked

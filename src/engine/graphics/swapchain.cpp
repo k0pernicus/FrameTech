@@ -6,8 +6,75 @@
 //
 
 #include "swapchain.hpp"
+#include "../../application.hpp"
 #include "../../debug_tools.h"
+#include "../../project.hpp"
 #include "../engine.hpp"
+#include <GLFW/glfw3.h>
+
+/// @brief 32 bits surface (BGRA, u8 each) in SRGB is
+/// prefered for the surface format
+constexpr VkFormat PREFERED_SURFACE_FORMAT = VK_FORMAT_B8G8R8A8_SRGB;
+
+/// @brief SRGB non-linear is prefered for the color space - standard color space
+constexpr VkColorSpaceKHR PREFERED_COLOR_SPACE_FORMAT = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
+
+/// @brief The favorite presentation mode. In this mode, the swapchain is a queue
+/// where the display takes an image from the front of the queue when the display
+/// is refreshed and the program inserts rendered images at the back of the queue.
+/// If the queue is full then the program has to wait.
+constexpr VkPresentModeKHR PREFERED_PRESENTATION_MODE = VK_PRESENT_MODE_FIFO_KHR;
+
+/// @brief Internal function to choose automatically a good Surface format
+/// from the SwapChainDetails structure
+/// @param formats The list of available formats to choose from
+/// @return A format that would corresponds to the engine basic needs.
+/// If the "perfect" format combination has not been found, then it
+/// returns the first element of the array.
+static Result<VkSurfaceFormatKHR> chooseFormat(const std::vector<VkSurfaceFormatKHR>& formats)
+{
+    for (const VkSurfaceFormatKHR format : formats)
+    {
+        if (format.format == PREFERED_SURFACE_FORMAT && format.colorSpace == PREFERED_COLOR_SPACE_FORMAT)
+            return Result<VkSurfaceFormatKHR>::Ok(format);
+    }
+    return Result<VkSurfaceFormatKHR>::Ok(formats[0]);
+}
+
+/// @brief Internal function to choose automatically a good Presentation Mode
+/// from the SwapChainDetails structure.
+/// The Presentation Mode represents the actual conditions for showing images
+/// to the screen.
+/// @param formats The list of available presentation modes to choose from
+/// @return A present mode that would corresponds to the engine basic needs
+static Result<VkPresentModeKHR> choosePresentMode(const std::vector<VkPresentModeKHR>& present_modes)
+{
+    for (const VkPresentModeKHR mode : present_modes)
+    {
+        if (mode == PREFERED_PRESENTATION_MODE)
+            return Result<VkPresentModeKHR>::Ok(mode);
+    }
+    return Result<VkPresentModeKHR>::Error((char*)"Our prefered presentation mode is not found");
+}
+
+/// @brief Internal function to choose automatically a good capability
+/// from the SwapChainDetails structure.
+/// The swap extent is the resolution of the swapchain images, which is almost
+/// exactly equal to the resolution of the window that we're drawing to (in pixels).
+/// @param formats The list of available capabilities to choose from
+/// @return A capability that would corresponds to the engine basic needs
+static Result<VkExtent2D> chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
+{
+    int window_height, window_width;
+    glfwGetFramebufferSize(FrameTech::Application::getInstance(Project::APPLICATION_NAME)->getWindow(), &window_width, &window_height);
+    VkExtent2D final_extent = {
+        static_cast<uint32_t>(window_width),
+        static_cast<uint32_t>(window_height),
+    };
+    final_extent.width = std::clamp(final_extent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
+    final_extent.height = std::clamp(final_extent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
+    return Result<VkExtent2D>::Ok(final_extent);
+}
 
 FrameTech::Graphics::SwapChain* FrameTech::Graphics::SwapChain::m_instance{nullptr};
 
@@ -74,16 +141,56 @@ void FrameTech::Graphics::SwapChain::queryDetails()
 
 Result<int> FrameTech::Graphics::SwapChain::checkDetails()
 {
-    if ((m_details.capabilities.minImageCount >= MAX_BUFFERS && m_details.capabilities.maxImageCount <= MAX_BUFFERS) &&
-        (!m_details.formats.empty() && m_details.present_modes.empty()) &&
+    if ((m_details.capabilities.minImageCount <= MAX_BUFFERS && m_details.capabilities.maxImageCount >= MAX_BUFFERS) &&
+        (!m_details.formats.empty() && !m_details.present_modes.empty()) &&
         (m_details.capabilities.minImageCount > 0))
+    {
         return Result<int>::Ok(RESULT_OK);
+    }
     LogW("< The swapchain only supports between %d and %d images (max)", m_details.capabilities.minImageCount, m_details.capabilities.maxImageCount);
     return Result<int>::Error((char*)"The supported images count is incorrect");
 }
 
-Result<int> FrameTech::Graphics::SwapChain::createSwapChain()
+Result<int> FrameTech::Graphics::SwapChain::create()
 {
-    WARN_RT_UNIMPLEMENTED;
-    return Result<int>::Error((char*)"Not implemented");
+    // Check that the details are correct
+    if (const auto result = checkDetails(); result.IsError())
+        return result;
+
+    const auto format_result = chooseFormat(m_details.formats);
+    if (format_result.IsError())
+        return Result<int>::Error((char*)"Did not found any good format for the swapchain");
+
+    const auto present_mode_result = choosePresentMode(m_details.present_modes);
+    if (present_mode_result.IsError())
+        return Result<int>::Error((char*)"Did not found any good presentation mode for the swapchain");
+
+    const auto swap_extent_result = chooseSwapExtent(m_details.capabilities);
+    if (swap_extent_result.IsError())
+        return Result<int>::Error((char*)"Did not found any good extent for the swapchain");
+
+    // Unwrap
+    const auto format = format_result.GetValue();
+    const auto present_mode = present_mode_result.GetValue();
+    const auto swap_extent = swap_extent_result.GetValue();
+
+    VkSwapchainCreateInfoKHR create_info{};
+    create_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+    create_info.surface = (*FrameTech::Engine::getInstance()->m_render->getSurface());
+    create_info.minImageCount = MAX_BUFFERS;
+    create_info.imageFormat = format.format;
+    create_info.imageColorSpace = format.colorSpace;
+    create_info.imageExtent = swap_extent;
+    create_info.imageArrayLayers = 1;                             // Always one (except stereoscopic 3D app)
+    create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT; // color attachment, use VK_IMAGE_USAGE_TRANSFER_DST_BIT instead
+    uint32_t indices[2] = {
+        FrameTech::Engine::getInstance()->m_graphics_device.m_graphics_queue_family_index,
+        FrameTech::Engine::getInstance()->m_graphics_device.m_presents_queue_family_index,
+    };
+    create_info.imageSharingMode = indices[0] == indices[1] ? VK_SHARING_MODE_EXCLUSIVE : VK_SHARING_MODE_CONCURRENT;
+    create_info.pQueueFamilyIndices = indices[0] == indices[1] ? nullptr : indices;
+    create_info.queueFamilyIndexCount = indices[0] == indices[1] ? 0 : 2;
+
+    // TODO: finish the configuration of the swapchain
+    return Result<int>::Ok(RESULT_OK);
 }
