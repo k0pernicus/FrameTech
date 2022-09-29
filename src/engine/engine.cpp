@@ -163,7 +163,6 @@ FrameTech::Engine::State FrameTech::Engine::getState()
 
 Result<int> FrameTech::Engine::pickPhysicalDevice()
 {
-    m_physical_device = FrameTech::Device();
     return m_physical_device.listDevices();
 }
 

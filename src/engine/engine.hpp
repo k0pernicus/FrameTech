@@ -67,11 +67,14 @@ namespace FrameTech
         ~Engine();
 
         /// @brief The graphics pipeline
-        FrameTech::Pipeline m_pipeline;
+        FrameTech::Pipeline m_pipeline = FrameTech::Pipeline();
         /// @brief The engine instance
         VkInstance m_graphics_instance = NULL;
         /// @brief The physical device
-        FrameTech::Device m_physical_device;
+        FrameTech::Device m_physical_device = FrameTech::Device();
+        /// @brief The renderer of the engine
+        /// TODO: check if this part has to move to another object
+        FrameTech::Render m_render = FrameTech::Render();
     };
 
 } // namespace FrameTech
