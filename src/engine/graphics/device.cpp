@@ -17,11 +17,13 @@ const std::vector<const char*> VALIDATION_LAYERS = {
     "VK_LAYER_KHRONOS_validation",
 };
 const std::vector<const char*> REQUIRED_LAYERS_TO_CHECK = {
+    // This extension is used for m1 macs
     "VK_KHR_portability_subset",
 };
 #else
 const std::vector<const char*> VALIDATION_LAYERS = {};
 const std::vector<const char*> REQUIRED_LAYERS_TO_CHECK = {
+    // This extension is used for m1 macs
     "VK_KHR_portability_subset",
 };
 #endif
@@ -132,22 +134,22 @@ Result<uint32_t> FrameTech::Graphics::Device::getQueueFamilies()
         result.Error((char*)"The physical device has not been setup");
         return result;
     }
-    uint32_t queue_families_number = 0;
+    uint32_t total_queue_families = 0;
 
-    vkGetPhysicalDeviceQueueFamilyProperties(m_physical_device, &queue_families_number, nullptr);
-    result.Ok(queue_families_number);
-    if (queue_families_number == 0)
+    vkGetPhysicalDeviceQueueFamilyProperties(m_physical_device, &total_queue_families, nullptr);
+    result.Ok(total_queue_families);
+    if (total_queue_families == 0)
     {
         Log("No queue families for the selected physical device");
         return result;
     }
-    std::vector<VkQueueFamilyProperties> found_queue_families(queue_families_number);
-    m_queue_support.resize((size_t)queue_families_number);
-    m_queue_states.resize((size_t)queue_families_number);
-    vkGetPhysicalDeviceQueueFamilyProperties(m_physical_device, &queue_families_number, found_queue_families.data());
+    std::vector<VkQueueFamilyProperties> found_queue_families(total_queue_families);
+    m_queue_support.resize((size_t)total_queue_families);
+    m_queue_states.resize((size_t)total_queue_families);
+    vkGetPhysicalDeviceQueueFamilyProperties(m_physical_device, &total_queue_families, found_queue_families.data());
 
-    // Check if there is at least one queue that supports graphics
-    for (uint32_t i = 0; i < queue_families_number; i++)
+    // Constructs the set of internal queues
+    for (uint32_t i = 0; i < total_queue_families; i++)
     {
         Log("\t> checking queue family %d", i);
 
@@ -168,7 +170,24 @@ Result<uint32_t> FrameTech::Graphics::Device::getQueueFamilies()
         m_queue_states[i] = m_queue_support[i] == SupportFeatures::NOONE ? QueueState::UNSUPPORTED : QueueState::READY;
     }
 
-    result.Ok(queue_families_number);
+    // Check if there is any queue family that supports both graphics and present queue,
+    // or one queue for graphics and another one for present
+    bool supports_graphics = false;
+    bool supports_present = false;
+    for (int i = 0; i < total_queue_families; i++)
+    {
+        supports_graphics = (m_queue_support[i] & SupportFeatures::GRAPHICS) != 0 || supports_graphics;
+        supports_present = (m_queue_support[i] & SupportFeatures::PRESENTS) != 0 || supports_present;
+        if (supports_graphics && supports_present)
+            break;
+    }
+    if (!supports_graphics || !supports_present)
+    {
+        result.Error((char*)"support for graphics and / or present family queues is incorrect");
+        return result;
+    }
+
+    result.Ok(total_queue_families);
     return result;
 }
 
@@ -181,29 +200,65 @@ Result<int> FrameTech::Graphics::Device::createLogicalDevice()
         result.Error((char*)"The physical device has not been setup");
         return result;
     }
-    uint32_t first_index = 0;
-    for (int i = 0; i < m_queue_support.size(); i++)
-    {
-        first_index = i;
-        if (m_queue_support[i] != SupportFeatures::NOONE)
-            break;
-    }
-    if (first_index >= m_queue_support.size())
-    {
-        result.Error((char*)"No any READY queue for the physical device");
-        return result;
-    }
-    // Set the first indexed queue as USED
-    m_queue_states[first_index] = QueueState::USED;
-    // Create the Queue information
-    VkDeviceQueueCreateInfo queue_create_info{};
-    queue_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-    queue_create_info.queueFamilyIndex = first_index; // The first READY queue
-    queue_create_info.queueCount = 1;                 // Enable one queue - low-overhead calls using multithreading
+
+    const SupportFeatures supported_flags[2] = {SupportFeatures::GRAPHICS, SupportFeatures::PRESENTS};
+    std::vector<VkDeviceQueueCreateInfo> queues(2);
+    // TODO: make Vulkan uses the same queue for GRAPHICS and PRESENTS,
+    // and avoid this trick
+    int took_indices[2] = {-1, -1};
     // Influences the scheduling of command buffer execution (1.0 is the max priority value)
     // Required, even for a single queue
-    float queue_priority = 1.0;
-    queue_create_info.pQueuePriorities = &queue_priority;
+    float queue_priority = 1.0f;
+    uint32_t graphics_queue_family_index = 0;
+    uint32_t presents_queue_family_index = 0;
+
+    size_t queue_index = 0;
+    // TODO: initialize and set the present queue here
+    for (const SupportFeatures supported_flag : supported_flags)
+    {
+        uint32_t first_index = 0;
+        for (int i = 0; i < m_queue_support.size(); i++)
+        {
+            first_index = i;
+            // If the current index is taken, go next, as
+            // we need to specify different queue indices to
+            // different families in Vulkan
+            if (std::find(std::begin(took_indices), std::end(took_indices), first_index) != std::end(took_indices))
+                continue;
+            if (m_queue_support[i] & supported_flag)
+                break;
+        }
+        took_indices[queue_index] = first_index;
+        if (first_index >= m_queue_support.size())
+        {
+            result.Error((char*)"No any READY queue for the physical device");
+            return result;
+        }
+        // Set the first indexed queue as USED
+        m_queue_states[first_index] = QueueState::USED;
+        // Create the Queue information
+        VkDeviceQueueCreateInfo queue_create_info{};
+        queue_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queue_create_info.queueFamilyIndex = first_index; // The first READY queue
+        queue_create_info.queueCount = 1;                 // Enable one queue - low-overhead calls using multithreading
+        queue_create_info.pQueuePriorities = &queue_priority;
+        queues[queue_index++] = queue_create_info;
+        switch (supported_flag)
+        {
+            case SupportFeatures::GRAPHICS:
+                graphics_queue_family_index = first_index;
+                Log("> Graphics family queue index is %d", first_index);
+                break;
+            case SupportFeatures::PRESENTS:
+                presents_queue_family_index = first_index;
+                Log("> Presents family queue index is %d", first_index);
+                break;
+            default:
+                LogE("unknown flag for SupportFeatures: %d", supported_flag);
+                result.Error((char*)"found unknown flag for SupportFeatures");
+                return result;
+        }
+    }
 
     // Specify GRAPHICS feature - set everyone
     // to VK_FALSE for the moment
@@ -212,8 +267,8 @@ Result<int> FrameTech::Graphics::Device::createLogicalDevice()
     // Initializes the logical device
     VkDeviceCreateInfo logical_device_create_info{};
     logical_device_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    logical_device_create_info.pQueueCreateInfos = &queue_create_info;
-    logical_device_create_info.queueCreateInfoCount = 1;
+    logical_device_create_info.pQueueCreateInfos = queues.data();
+    logical_device_create_info.queueCreateInfoCount = queues.size();
     logical_device_create_info.pEnabledFeatures = &device_features;
     logical_device_create_info.enabledExtensionCount = REQUIRED_LAYERS_TO_CHECK.size();
     logical_device_create_info.ppEnabledExtensionNames = REQUIRED_LAYERS_TO_CHECK.data();
@@ -252,8 +307,15 @@ Result<int> FrameTech::Graphics::Device::createLogicalDevice()
         return result;
     }
     Log("> Logical device has been created");
+
+    // Create the graphics queue
     // Let's use 0 by default for queue index as we create one queue per logical device
-    vkGetDeviceQueue(m_logical_device, first_index, 0, &m_graphics_queue);
+    vkGetDeviceQueue(m_logical_device, graphics_queue_family_index, 0, &m_graphics_queue);
+
+    // Create the present queue
+    // Let's use 0 by default for queue index as we create one queue per logical device
+    vkGetDeviceQueue(m_logical_device, presents_queue_family_index, 0, &m_presents_queue);
+
     result.Ok(RESULT_OK);
     return result;
 }
