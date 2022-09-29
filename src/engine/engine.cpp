@@ -127,7 +127,7 @@ void FrameTech::Engine::initialize()
         return;
     }
     assert(m_graphics_instance != nullptr);
-    if (Result<int> result = createRenderDevice(); result.IsError())
+    if (const auto result = createRenderDevice(); result.IsError())
     {
         m_state = ERROR;
         return;
