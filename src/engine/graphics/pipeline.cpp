@@ -11,11 +11,11 @@
 #include <filesystem>
 #include <fstream>
 
-FrameTech::Pipeline::Pipeline() {}
+FrameTech::Graphics::Pipeline::Pipeline() {}
 
-FrameTech::Pipeline::~Pipeline() {}
+FrameTech::Graphics::Pipeline::~Pipeline() {}
 
-std::optional<uint64_t> FrameTech::Pipeline::fileSize(const char* filepath)
+std::optional<uint64_t> FrameTech::Graphics::Pipeline::fileSize(const char* filepath)
 {
     try
     {
@@ -29,9 +29,9 @@ std::optional<uint64_t> FrameTech::Pipeline::fileSize(const char* filepath)
     }
 }
 
-std::optional<uint64_t> FrameTech::Pipeline::readFile(const char* filepath,
-                                                      char* buffer,
-                                                      uint64_t buffer_length)
+std::optional<uint64_t> FrameTech::Graphics::Pipeline::readFile(const char* filepath,
+                                                                char* buffer,
+                                                                uint64_t buffer_length)
 {
     std::ifstream file(filepath, std::ifstream::binary | std::ifstream::ate);
     assert(file);
@@ -56,8 +56,8 @@ std::optional<uint64_t> FrameTech::Pipeline::readFile(const char* filepath,
     return std::nullopt;
 }
 
-Result<int> FrameTech::Pipeline::create(const char* vertex_shader_filepath,
-                                        const char* fragment_shader_filepath)
+Result<int> FrameTech::Graphics::Pipeline::create(const char* vertex_shader_filepath,
+                                                  const char* fragment_shader_filepath)
 {
     Result<int> result;
     // Get the length

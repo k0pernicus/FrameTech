@@ -70,13 +70,13 @@ namespace FrameTech
         ~Engine();
 
         /// @brief The graphics pipeline
-        FrameTech::Pipeline m_pipeline = FrameTech::Pipeline();
+        FrameTech::Graphics::Pipeline m_pipeline = FrameTech::Graphics::Pipeline();
         /// @brief The engine instance
         VkInstance m_graphics_instance = NULL;
         /// @brief The physical device
-        FrameTech::Device m_physical_device = FrameTech::Device();
+        FrameTech::Graphics::Device m_physical_device = FrameTech::Graphics::Device();
         /// @brief The renderer of the engine
-        std::unique_ptr<FrameTech::Render> m_render;
+        std::unique_ptr<FrameTech::Graphics::Render> m_render;
         ;
     };
 

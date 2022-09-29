@@ -65,7 +65,7 @@ static bool isDeviceSuitable(const VkPhysicalDevice& device)
     return is_apple_silicon || is_discrete_gpu;
 }
 
-void FrameTech::Device::Destroy()
+void FrameTech::Graphics::Device::Destroy()
 {
     if (m_logical_device)
     {
@@ -74,7 +74,7 @@ void FrameTech::Device::Destroy()
     }
 }
 
-FrameTech::Device::~Device()
+FrameTech::Graphics::Device::~Device()
 {
     Destroy();
     m_queue_support.clear();
@@ -84,14 +84,14 @@ FrameTech::Device::~Device()
     Log("< Destroying the Physical and Logical device instance...");
 }
 
-uint32_t FrameTech::Device::getNumberDevices() const
+uint32_t FrameTech::Graphics::Device::getNumberDevices() const
 {
     uint32_t device_count{};
     vkEnumeratePhysicalDevices(FrameTech::Engine::getInstance()->m_graphics_instance, &device_count, nullptr);
     return device_count;
 }
 
-Result<int> FrameTech::Device::listDevices()
+Result<int> FrameTech::Graphics::Device::listDevices()
 {
     Result<int> result;
     uint32_t device_count{};
@@ -118,12 +118,12 @@ Result<int> FrameTech::Device::listDevices()
     return result;
 }
 
-bool FrameTech::Device::isInitialized() const
+bool FrameTech::Graphics::Device::isInitialized() const
 {
     return m_physical_device != VK_NULL_HANDLE;
 }
 
-Result<uint32_t> FrameTech::Device::getQueueFamilies()
+Result<uint32_t> FrameTech::Graphics::Device::getQueueFamilies()
 {
     Result<uint32_t> result;
     assert(isInitialized());
@@ -161,7 +161,7 @@ Result<uint32_t> FrameTech::Device::getQueueFamilies()
         vkGetPhysicalDeviceSurfaceSupportKHR(
             m_physical_device,
             i,
-            *FrameTech::Render::getInstance()->getSurface(),
+            *FrameTech::Graphics::Render::getInstance()->getSurface(),
             &present_supported);
         Log("\t\t* present feature supported? %s", present_supported ? "true!" : "false...");
         m_queue_support[i] |= present_supported ? SupportFeatures::PRESENTS : SupportFeatures::NOONE;
@@ -172,7 +172,7 @@ Result<uint32_t> FrameTech::Device::getQueueFamilies()
     return result;
 }
 
-Result<int> FrameTech::Device::createLogicalDevice()
+Result<int> FrameTech::Graphics::Device::createLogicalDevice()
 {
     assert(m_physical_device);
     Result<int> result;

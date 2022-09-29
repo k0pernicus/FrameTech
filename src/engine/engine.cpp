@@ -243,7 +243,7 @@ Result<int> FrameTech::Engine::createRenderDevice()
 {
     Log("> Creating the render device...");
     if (m_render == nullptr)
-        m_render = std::unique_ptr<FrameTech::Render>(FrameTech::Render::getInstance());
+        m_render = std::unique_ptr<FrameTech::Graphics::Render>(FrameTech::Graphics::Render::getInstance());
     Result<int> result = m_render->createSurface();
     return result;
 }

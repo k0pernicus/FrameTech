@@ -15,11 +15,11 @@
 // #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-FrameTech::Render* FrameTech::Render::m_render_instance{nullptr};
+FrameTech::Graphics::Render* FrameTech::Graphics::Render::m_render_instance{nullptr};
 
-FrameTech::Render::Render() {}
+FrameTech::Graphics::Render::Render() {}
 
-FrameTech::Render::~Render()
+FrameTech::Graphics::Render::~Render()
 {
     if (m_surface)
     {
@@ -30,7 +30,7 @@ FrameTech::Render::~Render()
     m_render_instance = nullptr;
 }
 
-FrameTech::Render* FrameTech::Render::getInstance()
+FrameTech::Graphics::Render* FrameTech::Graphics::Render::getInstance()
 {
     if (m_render_instance == nullptr)
     {
@@ -39,7 +39,7 @@ FrameTech::Render* FrameTech::Render::getInstance()
     return m_render_instance;
 }
 
-Result<int> FrameTech::Render::createSurface()
+Result<int> FrameTech::Graphics::Render::createSurface()
 {
     Result<int> result;
     const auto window_surface_result = glfwCreateWindowSurface(
@@ -56,7 +56,7 @@ Result<int> FrameTech::Render::createSurface()
     return result;
 }
 
-VkSurfaceKHR* FrameTech::Render::getSurface()
+VkSurfaceKHR* FrameTech::Graphics::Render::getSurface()
 {
     return &m_surface;
 }
