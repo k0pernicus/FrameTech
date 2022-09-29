@@ -69,7 +69,7 @@ Result<int> FrameTech::Pipeline::create(const char* vertex_shader_filepath,
     if (vs_file_size_opt == std::nullopt || fs_file_size_opt == std::nullopt)
     {
         LogE("< Cannot create the program");
-        result.Error(RESULT_ERROR, (char*)"vertex or fragment shader is NULL");
+        result.Error((char*)"vertex or fragment shader is NULL");
         return result;
     }
     // Get the content of the VS

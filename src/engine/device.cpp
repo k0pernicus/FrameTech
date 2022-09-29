@@ -95,7 +95,7 @@ Result<int> FrameTech::Device::listDevices()
     vkEnumeratePhysicalDevices(FrameTech::Engine::getInstance()->m_graphics_instance, &device_count, nullptr);
     if (device_count == 0)
     {
-        result.Error(RESULT_ERROR, (char*)"no supported physical device");
+        result.Error((char*)"no supported physical device");
         return result;
     }
     std::vector<VkPhysicalDevice> devices(device_count);
@@ -111,7 +111,7 @@ Result<int> FrameTech::Device::listDevices()
         }
         Log("\t... is **not** suitable!");
     }
-    result.Error(RESULT_ERROR, (char*)"no suitable physical device");
+    result.Error((char*)"no suitable physical device");
     return result;
 }
 
@@ -126,7 +126,7 @@ Result<uint32_t> FrameTech::Device::getQueueFamilies()
     assert(isInitialized());
     if (!isInitialized())
     {
-        result.Error(RESULT_ERROR, (char*)"The physical device has not been setup");
+        result.Error((char*)"The physical device has not been setup");
         return result;
     }
     uint32_t queue_families_number = 0;
@@ -160,7 +160,7 @@ Result<int> FrameTech::Device::createLogicalDevice()
     Result<int> result;
     if (m_physical_device == VK_NULL_HANDLE)
     {
-        result.Error(RESULT_ERROR, (char*)"The physical device has not been setup");
+        result.Error((char*)"The physical device has not been setup");
         return result;
     }
     uint32_t first_index = 0;
@@ -172,7 +172,7 @@ Result<int> FrameTech::Device::createLogicalDevice()
     }
     if (first_index >= m_queue_states.size())
     {
-        result.Error(RESULT_ERROR, (char*)"No any READY queue for the physical device");
+        result.Error((char*)"No any READY queue for the physical device");
         return result;
     }
     // Set the first indexed queue as USED
@@ -230,7 +230,7 @@ Result<int> FrameTech::Device::createLogicalDevice()
                 error_msg = (char*)"undocumented error";
         }
         LogE("> vkCreateInstance: %s", error_msg);
-        result.Error(RESULT_ERROR, (char*)"Cannot create the logical device");
+        result.Error((char*)"Cannot create the logical device");
         return result;
     }
     Log("Logical device has been created");
