@@ -20,6 +20,11 @@
 // (proper preprocessor for example)
 #define ENABLE_EXCEPTIONS
 
+// Ignore the diagnostic security as we can pass
+// variadic arguments to build_log (and to fprintf as well)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-security"
+
 /// @brief Build and prints a log statement.
 /// The prefix argument is optional.
 template <typename... Args>
@@ -42,6 +47,8 @@ void build_log(FILE* stream, const char* prefix, Args... message)
     fprintf(stream, message...);
     fprintf(stream, "\n");
 }
+
+#pragma GCC diagnostic pop
 
 #define Log(...) build_log(stdout, nullptr, __VA_ARGS__)
 #define LogE(...) build_log(stderr, "Error", __VA_ARGS__)
