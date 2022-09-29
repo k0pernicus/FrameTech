@@ -41,7 +41,6 @@ FrameTech::Graphics::Render* FrameTech::Graphics::Render::getInstance()
 
 Result<int> FrameTech::Graphics::Render::createSurface()
 {
-    Result<int> result;
     const auto window_surface_result = glfwCreateWindowSurface(
         FrameTech::Engine::getInstance()->m_graphics_instance,
         FrameTech::Application::getInstance(Project::APPLICATION_NAME)->getWindow(),
@@ -49,11 +48,9 @@ Result<int> FrameTech::Graphics::Render::createSurface()
         &m_surface);
     if (window_surface_result == VK_SUCCESS)
     {
-        result.Ok(RESULT_OK);
-        return result;
+        return Result<int>::Ok(RESULT_OK);
     }
-    result.Error((char*)"failed to create a window surface");
-    return result;
+    return Result<int>::Error((char*)"failed to create a window surface");
 }
 
 VkSurfaceKHR* FrameTech::Graphics::Render::getSurface()

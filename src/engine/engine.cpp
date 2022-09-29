@@ -200,7 +200,6 @@ Result<int> FrameTech::Engine::createGraphicsInstance()
         create_info.ppEnabledLayerNames = VALIDATION_LAYERS.data();
     }
 
-    Result<int> result{};
     VkResult instance_creation_result;
     instance_creation_result = vkCreateInstance(&create_info, nullptr, &m_graphics_instance);
     if (instance_creation_result != VK_SUCCESS)
@@ -231,12 +230,10 @@ Result<int> FrameTech::Engine::createGraphicsInstance()
                 error_msg = (char*)"undocumented error";
         }
         LogE("> vkCreateInstance: %s", error_msg);
-        result.Error(error_msg);
-        return result;
+        return Result<int>::Error(error_msg);
     }
     Log("> The graphics instance has been successfully created");
-    result.Ok(RESULT_OK);
-    return result;
+    return Result<int>::Ok(RESULT_OK);
 }
 
 Result<int> FrameTech::Engine::createRenderDevice()
