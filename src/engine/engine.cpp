@@ -17,13 +17,13 @@
 const std::vector<const char*> VALIDATION_LAYERS = {
     "VK_LAYER_KHRONOS_validation",
 };
-const std::vector<const char*> REQUIRED_LAYERS_TO_CHECK = {
+const std::vector<const char*> REQUIRED_EXTENSIONS = {
     "VK_EXT_debug_utils",
     "VK_KHR_portability_subset",
 };
 #else
 const std::vector<const char*> VALIDATION_LAYERS = {};
-const std::vector<const char*> REQUIRED_LAYERS_TO_CHECK = {
+const std::vector<const char*> REQUIRED_EXTENSIONS = {
     "VK_KHR_portability_subset",
 };
 #endif
@@ -46,42 +46,6 @@ static VkApplicationInfo createApplicationInfo()
         Project::ENGINE_VERSION_BUGFIX_NUMBER);
     application_info.apiVersion = VK_API_VERSION_1_3;
     return application_info;
-}
-
-static void getRequiredExtensions(const char*** extension_names, uint32_t* extension_count)
-{
-    // Platform specific additions
-    (*extension_names) = glfwGetRequiredInstanceExtensions(extension_count);
-    if ((*extension_count) == 0)
-    {
-        // Is this really an error?
-        LogE("> No required extension found...");
-        return;
-    }
-    // List the system required extensions
-    Log("> %d required extension(s):", *extension_count);
-    for (int i = 0; i < (*extension_count); i++)
-        Log("\t* %d -> %s", i, (*extension_names)[i]);
-    // Look for a required extension not present as
-    // system wide
-    for (const auto& required_layer : REQUIRED_LAYERS_TO_CHECK)
-    {
-        bool layer_found = false;
-        for (int i = 0; i < (*extension_count); i++)
-        {
-            const auto extension_name = (*extension_names)[i];
-            if (strcmp(extension_name, required_layer) == 0)
-            {
-                layer_found = true;
-                break;
-            }
-        }
-        if (!layer_found)
-        {
-            LogW("> Layer '%s' has not been found!", required_layer);
-            LogW("> This may throw an 'VK_ERROR_EXTENSION_NOT_PRESENT' error creating the Vulkan instance");
-        }
-    }
 }
 
 static void listSupportedExtensions()
@@ -111,7 +75,7 @@ FrameTech::Engine::~Engine()
 {
     Log("< Closing the Engine object...");
     m_render->~Render();
-    m_physical_device.Destroy();
+    m_graphics_device.Destroy();
     if (m_graphics_instance)
         vkDestroyInstance(m_graphics_instance, nullptr);
     m_instance = nullptr;
@@ -137,17 +101,22 @@ void FrameTech::Engine::initialize()
         m_state = ERROR;
         return;
     }
-    if (const auto result = m_physical_device.getQueueFamilies(); result.IsError())
+    if (const auto result = m_graphics_device.getQueueFamilies(); result.IsError())
     {
         m_state = ERROR;
         return;
     }
-    if (const auto result = m_physical_device.createLogicalDevice(); result.IsError())
+    if (const auto result = m_graphics_device.createLogicalDevice(); result.IsError())
     {
         m_state = ERROR;
         return;
     }
-    assert(m_physical_device.isInitialized());
+    if (const auto result = createSwapChain(); result.IsError())
+    {
+        m_state = ERROR;
+        return;
+    }
+    assert(m_graphics_device.isInitialized());
     m_state = INITIALIZED;
 }
 
@@ -168,7 +137,7 @@ FrameTech::Engine::State FrameTech::Engine::getState()
 
 Result<int> FrameTech::Engine::pickPhysicalDevice()
 {
-    return m_physical_device.listDevices();
+    return m_graphics_device.listDevices();
 }
 
 Result<int> FrameTech::Engine::createGraphicsInstance()
@@ -176,8 +145,8 @@ Result<int> FrameTech::Engine::createGraphicsInstance()
     listSupportedExtensions();
     // Get the supported extensions
     uint32_t extension_count = 0;
-    const char** extension_names = nullptr;
-    getRequiredExtensions(&extension_names, &extension_count);
+    // Platform specific additions
+    const char** extension_names = glfwGetRequiredInstanceExtensions(&extension_count);
 
     VkApplicationInfo application_info = createApplicationInfo();
 
@@ -233,6 +202,7 @@ Result<int> FrameTech::Engine::createGraphicsInstance()
         return Result<int>::Error(error_msg);
     }
     Log("> The graphics instance has been successfully created");
+
     return Result<int>::Ok(RESULT_OK);
 }
 
@@ -243,4 +213,13 @@ Result<int> FrameTech::Engine::createRenderDevice()
         m_render = std::unique_ptr<FrameTech::Graphics::Render>(FrameTech::Graphics::Render::getInstance());
     Result<int> result = m_render->createSurface();
     return result;
+}
+
+Result<int> FrameTech::Engine::createSwapChain()
+{
+    Log("> Creating the swapchain...");
+    if (m_swapchain == nullptr)
+        m_swapchain = std::unique_ptr<FrameTech::Graphics::SwapChain>(FrameTech::Graphics::SwapChain::getInstance());
+    m_swapchain->queryDetails();
+    return m_swapchain->checkDetails();
 }

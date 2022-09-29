@@ -57,6 +57,10 @@ namespace FrameTech
             bool isAnyQueueAvailable() const;
             /// @brief Creates a logical device based on the setted physical device
             Result<int> createLogicalDevice();
+            /// @brief Returns the logical device
+            VkDevice getLogicalDevice() const;
+            /// @brief Returns the logical device
+            VkPhysicalDevice getPhysicalDevice() const;
             /// @brief Clean and destroy the logical device, if it has been set
             void Destroy();
 

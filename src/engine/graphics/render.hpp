@@ -20,6 +20,8 @@ namespace FrameTech
         class Render
         {
         public:
+            /// @brief Returns the static instance (singleton) of the object
+            /// @return A static Render pointer
             static Render* getInstance();
             /// @brief Destructor
             ~Render();
@@ -41,7 +43,7 @@ namespace FrameTech
             VkSurfaceKHR m_surface = VK_NULL_HANDLE;
             /// @brief The internal instance (singleton) of
             /// the Render object
-            static Render* m_render_instance;
+            static Render* m_instance;
         };
     } // namespace Graphics
 } // namespace FrameTech

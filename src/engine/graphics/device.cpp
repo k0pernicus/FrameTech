@@ -16,15 +16,15 @@
 const std::vector<const char*> VALIDATION_LAYERS = {
     "VK_LAYER_KHRONOS_validation",
 };
-const std::vector<const char*> REQUIRED_LAYERS_TO_CHECK = {
-    // This extension is used for m1 macs
+const std::vector<const char*> REQUIRED_EXTENSIONS = {
     "VK_KHR_portability_subset",
+    "VK_KHR_swapchain",
 };
 #else
 const std::vector<const char*> VALIDATION_LAYERS = {};
-const std::vector<const char*> REQUIRED_LAYERS_TO_CHECK = {
-    // This extension is used for m1 macs
+const std::vector<const char*> REQUIRED_EXTENSIONS = {
     "VK_KHR_portability_subset",
+    "VK_KHR_swapchain",
 };
 #endif
 
@@ -46,7 +46,7 @@ static bool isDeviceSuitable(const VkPhysicalDevice& device)
     VkPhysicalDeviceProperties properties;
     vkGetPhysicalDeviceProperties(device, &properties);
 
-    Log("> checking device '%s' (with ID '%d')", properties.deviceName, properties.deviceID);
+    Log("> Checking device '%s' (with ID '%d')", properties.deviceName, properties.deviceID);
 
     const bool is_apple_silicon = strcmp(properties.deviceName, APPLE_M1_NAME) == 0;
     Log("\t* is Apple Silicon? %s", is_apple_silicon ? "true!" : "false...");
@@ -65,6 +65,41 @@ static bool isDeviceSuitable(const VkPhysicalDevice& device)
 #endif
 
     return is_apple_silicon || is_discrete_gpu;
+}
+
+static void listAvailableExtensions(const VkPhysicalDevice& physical_device)
+{
+    uint32_t available_extensions_count;
+    vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &available_extensions_count, nullptr);
+
+    std::vector<VkExtensionProperties> available_extensions;
+    available_extensions.resize(available_extensions_count);
+
+    vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &available_extensions_count, available_extensions.data());
+
+    Log("%d available extensions for this system", available_extensions_count);
+    for (int i = 0; i < available_extensions_count; i++)
+        Log("\t* %s", available_extensions[i].extensionName);
+
+    for (const auto& required_extension : REQUIRED_EXTENSIONS)
+    {
+        bool extension_found = false;
+        for (int i = 0; i < available_extensions_count; i++)
+        {
+            const auto extension_name = available_extensions[i].extensionName;
+            if (strcmp(extension_name, required_extension) == 0)
+            {
+                extension_found = true;
+                Log("> Using extension '%s'...", extension_name);
+                break;
+            }
+        }
+        if (!extension_found)
+        {
+            LogW("> Layer '%s' has not been found!", required_extension);
+            LogW("> This may throw an 'VK_ERROR_EXTENSION_NOT_PRESENT' error creating the Vulkan instance");
+        }
+    }
 }
 
 void FrameTech::Graphics::Device::Destroy()
@@ -110,6 +145,7 @@ Result<int> FrameTech::Graphics::Device::listDevices()
         {
             m_physical_device = device;
             Log("\t... is suitable!");
+            listAvailableExtensions(device);
             return Result<int>::Ok(RESULT_OK);
         }
         Log("\t... is **not** suitable!");
@@ -259,8 +295,8 @@ Result<int> FrameTech::Graphics::Device::createLogicalDevice()
     logical_device_create_info.pQueueCreateInfos = queues.data();
     logical_device_create_info.queueCreateInfoCount = queues.size();
     logical_device_create_info.pEnabledFeatures = &device_features;
-    logical_device_create_info.enabledExtensionCount = REQUIRED_LAYERS_TO_CHECK.size();
-    logical_device_create_info.ppEnabledExtensionNames = REQUIRED_LAYERS_TO_CHECK.data();
+    logical_device_create_info.enabledExtensionCount = static_cast<uint32_t>(REQUIRED_EXTENSIONS.size());
+    logical_device_create_info.ppEnabledExtensionNames = REQUIRED_EXTENSIONS.data();
     if (const auto result_status = vkCreateDevice(m_physical_device, &logical_device_create_info, nullptr, &m_logical_device); result_status != VK_SUCCESS)
     {
         char* error_msg;
@@ -305,4 +341,14 @@ Result<int> FrameTech::Graphics::Device::createLogicalDevice()
     vkGetDeviceQueue(m_logical_device, presents_queue_family_index, 0, &m_presents_queue);
 
     return Result<int>::Ok(RESULT_OK);
+}
+
+VkDevice FrameTech::Graphics::Device::getLogicalDevice() const
+{
+    return m_logical_device;
+}
+
+VkPhysicalDevice FrameTech::Graphics::Device::getPhysicalDevice() const
+{
+    return m_physical_device;
 }

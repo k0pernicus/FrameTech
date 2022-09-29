@@ -13,6 +13,7 @@
 #include "graphics/device.hpp"
 #include "graphics/pipeline.hpp"
 #include "graphics/render.hpp"
+#include "graphics/swapchain.hpp"
 #include "vulkan/vulkan.h"
 #include <cstdlib>
 
@@ -52,6 +53,8 @@ namespace FrameTech
         Result<int> pickPhysicalDevice();
         /// @brief Creates the render device
         Result<int> createRenderDevice();
+        /// @brief Creates the swapchain
+        Result<int> createSwapChain();
         /// @brief Stores the internal state of the unique
         /// Engine object
         FrameTech::Engine::State m_state;
@@ -74,9 +77,11 @@ namespace FrameTech
         /// @brief The engine instance
         VkInstance m_graphics_instance = NULL;
         /// @brief The physical device
-        FrameTech::Graphics::Device m_physical_device = FrameTech::Graphics::Device();
+        FrameTech::Graphics::Device m_graphics_device = FrameTech::Graphics::Device();
         /// @brief The renderer of the engine
         std::unique_ptr<FrameTech::Graphics::Render> m_render;
+        /// @brief The swapchain of the engine
+        std::unique_ptr<FrameTech::Graphics::SwapChain> m_swapchain;
         ;
     };
 
