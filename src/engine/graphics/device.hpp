@@ -9,7 +9,7 @@
 #ifndef device_h
 #define device_h
 
-#include "../result.h"
+#include "../../result.h"
 #include <vector>
 #include <vulkan/vulkan.h>
 
@@ -20,6 +20,13 @@ namespace FrameTech
         UNSUPPORTED,
         READY,
         USED,
+    };
+
+    enum SupportFeatures
+    {
+        NOONE = 0x00000000,
+        GRAPHICS = 0x00000001,
+        PRESENTS = 0x00000002,
     };
 
     class Device
@@ -54,13 +61,19 @@ namespace FrameTech
     private:
         /// @brief The physical device that has been picked
         VkPhysicalDevice m_physical_device = VK_NULL_HANDLE;
-        /// @brief The state associated to each queue, for the stored
-        /// physical device
+        /// @brief The support state (SupportFeature) associated to each queue,
+        /// for the physical device
+        std::vector<int> m_queue_support;
+        /// @brief To set and to get the state of the different family queues
         std::vector<QueueState> m_queue_states;
         /// @brief The logical device associated to the physical device
         VkDevice m_logical_device = VK_NULL_HANDLE;
         /// @brief Interface to the graphics queue
         VkQueue m_graphics_queue = VK_NULL_HANDLE;
+        /// @brief Interface to the presents queue
+        /// The presents queue **may** be the same than
+        /// the graphics queue
+        VkQueue m_presents_queue = VK_NULL_HANDLE;
     };
 } // namespace FrameTech
 

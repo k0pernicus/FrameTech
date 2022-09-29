@@ -16,8 +16,6 @@
 #ifdef DEBUG
 const std::vector<const char*> VALIDATION_LAYERS = {
     "VK_LAYER_KHRONOS_validation",
-    // "VK_KHR_portability_subset",
-    //    "VK_KHR_get_physical_device_properties2",
 };
 const std::vector<const char*> REQUIRED_LAYERS_TO_CHECK = {
     "VK_EXT_debug_utils",
@@ -52,6 +50,7 @@ static VkApplicationInfo createApplicationInfo()
 
 static void getRequiredExtensions(const char*** extension_names, uint32_t* extension_count)
 {
+    // Platform specific additions
     (*extension_names) = glfwGetRequiredInstanceExtensions(extension_count);
     if ((*extension_count) == 0)
     {
@@ -111,6 +110,7 @@ FrameTech::Engine::Engine()
 FrameTech::Engine::~Engine()
 {
     Log("< Closing the Engine object...");
+    m_render->~Render();
     m_physical_device.Destroy();
     if (m_graphics_instance)
         vkDestroyInstance(m_graphics_instance, nullptr);
@@ -127,6 +127,11 @@ void FrameTech::Engine::initialize()
         return;
     }
     assert(m_graphics_instance != nullptr);
+    if (Result<int> result = createRenderDevice(); result.IsError())
+    {
+        m_state = ERROR;
+        return;
+    }
     if (const auto result = pickPhysicalDevice(); result.IsError())
     {
         m_state = ERROR;
@@ -226,10 +231,19 @@ Result<int> FrameTech::Engine::createGraphicsInstance()
                 error_msg = (char*)"undocumented error";
         }
         LogE("> vkCreateInstance: %s", error_msg);
-        result.Error(RESULT_ERROR, error_msg);
+        result.Error(error_msg);
         return result;
     }
     Log("> The graphics instance has been successfully created");
     result.Ok(RESULT_OK);
+    return result;
+}
+
+Result<int> FrameTech::Engine::createRenderDevice()
+{
+    Log("> Creating the render device...");
+    if (m_render == nullptr)
+        m_render = std::unique_ptr<FrameTech::Render>(FrameTech::Render::getInstance());
+    Result<int> result = m_render->createSurface();
     return result;
 }

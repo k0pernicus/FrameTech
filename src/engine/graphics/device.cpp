@@ -6,9 +6,10 @@
 //
 
 #include "device.hpp"
-#include "../debug_tools.h"
-#include "../result.h"
-#include "engine.hpp"
+#include "../../debug_tools.h"
+#include "../../result.h"
+#include "../engine.hpp"
+#include "render.hpp"
 #include <vector>
 
 #ifdef DEBUG
@@ -76,9 +77,11 @@ void FrameTech::Device::Destroy()
 FrameTech::Device::~Device()
 {
     Destroy();
-    m_queue_states.clear();
-    m_logical_device = VK_NULL_HANDLE;
+    m_queue_support.clear();
     m_physical_device = VK_NULL_HANDLE;
+    m_graphics_queue = VK_NULL_HANDLE;
+    m_presents_queue = VK_NULL_HANDLE;
+    Log("< Destroying the Physical and Logical device instance...");
 }
 
 uint32_t FrameTech::Device::getNumberDevices() const
@@ -139,6 +142,7 @@ Result<uint32_t> FrameTech::Device::getQueueFamilies()
         return result;
     }
     std::vector<VkQueueFamilyProperties> found_queue_families(queue_families_number);
+    m_queue_support.resize((size_t)queue_families_number);
     m_queue_states.resize((size_t)queue_families_number);
     vkGetPhysicalDeviceQueueFamilyProperties(m_physical_device, &queue_families_number, found_queue_families.data());
 
@@ -146,10 +150,24 @@ Result<uint32_t> FrameTech::Device::getQueueFamilies()
     for (uint32_t i = 0; i < queue_families_number; i++)
     {
         Log("\t> checking queue family %d", i);
-        const bool is_supported = (found_queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT);
-        Log("\t\t* is supported? %s", is_supported ? "true!" : "false...");
-        m_queue_states[i] = is_supported ? QueueState::READY : QueueState::UNSUPPORTED;
+
+        // Supports graphics queue?
+        const bool graphics_supported = (found_queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT);
+        Log("\t\t* graphics feature supported? %s", graphics_supported ? "true!" : "false...");
+        m_queue_support[i] = graphics_supported ? SupportFeatures::GRAPHICS : SupportFeatures::NOONE;
+
+        // Supports present queue?
+        VkBool32 present_supported;
+        vkGetPhysicalDeviceSurfaceSupportKHR(
+            m_physical_device,
+            i,
+            *FrameTech::Render::getInstance()->getSurface(),
+            &present_supported);
+        Log("\t\t* present feature supported? %s", present_supported ? "true!" : "false...");
+        m_queue_support[i] |= present_supported ? SupportFeatures::PRESENTS : SupportFeatures::NOONE;
+        m_queue_states[i] = m_queue_support[i] == SupportFeatures::NOONE ? QueueState::UNSUPPORTED : QueueState::READY;
     }
+
     result.Ok(queue_families_number);
     return result;
 }
@@ -164,13 +182,13 @@ Result<int> FrameTech::Device::createLogicalDevice()
         return result;
     }
     uint32_t first_index = 0;
-    for (int i = 0; i < m_queue_states.size(); i++)
+    for (int i = 0; i < m_queue_support.size(); i++)
     {
         first_index = i;
-        if (m_queue_states[i] == QueueState::READY)
+        if (m_queue_support[i] != SupportFeatures::NOONE)
             break;
     }
-    if (first_index >= m_queue_states.size())
+    if (first_index >= m_queue_support.size())
     {
         result.Error((char*)"No any READY queue for the physical device");
         return result;

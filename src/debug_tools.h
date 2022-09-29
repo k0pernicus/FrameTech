@@ -62,12 +62,8 @@ void build_log(FILE* stream, const char* prefix, Args... message)
 #define Log(...)
 #define LogE(...)
 #define LogW(...)
-#define WARN_RT_UNIMPLEMENTED \
-    {                         \
-    }
-#define WARN_CT_UNIMPLEMENTED \
-    {                         \
-    }
+#define WARN_RT_UNIMPLEMENTED
+#define WARN_CT_UNIMPLEMENTED
 
 #endif
 

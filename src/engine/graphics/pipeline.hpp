@@ -9,7 +9,7 @@
 #ifndef pipeline_hpp
 #define pipeline_hpp
 
-#include "../result.h"
+#include "../../result.h"
 #include <cstdlib>
 #include <optional>
 

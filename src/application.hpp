@@ -10,7 +10,6 @@
 #define application_hpp
 
 #include "engine/engine.hpp"
-#include "engine/pipeline.hpp"
 #include <GLFW/glfw3.h>
 #include <optional>
 
@@ -97,6 +96,8 @@ namespace FrameTech
         /// @brief Update the internal state of the Application object
         /// @param new_state The new state of the object
         void setState(State new_state);
+        /// @brief Returns a pointer to the Window instance
+        GLFWwindow* getWindow() const;
         /// @brief Returns the internal state of the Application object
         State getState();
         /// @brief Force the renderer to run `FPS_limit` frames per second.

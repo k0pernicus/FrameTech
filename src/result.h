@@ -10,6 +10,7 @@
 #define result_h
 
 #include "debug_tools.h"
+#include <cstdint>
 
 constexpr int8_t RESULT_OK = 0;
 constexpr int8_t RESULT_ERROR = 0;

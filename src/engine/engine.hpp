@@ -10,8 +10,9 @@
 #define engine_hpp
 
 #include "../result.h"
-#include "device.hpp"
-#include "pipeline.hpp"
+#include "graphics/device.hpp"
+#include "graphics/pipeline.hpp"
+#include "graphics/render.hpp"
 #include "vulkan/vulkan.h"
 #include <cstdlib>
 
@@ -49,6 +50,8 @@ namespace FrameTech
         Result<int> createGraphicsInstance();
         /// @brief Choose and picks a physical device
         Result<int> pickPhysicalDevice();
+        /// @brief Creates the render device
+        Result<int> createRenderDevice();
         /// @brief Stores the internal state of the unique
         /// Engine object
         FrameTech::Engine::State m_state;
@@ -73,8 +76,8 @@ namespace FrameTech
         /// @brief The physical device
         FrameTech::Device m_physical_device = FrameTech::Device();
         /// @brief The renderer of the engine
-        /// TODO: check if this part has to move to another object
-        FrameTech::Render m_render = FrameTech::Render();
+        std::unique_ptr<FrameTech::Render> m_render;
+        ;
     };
 
 } // namespace FrameTech

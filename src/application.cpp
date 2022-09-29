@@ -22,6 +22,11 @@ FrameTech::Application::~Application()
     m_instance = nullptr;
 }
 
+GLFWwindow* FrameTech::Application::getWindow() const
+{
+    return m_app_window;
+}
+
 FrameTech::Application* FrameTech::Application::getInstance(const char* app_title)
 {
     if (m_instance == nullptr)
