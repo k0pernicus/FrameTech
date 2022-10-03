@@ -118,7 +118,7 @@ FrameTech::Graphics::Device::~Device()
     m_physical_device = VK_NULL_HANDLE;
     m_graphics_queue = VK_NULL_HANDLE;
     m_presents_queue = VK_NULL_HANDLE;
-    Log("< Destroying the Physical and Logical device instance...");
+    Log("< Destroying the physical, and logical, devices...");
 }
 
 uint32_t FrameTech::Graphics::Device::getNumberDevices() const
