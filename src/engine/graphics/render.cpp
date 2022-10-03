@@ -27,6 +27,13 @@ FrameTech::Graphics::Render::~Render()
         vkDestroySurfaceKHR(FrameTech::Engine::getInstance()->m_graphics_instance, m_surface, nullptr);
         m_surface = VK_NULL_HANDLE;
     }
+    if (m_image_views.size() > 0)
+    {
+        Log("< Destroying the image views...");
+        for (auto image_view : m_image_views)
+            vkDestroyImageView(FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), image_view, nullptr);
+        m_image_views.clear();
+    }
     m_instance = nullptr;
 }
 

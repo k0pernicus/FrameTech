@@ -44,6 +44,9 @@ namespace FrameTech
             /// @brief The internal instance (singleton) of
             /// the Render object
             static Render* m_instance;
+            /// @brief Literal views to different images - describe how
+            /// to access images and which part of the images to access
+            std::vector<VkImageView> m_image_views;
         };
     } // namespace Graphics
 } // namespace FrameTech
