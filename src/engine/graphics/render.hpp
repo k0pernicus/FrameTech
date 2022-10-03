@@ -11,6 +11,7 @@
 
 #include "../../result.h"
 #include "vulkan/vulkan.h"
+#include <vector>
 
 namespace FrameTech
 {
@@ -31,6 +32,11 @@ namespace FrameTech
             VResult createSurface();
             /// @brief Returns the KHR surface as a pointer
             VkSurfaceKHR* getSurface();
+            /// @brief Creates the image views for the Render, from the
+            /// images from the SwapChain object.
+            /// @return A Result type to know if the function succeeded
+            /// or not.
+            VResult createImageViews();
 
         private:
             /// @brief Constructor

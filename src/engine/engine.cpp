@@ -117,6 +117,11 @@ void FrameTech::Engine::initialize()
         m_state = ERROR;
         return;
     }
+    if (const auto result = m_render->createImageViews(); result.IsError())
+    {
+        m_state = ERROR;
+        return;
+    }
     assert(m_graphics_device.isInitialized());
     m_state = INITIALIZED;
 }

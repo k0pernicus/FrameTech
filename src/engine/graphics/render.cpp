@@ -64,3 +64,58 @@ VkSurfaceKHR* FrameTech::Graphics::Render::getSurface()
 {
     return &m_surface;
 }
+
+VResult FrameTech::Graphics::Render::createImageViews()
+{
+    const auto swapchain_images = FrameTech::Engine::getInstance()->m_swapchain->getImages();
+    const size_t nb_swapchain_images = swapchain_images.size();
+    m_image_views.resize(nb_swapchain_images);
+    Log("> %d image views to create (for the render object)", nb_swapchain_images);
+    for (size_t i = 0; i < nb_swapchain_images; i++)
+    {
+        // Create a VkImageView for each VkImage from the swapchain
+        VkImageViewCreateInfo image_view_create_info{};
+        image_view_create_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        image_view_create_info.image = swapchain_images[i];
+        // How the image data should be interpreted
+        image_view_create_info.viewType = VK_IMAGE_VIEW_TYPE_2D; // could be 1D / 2D / 3D texture, or cube maps
+        image_view_create_info.format = FrameTech::Engine::getInstance()->m_swapchain->getImageFormat().format;
+        // Default mapping
+        image_view_create_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+        image_view_create_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+        image_view_create_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+        image_view_create_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+        image_view_create_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        image_view_create_info.subresourceRange.baseMipLevel = 0;
+        image_view_create_info.subresourceRange.levelCount = 1;
+        image_view_create_info.subresourceRange.baseArrayLayer = 0;
+        image_view_create_info.subresourceRange.layerCount = 1;
+        const auto image_view_result = vkCreateImageView(FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+                                                         &image_view_create_info,
+                                                         nullptr,
+                                                         &m_image_views[i]);
+        if (image_view_result == VK_SUCCESS)
+        {
+            Log("\t* image view %d... ok!", i);
+            continue;
+        }
+
+        char* error_msg;
+        switch (image_view_result)
+        {
+            case VK_ERROR_OUT_OF_HOST_MEMORY:
+                error_msg = (char*)"out of host memory";
+                break;
+            case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+                error_msg = (char*)"out of device memory";
+                break;
+            default:
+                LogE("> vkCreateImageView: unknown error 0x%08x", image_view_result);
+                error_msg = (char*)"undocumented error";
+                break;
+        }
+        LogE("Error creating the image view %d: %s", i, error_msg);
+        return VResult::Error(error_msg);
+    }
+    return VResult::Ok();
+}
