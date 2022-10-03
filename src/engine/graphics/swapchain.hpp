@@ -88,6 +88,8 @@ namespace FrameTech
             VkSurfaceFormatKHR m_format;
             /// @brief Stores the extent of handled images
             VkExtent2D m_extent;
+            /// @brief The present mode used to handle images
+            VkPresentModeKHR m_present_mode;
         };
     } // namespace Graphics
 } // namespace FrameTech

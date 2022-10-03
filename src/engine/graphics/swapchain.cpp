@@ -169,8 +169,8 @@ VResult FrameTech::Graphics::SwapChain::create()
     if (swap_extent_result.IsError())
         return VResult::Error((char*)"Did not found any good extent for the swapchain");
 
+    m_present_mode = present_mode_result.GetValue();
     m_format = format_result.GetValue();
-    const auto present_mode = present_mode_result.GetValue();
     m_extent = swap_extent_result.GetValue();
 
     VkSwapchainCreateInfoKHR create_info{};
@@ -196,7 +196,7 @@ VResult FrameTech::Graphics::SwapChain::create()
     // TODO: remove for any transformation in the SC
     create_info.preTransform = m_details.capabilities.currentTransform;
     create_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-    create_info.presentMode = present_mode;
+    create_info.presentMode = m_present_mode;
     // Enable clipping
     create_info.clipped = VK_TRUE;
     // TODO: change in order to recreate another swapchain (and reference the old one)
