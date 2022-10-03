@@ -54,11 +54,11 @@ namespace FrameTech
             /// supported number of images for the swapchain, and if there
             /// is at least one supported image format and one
             /// presentation mode
-            Result<int> checkDetails();
+            VResult checkDetails();
             /// @brief Creates the Vulkan swapchain object
             /// This function should not be called before `queryDetails`
             /// and `checkDetails` functions!
-            Result<int> create();
+            VResult create();
 
         private:
             SwapChain();

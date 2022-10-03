@@ -139,19 +139,19 @@ void FrameTech::Graphics::SwapChain::queryDetails()
     m_details = support_details;
 }
 
-Result<int> FrameTech::Graphics::SwapChain::checkDetails()
+VResult FrameTech::Graphics::SwapChain::checkDetails()
 {
     if ((m_details.capabilities.minImageCount <= MAX_BUFFERS && m_details.capabilities.maxImageCount >= MAX_BUFFERS) &&
         (!m_details.formats.empty() && !m_details.present_modes.empty()) &&
         (m_details.capabilities.minImageCount > 0))
     {
-        return Result<int>::Ok(RESULT_OK);
+        return VResult::Ok();
     }
     LogW("< The swapchain only supports between %d and %d images (max)", m_details.capabilities.minImageCount, m_details.capabilities.maxImageCount);
-    return Result<int>::Error((char*)"The supported images count is incorrect");
+    return VResult::Error((char*)"The supported images count is incorrect");
 }
 
-Result<int> FrameTech::Graphics::SwapChain::create()
+VResult FrameTech::Graphics::SwapChain::create()
 {
     // Check that the details are correct
     if (const auto result = checkDetails(); result.IsError())

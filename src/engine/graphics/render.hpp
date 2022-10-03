@@ -28,7 +28,7 @@ namespace FrameTech
             /// @brief Presents rendered images to a window.
             /// @return A Result type to know if the surface abstraction
             /// has been created.
-            Result<int> createSurface();
+            VResult createSurface();
             /// @brief Returns the KHR surface as a pointer
             VkSurfaceKHR* getSurface();
 

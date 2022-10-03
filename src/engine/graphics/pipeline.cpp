@@ -56,8 +56,8 @@ std::optional<uint64_t> FrameTech::Graphics::Pipeline::readFile(const char* file
     return std::nullopt;
 }
 
-Result<int> FrameTech::Graphics::Pipeline::create(const char* vertex_shader_filepath,
-                                                  const char* fragment_shader_filepath)
+VResult FrameTech::Graphics::Pipeline::create(const char* vertex_shader_filepath,
+                                              const char* fragment_shader_filepath)
 {
     // Get the length
     const auto vs_file_size_opt = fileSize(vertex_shader_filepath);
@@ -68,7 +68,7 @@ Result<int> FrameTech::Graphics::Pipeline::create(const char* vertex_shader_file
     if (vs_file_size_opt == std::nullopt || fs_file_size_opt == std::nullopt)
     {
         LogE("< Cannot create the program");
-        return Result<int>::Error((char*)"vertex or fragment shader is NULL");
+        return VResult::Error((char*)"vertex or fragment shader is NULL");
     }
     // Get the content of the VS
     const auto vs_file_size = vs_file_size_opt.value();
@@ -83,5 +83,5 @@ Result<int> FrameTech::Graphics::Pipeline::create(const char* vertex_shader_file
     // TODO: return the buffers?
     delete[] vs_buffer;
     delete[] fs_buffer;
-    return Result<int>::Ok(RESULT_OK);
+    return VResult::Ok();
 }

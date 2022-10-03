@@ -136,12 +136,12 @@ FrameTech::Engine::State FrameTech::Engine::getState()
     return m_state;
 }
 
-Result<int> FrameTech::Engine::pickPhysicalDevice()
+VResult FrameTech::Engine::pickPhysicalDevice()
 {
     return m_graphics_device.listDevices();
 }
 
-Result<int> FrameTech::Engine::createGraphicsInstance()
+VResult FrameTech::Engine::createGraphicsInstance()
 {
     listSupportedExtensions();
     // Get the supported extensions
@@ -196,31 +196,31 @@ Result<int> FrameTech::Engine::createGraphicsInstance()
                 error_msg = (char*)"incompatible driver";
                 break;
             default:
-                Log("> vkCreateInstance: error 0x%08x", instance_creation_result);
+                LogE("> vkCreateInstance: error 0x%08x", instance_creation_result);
                 error_msg = (char*)"undocumented error";
         }
         LogE("> vkCreateInstance: %s", error_msg);
-        return Result<int>::Error(error_msg);
+        return VResult::Error(error_msg);
     }
     Log("> The graphics instance has been successfully created");
 
-    return Result<int>::Ok(RESULT_OK);
+    return VResult::Ok();
 }
 
-Result<int> FrameTech::Engine::createRenderDevice()
+VResult FrameTech::Engine::createRenderDevice()
 {
     Log("> Creating the render device...");
     if (m_render == nullptr)
         m_render = std::unique_ptr<FrameTech::Graphics::Render>(FrameTech::Graphics::Render::getInstance());
-    Result<int> result = m_render->createSurface();
+    VResult result = m_render->createSurface();
     return result;
 }
 
-Result<int> FrameTech::Engine::createSwapChain()
+VResult FrameTech::Engine::createSwapChain()
 {
     Log("> Creating the swapchain...");
     if (m_swapchain == nullptr)
         m_swapchain = std::unique_ptr<FrameTech::Graphics::SwapChain>(FrameTech::Graphics::SwapChain::getInstance());
     m_swapchain->queryDetails();
-    m_swapchain->create();
+    return m_swapchain->create();
 }

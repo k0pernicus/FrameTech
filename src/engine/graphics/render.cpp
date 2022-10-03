@@ -39,7 +39,7 @@ FrameTech::Graphics::Render* FrameTech::Graphics::Render::getInstance()
     return m_instance;
 }
 
-Result<int> FrameTech::Graphics::Render::createSurface()
+VResult FrameTech::Graphics::Render::createSurface()
 {
     const auto window_surface_result = glfwCreateWindowSurface(
         FrameTech::Engine::getInstance()->m_graphics_instance,
@@ -48,9 +48,9 @@ Result<int> FrameTech::Graphics::Render::createSurface()
         &m_surface);
     if (window_surface_result == VK_SUCCESS)
     {
-        return Result<int>::Ok(RESULT_OK);
+        return VResult::Ok();
     }
-    return Result<int>::Error((char*)"failed to create a window surface");
+    return VResult::Error((char*)"failed to create a window surface");
 }
 
 VkSurfaceKHR* FrameTech::Graphics::Render::getSurface()
