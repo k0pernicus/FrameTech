@@ -75,7 +75,7 @@ FrameTech::Engine::~Engine()
 {
     Log("< Closing the Engine object...");
     m_swapchain = nullptr;
-    m_render->~Render();
+    m_render = nullptr;
     m_graphics_device.Destroy();
     if (m_graphics_instance)
         vkDestroyInstance(m_graphics_instance, nullptr);
