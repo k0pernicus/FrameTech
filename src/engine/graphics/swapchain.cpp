@@ -159,38 +159,98 @@ VResult FrameTech::Graphics::SwapChain::create()
 
     const auto format_result = chooseFormat(m_details.formats);
     if (format_result.IsError())
-        return Result<int>::Error((char*)"Did not found any good format for the swapchain");
+        return VResult::Error((char*)"Did not found any good format for the swapchain");
 
     const auto present_mode_result = choosePresentMode(m_details.present_modes);
     if (present_mode_result.IsError())
-        return Result<int>::Error((char*)"Did not found any good presentation mode for the swapchain");
+        return VResult::Error((char*)"Did not found any good presentation mode for the swapchain");
 
     const auto swap_extent_result = chooseSwapExtent(m_details.capabilities);
     if (swap_extent_result.IsError())
-        return Result<int>::Error((char*)"Did not found any good extent for the swapchain");
+        return VResult::Error((char*)"Did not found any good extent for the swapchain");
 
-    // Unwrap
-    const auto format = format_result.GetValue();
+    m_format = format_result.GetValue();
     const auto present_mode = present_mode_result.GetValue();
-    const auto swap_extent = swap_extent_result.GetValue();
+    m_extent = swap_extent_result.GetValue();
 
     VkSwapchainCreateInfoKHR create_info{};
     create_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
     create_info.surface = (*FrameTech::Engine::getInstance()->m_render->getSurface());
     create_info.minImageCount = MAX_BUFFERS;
-    create_info.imageFormat = format.format;
-    create_info.imageColorSpace = format.colorSpace;
-    create_info.imageExtent = swap_extent;
+    create_info.imageFormat = m_format.format;
+    create_info.imageColorSpace = m_format.colorSpace;
+    create_info.imageExtent = m_extent;
     create_info.imageArrayLayers = 1;                             // Always one (except stereoscopic 3D app)
     create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT; // color attachment, use VK_IMAGE_USAGE_TRANSFER_DST_BIT instead
     uint32_t indices[2] = {
         FrameTech::Engine::getInstance()->m_graphics_device.m_graphics_queue_family_index,
         FrameTech::Engine::getInstance()->m_graphics_device.m_presents_queue_family_index,
     };
+    // TODO: check if the indices car really be equal to each other
+    // https://github.com/Overv/VulkanTutorial/issues/233
+    assert(indices[0] != indices[1]);
     create_info.imageSharingMode = indices[0] == indices[1] ? VK_SHARING_MODE_EXCLUSIVE : VK_SHARING_MODE_CONCURRENT;
     create_info.pQueueFamilyIndices = indices[0] == indices[1] ? nullptr : indices;
     create_info.queueFamilyIndexCount = indices[0] == indices[1] ? 0 : 2;
+    // No transformation
+    // TODO: remove for any transformation in the SC
+    create_info.preTransform = m_details.capabilities.currentTransform;
+    create_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    create_info.presentMode = present_mode;
+    // Enable clipping
+    create_info.clipped = VK_TRUE;
+    // TODO: change in order to recreate another swapchain (and reference the old one)
+    // after a resize
+    // WARNING: resize feature does not work
+    create_info.oldSwapchain = VK_NULL_HANDLE;
 
-    // TODO: finish the configuration of the swapchain
-    return Result<int>::Ok(RESULT_OK);
+    const auto result = vkCreateSwapchainKHR(FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+                                             &create_info,
+                                             nullptr,
+                                             &m_swapchain);
+
+    if (result == VK_SUCCESS)
+    {
+        uint32_t image_count;
+        vkGetSwapchainImagesKHR(
+            FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+            m_swapchain,
+            &image_count,
+            nullptr);
+        m_images.resize(image_count);
+        vkGetSwapchainImagesKHR(
+            FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+            m_swapchain,
+            &image_count,
+            m_images.data());
+        return VResult::Ok();
+    }
+
+    char* error_msg;
+    switch (result)
+    {
+        case VK_ERROR_OUT_OF_HOST_MEMORY:
+            error_msg = (char*)"out of host memory";
+            break;
+        case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+            error_msg = (char*)"out of device memory";
+            break;
+        case VK_ERROR_DEVICE_LOST:
+            error_msg = (char*)"device lost";
+            break;
+        case VK_ERROR_SURFACE_LOST_KHR:
+            error_msg = (char*)"surface lost";
+            break;
+        case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
+            error_msg = (char*)"native window in use";
+            break;
+        case VK_ERROR_INITIALIZATION_FAILED:
+            error_msg = (char*)"initialization failed";
+            break;
+        default:
+            LogE("> vkCreateSwapchainKHR: error 0x%08x", result);
+            error_msg = (char*)"undocumented error";
+    }
+    LogE("> vkCreateSwapchainKHR: %s", error_msg);
+    return VResult::Error(error_msg);
 }

@@ -44,6 +44,8 @@ namespace FrameTech
         public:
             /// @brief Returns the static instance (singleton) of the object
             /// @return A static SwapChain pointer
+            // TODO: remove in order to use the resize / new swapchain creation
+            // features
             static SwapChain* getInstance();
             /// @brief Destructor
             ~SwapChain();
@@ -73,6 +75,13 @@ namespace FrameTech
             VkSwapchainKHR m_swapchain = VK_NULL_HANDLE;
             /// @brief Any stored details about the SwapChain object
             SwapChainSupportDetails m_details;
+            /// @brief Retrieve the handles of the VkImage(s) object
+            /// stored in the SwapChain object
+            std::vector<VkImage> m_images;
+            /// @brief Stores the format of handled images
+            VkSurfaceFormatKHR m_format;
+            /// @brief Stores the extent of handled images
+            VkExtent2D m_extent;
         };
     } // namespace Graphics
 } // namespace FrameTech
