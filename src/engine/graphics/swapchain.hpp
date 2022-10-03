@@ -61,6 +61,12 @@ namespace FrameTech
             /// This function should not be called before `queryDetails`
             /// and `checkDetails` functions!
             VResult create();
+            /// @brief Returns the number of images stored in the
+            /// SwapChain object
+            const std::vector<VkImage>& getImages() const;
+            /// @brief Returns the image format stored in the swapchain.
+            /// @return A VkSurfaceFormatKHR type.
+            const VkSurfaceFormatKHR& getImageFormat() const;
 
         private:
             SwapChain();

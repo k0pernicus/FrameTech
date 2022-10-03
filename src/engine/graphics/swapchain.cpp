@@ -254,3 +254,13 @@ VResult FrameTech::Graphics::SwapChain::create()
     LogE("> vkCreateSwapchainKHR: %s", error_msg);
     return VResult::Error(error_msg);
 }
+
+const std::vector<VkImage>& FrameTech::Graphics::SwapChain::getImages() const
+{
+    return m_images;
+}
+
+const VkSurfaceFormatKHR& FrameTech::Graphics::SwapChain::getImageFormat() const
+{
+    return m_format;
+}
