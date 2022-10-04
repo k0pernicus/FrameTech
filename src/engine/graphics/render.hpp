@@ -10,6 +10,7 @@
 #define render_h
 
 #include "../../result.h"
+#include "pipeline.hpp"
 #include "vulkan/vulkan.h"
 #include <vector>
 
@@ -37,6 +38,13 @@ namespace FrameTech
             /// @return A Result type to know if the function succeeded
             /// or not.
             VResult createImageViews();
+            /// @brief Creates the graphics pipeline:
+            /// 1. Read the SPIR-V shaders,
+            /// 2. Create the shader modules,
+            /// 3. Create the shader stages.
+            /// @return A Result type to know if the function succeeded
+            /// or not.
+            VResult createGraphicsPipeline();
 
         private:
             /// @brief Constructor
@@ -53,6 +61,10 @@ namespace FrameTech
             /// @brief Literal views to different images - describe how
             /// to access images and which part of the images to access
             std::vector<VkImageView> m_image_views;
+            /// @brief The graphics pipeline, associated to a Renderer
+            /// TODO: check if the graphics pipeline belongs exclusively
+            /// to the Render object or if it belongs to the engine directly
+            std::unique_ptr<FrameTech::Graphics::Pipeline> m_graphics_pipeline = nullptr;
         };
     } // namespace Graphics
 } // namespace FrameTech

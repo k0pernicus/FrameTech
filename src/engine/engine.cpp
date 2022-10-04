@@ -122,6 +122,11 @@ void FrameTech::Engine::initialize()
         m_state = ERROR;
         return;
     }
+    if (const auto result = m_render->createGraphicsPipeline(); result.IsError())
+    {
+        m_state = ERROR;
+        return;
+    }
     assert(m_graphics_device.isInitialized());
     m_state = INITIALIZED;
 }
@@ -157,11 +162,12 @@ VResult FrameTech::Engine::createGraphicsInstance()
     VkApplicationInfo application_info = createApplicationInfo();
 
     // Global extensions and validation layers
-    VkInstanceCreateInfo create_info{};
-    create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    create_info.pApplicationInfo = &application_info;
-    create_info.enabledExtensionCount = extension_count;
-    create_info.ppEnabledExtensionNames = extension_names;
+    VkInstanceCreateInfo create_info{
+        .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+        .pApplicationInfo = &application_info,
+        .enabledExtensionCount = extension_count,
+        .ppEnabledExtensionNames = extension_names,
+    };
     if (VALIDATION_LAYERS.size() == 0)
     {
         create_info.enabledLayerCount = 0;

@@ -261,11 +261,12 @@ VResult FrameTech::Graphics::Device::createLogicalDevice()
         // Set the first indexed queue as USED
         m_queue_states[first_index] = QueueState::USED;
         // Create the Queue information
-        VkDeviceQueueCreateInfo queue_create_info{};
-        queue_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        queue_create_info.queueFamilyIndex = first_index; // The first READY queue
-        queue_create_info.queueCount = 1;                 // Enable one queue - low-overhead calls using multithreading
-        queue_create_info.pQueuePriorities = &queue_priority;
+        VkDeviceQueueCreateInfo queue_create_info{
+            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+            .queueFamilyIndex = first_index, // The first READY queue
+            .queueCount = 1,                 // Enable one queue - low-overhead calls using multithreading
+            .pQueuePriorities = &queue_priority,
+        };
         queues[queue_index++] = queue_create_info;
         switch (supported_flag)
         {
@@ -288,13 +289,14 @@ VResult FrameTech::Graphics::Device::createLogicalDevice()
     VkPhysicalDeviceFeatures device_features{};
 
     // Initializes the logical device
-    VkDeviceCreateInfo logical_device_create_info{};
-    logical_device_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    logical_device_create_info.pQueueCreateInfos = queues.data();
-    logical_device_create_info.queueCreateInfoCount = queues.size();
-    logical_device_create_info.pEnabledFeatures = &device_features;
-    logical_device_create_info.enabledExtensionCount = static_cast<uint32_t>(REQUIRED_EXTENSIONS.size());
-    logical_device_create_info.ppEnabledExtensionNames = REQUIRED_EXTENSIONS.data();
+    VkDeviceCreateInfo logical_device_create_info{
+        .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+        .pQueueCreateInfos = queues.data(),
+        .queueCreateInfoCount = static_cast<uint32_t>(queues.size()),
+        .pEnabledFeatures = &device_features,
+        .enabledExtensionCount = static_cast<uint32_t>(REQUIRED_EXTENSIONS.size()),
+        .ppEnabledExtensionNames = REQUIRED_EXTENSIONS.data(),
+    };
     if (const auto result_status = vkCreateDevice(m_physical_device, &logical_device_create_info, nullptr, &m_logical_device); result_status != VK_SUCCESS)
     {
         char* error_msg;

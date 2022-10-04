@@ -173,15 +173,17 @@ VResult FrameTech::Graphics::SwapChain::create()
     m_format = format_result.GetValue();
     m_extent = swap_extent_result.GetValue();
 
-    VkSwapchainCreateInfoKHR create_info{};
-    create_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    create_info.surface = (*FrameTech::Engine::getInstance()->m_render->getSurface());
-    create_info.minImageCount = MAX_BUFFERS;
-    create_info.imageFormat = m_format.format;
-    create_info.imageColorSpace = m_format.colorSpace;
-    create_info.imageExtent = m_extent;
-    create_info.imageArrayLayers = 1;                             // Always one (except stereoscopic 3D app)
-    create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT; // color attachment, use VK_IMAGE_USAGE_TRANSFER_DST_BIT instead
+    VkSwapchainCreateInfoKHR create_info{
+
+        .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+        .surface = (*FrameTech::Engine::getInstance()->m_render->getSurface()),
+        .minImageCount = MAX_BUFFERS,
+        .imageFormat = m_format.format,
+        .imageColorSpace = m_format.colorSpace,
+        .imageExtent = m_extent,
+        .imageArrayLayers = 1,                             // Always one (except stereoscopic 3D app)
+        .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, // color attachment, use VK_IMAGE_USAGE_TRANSFER_DST_BIT instead
+    };
     uint32_t indices[2] = {
         FrameTech::Engine::getInstance()->m_graphics_device.m_graphics_queue_family_index,
         FrameTech::Engine::getInstance()->m_graphics_device.m_presents_queue_family_index,

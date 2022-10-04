@@ -10,6 +10,7 @@
 #include "../../result.h"
 #include <filesystem>
 #include <fstream>
+#include <vector>
 
 FrameTech::Graphics::Pipeline::Pipeline() {}
 
@@ -30,7 +31,7 @@ std::optional<uint64_t> FrameTech::Graphics::Pipeline::fileSize(const char* file
 }
 
 std::optional<uint64_t> FrameTech::Graphics::Pipeline::readFile(const char* filepath,
-                                                                char* buffer,
+                                                                char** buffer,
                                                                 uint64_t buffer_length)
 {
     std::ifstream file(filepath, std::ifstream::binary | std::ifstream::ate);
@@ -49,15 +50,16 @@ std::optional<uint64_t> FrameTech::Graphics::Pipeline::readFile(const char* file
 
         // read data as a block, close, and return
         // the length of the file
-        file.read(buffer, length);
+        file.seekg(0);
+        file.read(*buffer, length);
         file.close();
         return length;
     }
     return std::nullopt;
 }
 
-VResult FrameTech::Graphics::Pipeline::create(const char* vertex_shader_filepath,
-                                              const char* fragment_shader_filepath)
+Result<std::vector<FrameTech::Graphics::Shader::Module>> FrameTech::Graphics::Pipeline::createGraphicsApplication(const char* vertex_shader_filepath,
+                                                                                                                  const char* fragment_shader_filepath)
 {
     // Get the length
     const auto vs_file_size_opt = fileSize(vertex_shader_filepath);
@@ -68,20 +70,35 @@ VResult FrameTech::Graphics::Pipeline::create(const char* vertex_shader_filepath
     if (vs_file_size_opt == std::nullopt || fs_file_size_opt == std::nullopt)
     {
         LogE("< Cannot create the program");
-        return VResult::Error((char*)"vertex or fragment shader is NULL");
+        return Result<std::vector<FrameTech::Graphics::Shader::Module>>::Error((char*)"vertex or fragment shader is NULL");
     }
     // Get the content of the VS
     const auto vs_file_size = vs_file_size_opt.value();
     auto vs_buffer = new char[vs_file_size];
-    readFile(vertex_shader_filepath, vs_buffer, vs_file_size);
+    readFile(vertex_shader_filepath, &vs_buffer, vs_file_size);
     Log("> For VS file '%s', read file ok (%d bytes)", vertex_shader_filepath, vs_file_size);
     // Get the content of the FS
     const auto fs_file_size = fs_file_size_opt.value();
     auto fs_buffer = new char[fs_file_size];
-    readFile(fragment_shader_filepath, fs_buffer, fs_file_size);
+    readFile(fragment_shader_filepath, &fs_buffer, fs_file_size);
     Log("> For FS file '%s', read file ok (%d bytes)", fragment_shader_filepath, fs_file_size);
-    // TODO: return the buffers?
-    delete[] vs_buffer;
-    delete[] fs_buffer;
-    return VResult::Ok();
+    std::vector<FrameTech::Graphics::Shader::Module> shader_modules(
+        {FrameTech::Graphics::Shader::Module{
+             .m_tag = (char*)fragment_shader_filepath,
+             .m_code = fs_buffer,
+             .m_size = fs_file_size,
+             .m_type = FrameTech::Graphics::Shader::FRAGMENT_SHADER,
+         },
+         FrameTech::Graphics::Shader::Module{
+             .m_tag = (char*)vertex_shader_filepath,
+             .m_code = vs_buffer,
+             .m_size = vs_file_size,
+             .m_type = FrameTech::Graphics::Shader::VERTEX_SHADER,
+         }});
+    return Result<std::vector<FrameTech::Graphics::Shader::Module>>::Ok(shader_modules);
+}
+
+void FrameTech::Graphics::Pipeline::setShaderStages(const std::vector<VkPipelineShaderStageCreateInfo> stages)
+{
+    m_shader_stages = stages;
 }
