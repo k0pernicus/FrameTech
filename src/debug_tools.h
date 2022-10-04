@@ -50,19 +50,29 @@ void build_log(FILE* stream, const char* prefix, Args... message)
 
 #pragma GCC diagnostic pop
 
+/// @brief Debug log statement
 #define Log(...) build_log(stdout, nullptr, __VA_ARGS__)
+/// @brief Error log statement
 #define LogE(...) build_log(stderr, "Error", __VA_ARGS__)
+/// @brief Warning log statement
 #define LogW(...) build_log(stderr, "Warning", __VA_ARGS__)
+/// @brief Warn the developer, at runtime, that the function has not been implemented
 #define WARN_RT_UNIMPLEMENTED assert(0)
+/// @brief Warn the developer, at compile time, that the function has not been implemented
 #define WARN_CT_UNIMPLEMENTED static_assert(0)
 
 #else
 // PROFILE & RELEASE
 
+/// @brief Debug log statement
 #define Log(...)
+/// @brief Error log statement
 #define LogE(...)
+/// @brief Warning log statement
 #define LogW(...)
+/// @brief Warn the developer, at runtime, that the function has not been implemented yet
 #define WARN_RT_UNIMPLEMENTED
+/// @brief Warn the developer, at compile time, that the function has not been implemented yet
 #define WARN_CT_UNIMPLEMENTED
 
 #endif
