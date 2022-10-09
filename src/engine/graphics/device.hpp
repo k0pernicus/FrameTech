@@ -17,13 +17,18 @@ namespace FrameTech
 {
     namespace Graphics
     {
+        /// @brief Stores the state of a Graphics queue
         enum QueueState
         {
+            /// @brief The queue will not be used for the engine
             UNSUPPORTED,
+            /// @brief The queue is ready to be used
             READY,
+            /// @brief The queue is already being used
             USED,
         };
 
+        /// @brief Enumerates the features supported, or requested, by FrameTech
         enum SupportFeatures
         {
             NOONE = 0x00000000,

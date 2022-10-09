@@ -38,10 +38,7 @@ namespace FrameTech
             /// @return A Result type to know if the function succeeded
             /// or not.
             VResult createImageViews();
-            /// @brief Creates the graphics pipeline:
-            /// 1. Read the SPIR-V shaders,
-            /// 2. Create the shader modules,
-            /// 3. Create the shader stages.
+            /// @brief Creates the graphics pipeline
             /// @return A Result type to know if the function succeeded
             /// or not.
             VResult createGraphicsPipeline();
@@ -65,6 +62,20 @@ namespace FrameTech
             /// TODO: check if the graphics pipeline belongs exclusively
             /// to the Render object or if it belongs to the engine directly
             std::unique_ptr<FrameTech::Graphics::Pipeline> m_graphics_pipeline = nullptr;
+            /// @brief Creates the shader module:
+            /// 1. Read the SPIR-V shaders,
+            /// 2. Create the shader modules,
+            /// 3. Create the shader stages.
+            /// @return A Result type to know if the function succeeded
+            /// or not.
+            VResult createShaderModule();
+            /// @brief Configures the graphics pipeline:
+            /// 1. Creates the shader module,
+            /// 2. Configure the fixed functions,
+            /// 3. TODO: ...
+            /// @return A Result type to know if the function succeeded
+            /// or not.
+            VResult configurePipeline();
         };
     } // namespace Graphics
 } // namespace FrameTech

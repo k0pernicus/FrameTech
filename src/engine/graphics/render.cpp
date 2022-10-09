@@ -131,9 +131,9 @@ VResult FrameTech::Graphics::Render::createImageViews()
     return VResult::Ok();
 }
 
-VResult FrameTech::Graphics::Render::createGraphicsPipeline()
+VResult FrameTech::Graphics::Render::createShaderModule()
 {
-    // TODO: vector of ShaderModule ?
+    // TODO: vector of ShaderModule type
     const Result<std::vector<FrameTech::Graphics::Shader::Module>> shaders_compile_result = m_graphics_pipeline->createGraphicsApplication(
         "shaders/basic_triangle.vert.spv",
         "shaders/basic_triangle.frag.spv");
@@ -212,8 +212,6 @@ VResult FrameTech::Graphics::Render::createGraphicsPipeline()
 
         shader_stages[shader_index++] = shader_stage_create_info;
 
-        WARN_RT_UNIMPLEMENTED;
-
         // Don't need to store or use the shader module later
         vkDestroyShaderModule(
             FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
@@ -228,5 +226,35 @@ VResult FrameTech::Graphics::Render::createGraphicsPipeline()
         return VResult::Error((char*)"cannot set NULL shader stages");
     }
     m_graphics_pipeline->setShaderStages(shader_stages);
+    return VResult::Ok();
+}
+
+VResult FrameTech::Graphics::Render::configurePipeline()
+{
+    // TODO: make this array as a class parameter
+    VkDynamicState dynamic_states[2] = {
+        VK_DYNAMIC_STATE_VIEWPORT,
+        VK_DYNAMIC_STATE_SCISSOR,
+    };
+    VkPipelineDynamicStateCreateInfo dynamic_state_create_info{};
+    dynamic_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    dynamic_state_create_info.dynamicStateCount = sizeof(dynamic_states) / sizeof(VkDynamicState);
+    dynamic_state_create_info.pDynamicStates = dynamic_states;
+
+    WARN_CT_UNIMPLEMENTED;
+}
+
+VResult FrameTech::Graphics::Render::createGraphicsPipeline()
+{
+    if (const auto result = createShaderModule(); result.IsError())
+    {
+        LogE("< Error creating the shader module for the graphics pipeline");
+        return result;
+    }
+    if (const auto result = configurePipeline(); result.IsError())
+    {
+        LogE("< Error configuring the graphics pipeline");
+        return result;
+    }
     return VResult::Ok();
 }
