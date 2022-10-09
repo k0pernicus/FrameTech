@@ -11,12 +11,15 @@
 
 #include "ftstd/version.h"
 #include <cstdlib>
+#include <optional>
 
 namespace Project
 {
 
     /// @brief The name of the application
     constexpr const char* APPLICATION_NAME = "Example";
+    /// @brief Pause / limit the Application to 60 FPS
+    const std::optional<uint8_t> APPLICATION_FPS_LIMIT = 60;
     /// @brief Major version number of the application
     constexpr uint8_t const APPLICATION_VERSION_MAJOR_NUMBER = 0;
     /// @brief Minor version number of the application

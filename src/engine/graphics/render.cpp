@@ -185,7 +185,6 @@ VResult FrameTech::Graphics::Render::createGraphicsPipeline()
         }
 
         // TODO: create the shader stages
-        WARN_RT_UNIMPLEMENTED;
         VkPipelineShaderStageCreateInfo shader_stage_create_info{
             .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
             .pName = c_shader.m_entrypoint,
@@ -213,7 +212,7 @@ VResult FrameTech::Graphics::Render::createGraphicsPipeline()
 
         shader_stages[shader_index++] = shader_stage_create_info;
 
-        WARN_RT_UNIMPLEMENTED;
+        // WARN_RT_UNIMPLEMENTED;
 
         // Don't need to store or use the shader module later
         vkDestroyShaderModule(

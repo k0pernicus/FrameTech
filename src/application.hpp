@@ -10,6 +10,8 @@
 #define application_hpp
 
 #include "engine/engine.hpp"
+#include "ftstd/chrono.h"
+#include "project.hpp"
 #include <GLFW/glfw3.h>
 #include <optional>
 
@@ -63,7 +65,7 @@ namespace FrameTech
         uint64_t m_current_frame = 1;
         /// @brief The current FPS limit per second to draw
         /// Optional value as the default value is NULL
-        std::optional<uint8_t> m_FPS_limit = std::nullopt;
+        std::optional<uint8_t> m_FPS_limit = Project::APPLICATION_FPS_LIMIT;
         /// @brief The unique instance of the Engine object
         std::unique_ptr<FrameTech::Engine> m_engine;
         /// @brief Recorded frames to make
@@ -72,6 +74,8 @@ namespace FrameTech
         /// @brief The index to record the current FPS
         /// record
         uint8_t recorded_frames_index = 0;
+        /// @brief A private chronometer
+        std::unique_ptr<Chrono> m_chrono = nullptr;
 
     public:
         /// @brief Private destructor
