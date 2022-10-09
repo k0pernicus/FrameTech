@@ -60,6 +60,8 @@ void build_log(FILE* stream, const char* prefix, Args... message)
 #define WARN_RT_UNIMPLEMENTED assert(0)
 /// @brief Warn the developer, at compile time, that the function has not been implemented
 #define WARN_CT_UNIMPLEMENTED static_assert(0)
+/// @brief Warn the developer of a possible bug
+#define WARN assert(0)
 
 #else
 // PROFILE & RELEASE
@@ -74,6 +76,8 @@ void build_log(FILE* stream, const char* prefix, Args... message)
 #define WARN_RT_UNIMPLEMENTED
 /// @brief Warn the developer, at compile time, that the function has not been implemented yet
 #define WARN_CT_UNIMPLEMENTED
+/// @brief Warn the developer of a possible bug
+#define WARN
 
 #endif
 

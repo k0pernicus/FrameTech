@@ -212,7 +212,7 @@ VResult FrameTech::Graphics::Render::createGraphicsPipeline()
 
         shader_stages[shader_index++] = shader_stage_create_info;
 
-        // WARN_RT_UNIMPLEMENTED;
+        WARN_RT_UNIMPLEMENTED;
 
         // Don't need to store or use the shader module later
         vkDestroyShaderModule(
@@ -223,7 +223,7 @@ VResult FrameTech::Graphics::Render::createGraphicsPipeline()
     // Should not happen
     if (shader_stages.size() <= 0)
     {
-        WARN_RT_UNIMPLEMENTED;
+        WARN;
         LogW("> There is %d shader stages, instead of %d", shader_stages.size(), shaders_compiled.size());
         return VResult::Error((char*)"cannot set NULL shader stages");
     }
