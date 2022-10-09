@@ -10,7 +10,7 @@
 #define application_hpp
 
 #include "engine/engine.hpp"
-#include "ftstd/chrono.h"
+#include "ftstd/timer.h"
 #include "project.hpp"
 #include <GLFW/glfw3.h>
 #include <optional>
@@ -74,8 +74,8 @@ namespace FrameTech
         /// @brief The index to record the current FPS
         /// record
         uint8_t recorded_frames_index = 0;
-        /// @brief A private chronometer
-        std::unique_ptr<Chrono> m_chrono = nullptr;
+        /// @brief A private timer
+        std::unique_ptr<Timer> m_app_timer = nullptr;
 
     public:
         /// @brief Private destructor

@@ -6,8 +6,8 @@
 //
 
 #include "application.hpp"
-#include "ftstd/chrono.h"
 #include "ftstd/debug_tools.h"
+#include "ftstd/timer.h"
 #include "project.hpp"
 
 FrameTech::Application* FrameTech::Application::m_instance{nullptr};
@@ -15,7 +15,7 @@ FrameTech::Application* FrameTech::Application::m_instance{nullptr};
 FrameTech::Application::Application(const char* app_title)
 {
     m_app_title = app_title;
-    m_chrono = std::unique_ptr<Chrono>(new Chrono());
+    m_app_timer = std::unique_ptr<Timer>(new Timer());
 }
 
 FrameTech::Application::~Application()
@@ -86,14 +86,14 @@ void FrameTech::Application::drawFrame()
     const double wait_ms = (m_FPS_limit == std::nullopt) ? 0.0 : (1000 / m_FPS_limit.value());
     if (wait_ms > 0.0)
     {
-        uint64_t wait_until_ms = Chrono::get_time_limit(wait_ms);
+        uint64_t wait_until_ms = Timer::get_time_limit(wait_ms);
         Log("Drawing frame %d...", m_current_frame);
 
         // TODO: Draw command
 
         // Force to pause the rendering thread
         // if (and only if) the time has not come yet
-        m_chrono->block_until(wait_until_ms);
+        m_app_timer->block_until(wait_until_ms);
         ++m_current_frame;
         return;
     }

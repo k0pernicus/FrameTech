@@ -10,6 +10,7 @@
 #define result_h
 
 #include "debug_tools.h"
+#include <assert.h>
 #include <cstdint>
 
 constexpr int8_t RESULT_OK = 0;
