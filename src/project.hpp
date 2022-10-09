@@ -9,7 +9,7 @@
 #ifndef app_project_h
 #define app_project_h
 
-#include "version.h"
+#include "ftstd/version.h"
 #include <cstdlib>
 
 namespace Project

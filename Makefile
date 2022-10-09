@@ -5,7 +5,7 @@ CFLAGS_RELEASE = $(CFLAGS) -O2 -DNDEBUG -DNO_AVG_FPS_RECORDS
 LDFLAGS = -L$(VULKAN_SDK)/lib `pkg-config --static --libs glfw3` -lvulkan
 
 SOURCES = src/*.cpp src/engine/*.cpp src/engine/graphics/*.cpp
-HEADERS = src/*.h src/*.hpp src/engine/*.hpp src/engine/graphics/*.hpp
+HEADERS = src/*.hpp src/engine/*.hpp src/engine/graphics/*.hpp
 ALL_SOURCES = $(SOURCES) $(HEADERS)
 
 MKDIR_P = mkdir -p

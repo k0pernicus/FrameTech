@@ -6,7 +6,7 @@
 //
 
 #include "application.hpp"
-#include "debug_tools.h"
+#include "ftstd/debug_tools.h"
 
 FrameTech::Application* FrameTech::Application::m_instance{nullptr};
 

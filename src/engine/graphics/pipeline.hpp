@@ -9,7 +9,7 @@
 #ifndef pipeline_hpp
 #define pipeline_hpp
 
-#include "../../result.h"
+#include "../../ftstd/result.h"
 #include <cstdlib>
 #include <optional>
 #include <vector>

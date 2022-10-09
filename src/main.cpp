@@ -7,8 +7,8 @@
 
 #define GLFW_INCLUDE_VULKAN
 #include "application.hpp"
-#include "debug_tools.h"
 #include "engine/project.hpp"
+#include "ftstd/debug_tools.h"
 #include "project.hpp"
 #include <GLFW/glfw3.h>
 #include <stdio.h>

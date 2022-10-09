@@ -6,8 +6,8 @@
 //
 
 #include "device.hpp"
-#include "../../debug_tools.h"
-#include "../../result.h"
+#include "../../ftstd/debug_tools.h"
+#include "../../ftstd/result.h"
 #include "../engine.hpp"
 #include "render.hpp"
 #include <vector>

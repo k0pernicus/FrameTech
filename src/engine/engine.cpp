@@ -7,9 +7,9 @@
 
 #include "engine.hpp"
 #include "../application.hpp"
-#include "../debug_tools.h"
+#include "../ftstd/debug_tools.h"
+#include "../ftstd/result.h"
 #include "../project.hpp"
-#include "../result.h"
 #include "project.hpp"
 #include <vulkan/vulkan.h>
 
