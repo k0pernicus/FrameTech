@@ -65,8 +65,11 @@ namespace FrameTech
             /// SwapChain object
             const std::vector<VkImage>& getImages() const;
             /// @brief Returns the image format stored in the swapchain.
-            /// @return A VkSurfaceFormatKHR type.
+            /// @return A reference to a VkSurfaceFormatKHR value.
             const VkSurfaceFormatKHR& getImageFormat() const;
+            /// @brief Returns the image extent stored in the swapchain.
+            /// @return A reference to a VkExtent2D value;
+            const VkExtent2D& getExtent() const;
 
         private:
             SwapChain();

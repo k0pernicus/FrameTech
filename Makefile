@@ -1,5 +1,5 @@
 CFLAGS = -std=c++17 -I. -I$(VULKAN_SDK)/include -I/usr/local/include -I/opt/homebrew/include
-CFLAGS_DEBUG = $(CFLAGS) -g -DDEBUG
+CFLAGS_DEBUG = $(CFLAGS) -Werror -Wall -g -DDEBUG
 CFLAGS_RELEASE = $(CFLAGS) -O2 -DNDEBUG -DNO_AVG_FPS_RECORDS
 
 LDFLAGS = -L$(VULKAN_SDK)/lib `pkg-config --static --libs glfw3` -lvulkan

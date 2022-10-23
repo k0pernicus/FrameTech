@@ -147,6 +147,7 @@ VResult FrameTech::Graphics::Render::createShaderModule()
     }
     int shader_index = 0;
     std::vector<VkPipelineShaderStageCreateInfo> shader_stages(shaders_compiled.size());
+    std::vector<VkShaderModule> shader_modules(shaders_compiled.size());
     for (const auto c_shader : shaders_compiled)
     {
         Log("> Creating shader module for %s (size of %d bytes), with type %d", c_shader.m_tag, c_shader.m_size, c_shader.m_type);
@@ -210,13 +211,9 @@ VResult FrameTech::Graphics::Render::createShaderModule()
                 break;
         }
 
-        shader_stages[shader_index++] = shader_stage_create_info;
-
-        // Don't need to store or use the shader module later
-        vkDestroyShaderModule(
-            FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
-            shader_module,
-            nullptr);
+        shader_stages[shader_index] = shader_stage_create_info;
+        shader_modules[shader_index] = shader_module;
+        ++shader_index;
     }
     // Should not happen
     if (shader_stages.size() <= 0)
@@ -225,23 +222,9 @@ VResult FrameTech::Graphics::Render::createShaderModule()
         LogW("> There is %d shader stages, instead of %d", shader_stages.size(), shaders_compiled.size());
         return VResult::Error((char*)"cannot set NULL shader stages");
     }
+    m_graphics_pipeline->setShaderModules(shader_modules);
     m_graphics_pipeline->setShaderStages(shader_stages);
     return VResult::Ok();
-}
-
-VResult FrameTech::Graphics::Render::configurePipeline()
-{
-    // TODO: make this array as a class parameter
-    VkDynamicState dynamic_states[2] = {
-        VK_DYNAMIC_STATE_VIEWPORT,
-        VK_DYNAMIC_STATE_SCISSOR,
-    };
-    VkPipelineDynamicStateCreateInfo dynamic_state_create_info{};
-    dynamic_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-    dynamic_state_create_info.dynamicStateCount = sizeof(dynamic_states) / sizeof(VkDynamicState);
-    dynamic_state_create_info.pDynamicStates = dynamic_states;
-
-    WARN_CT_UNIMPLEMENTED;
 }
 
 VResult FrameTech::Graphics::Render::createGraphicsPipeline()
@@ -251,9 +234,19 @@ VResult FrameTech::Graphics::Render::createGraphicsPipeline()
         LogE("< Error creating the shader module for the graphics pipeline");
         return result;
     }
-    if (const auto result = configurePipeline(); result.IsError())
+    if (const auto result = m_graphics_pipeline->setupRenderPass(); result.IsError())
     {
-        LogE("< Error configuring the graphics pipeline");
+        LogE("< Error setuping the render pass");
+        return result;
+    }
+    if (const auto result = m_graphics_pipeline->preconfigure(); result.IsError())
+    {
+        LogE("< Error pre-configuring the graphics pipeline");
+        return result;
+    }
+    if (const auto result = m_graphics_pipeline->create(); result.IsError())
+    {
+        LogE("< Error creating the graphics pipeline");
         return result;
     }
     return VResult::Ok();

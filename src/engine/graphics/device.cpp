@@ -160,7 +160,6 @@ bool FrameTech::Graphics::Device::isInitialized() const
 
 Result<uint32_t> FrameTech::Graphics::Device::getQueueFamilies()
 {
-    Result<uint32_t> result;
     assert(isInitialized());
     if (!isInitialized())
     {

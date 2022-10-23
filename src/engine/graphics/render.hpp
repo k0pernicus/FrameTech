@@ -35,11 +35,11 @@ namespace FrameTech
             VkSurfaceKHR* getSurface();
             /// @brief Creates the image views for the Render, from the
             /// images from the SwapChain object.
-            /// @return A Result type to know if the function succeeded
+            /// @return A VResult type to know if the function succeeded
             /// or not.
             VResult createImageViews();
             /// @brief Creates the graphics pipeline
-            /// @return A Result type to know if the function succeeded
+            /// @return A VResult type to know if the function succeeded
             /// or not.
             VResult createGraphicsPipeline();
 
@@ -69,13 +69,6 @@ namespace FrameTech
             /// @return A Result type to know if the function succeeded
             /// or not.
             VResult createShaderModule();
-            /// @brief Configures the graphics pipeline:
-            /// 1. Creates the shader module,
-            /// 2. Configure the fixed functions,
-            /// 3. TODO: ...
-            /// @return A Result type to know if the function succeeded
-            /// or not.
-            VResult configurePipeline();
         };
     } // namespace Graphics
 } // namespace FrameTech

@@ -61,6 +61,27 @@ namespace FrameTech
             /// @brief Set the shader stages
             /// @param stages The shader stages to register
             void setShaderStages(const std::vector<VkPipelineShaderStageCreateInfo> stages);
+            /// @brief Set the shader modules
+            /// @param shader_modules The shader modules to register
+            void setShaderModules(const std::vector<VkShaderModule> shader_modules);
+            /// @brief Finalizes the graphics pipeline setup, once everything
+            /// has been created
+            /// @return A VResult type to know if the function succeeded
+            /// or not.
+            VResult create();
+            /// @brief Pre-configures the graphics pipeline:
+            /// 1. Creates the shader module,
+            /// 2. Configure the fixed functions,
+            /// 3. TODO: ...
+            /// @return A Result type to know if the function succeeded
+            /// or not.
+            VResult preconfigure();
+            /// @brief Setup the framebuffer attachments that will be used
+            /// while rendering, like color and depth buffers, how many
+            /// samples do we want to use, etc...
+            /// @return A VResult type to know if the function succeeded
+            /// or not.
+            VResult setupRenderPass();
 
         private:
             /// @brief Returns the size, as a `uint64_t` type, of a file located at `filepath`.
@@ -75,6 +96,14 @@ namespace FrameTech
             std::optional<uint64_t> readFile(const char* filepath, char** buffer, uint64_t buffer_length);
             /// @brief The shader stages in the pipeline
             std::vector<VkPipelineShaderStageCreateInfo> m_shader_stages;
+            /// @brief Stores the shader modules to create the pipeline object later
+            std::vector<VkShaderModule> m_shader_modules;
+            /// @brief The pipeline layout created for our renderer
+            VkPipelineLayout m_layout = VK_NULL_HANDLE;
+            /// @brief The render pass object
+            VkRenderPass m_render_pass = VK_NULL_HANDLE;
+            /// @brief The pipeline object
+            VkPipeline m_pipeline = VK_NULL_HANDLE;
         };
     } // namespace Graphics
 } // namespace FrameTech

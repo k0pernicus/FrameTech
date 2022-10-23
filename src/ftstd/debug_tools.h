@@ -53,11 +53,13 @@ void build_log(FILE* stream, const char* prefix, Args... message)
 /// @brief Debug log statement
 #define Log(...) build_log(stdout, nullptr, __VA_ARGS__)
 /// @brief Error log statement
-#define LogE(...) build_log(stderr, "Error", __VA_ARGS__)
+#define LogE(...) build_log(stderr, (char*)"Error", __VA_ARGS__)
 /// @brief Warning log statement
-#define LogW(...) build_log(stderr, "Warning", __VA_ARGS__)
+#define LogW(...) build_log(stderr, (char*)"Warning", __VA_ARGS__)
 /// @brief Warn the developer, at runtime, that the function has not been implemented
-#define WARN_RT_UNIMPLEMENTED assert(0)
+#define WARN_RT_UNIMPLEMENTED                                                                       \
+    build_log(stderr, (char*)"Error", (char*)"Line %d of %s: not implemented", __LINE__, __FILE__); \
+    assert(0)
 /// @brief Warn the developer, at compile time, that the function has not been implemented
 #define WARN_CT_UNIMPLEMENTED static_assert(0)
 /// @brief Warn the developer of a possible bug

@@ -266,3 +266,8 @@ const VkSurfaceFormatKHR& FrameTech::Graphics::SwapChain::getImageFormat() const
 {
     return m_format;
 }
+
+const VkExtent2D& FrameTech::Graphics::SwapChain::getExtent() const
+{
+    return m_extent;
+}
