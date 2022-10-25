@@ -323,10 +323,10 @@ VResult FrameTech::Graphics::Device::createLogicalDevice()
                 error_msg = (char*)"device lost";
                 break;
             default:
-                Log("> vkCreateInstance: error 0x%08x", result_status);
+                Log("> vkCreateDevice: error 0x%08x", result_status);
                 error_msg = (char*)"undocumented error";
         }
-        LogE("> vkCreateInstance: %s", error_msg);
+        LogE("> vkCreateDevice: %s", error_msg);
         return VResult::Error((char*)"Cannot create the logical device");
     }
     Log("> Logical device has been created");
