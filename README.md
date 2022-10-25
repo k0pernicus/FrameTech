@@ -2,6 +2,8 @@
 
 An example of a game and the custom `FrameTech` engine.
 
+**This project is not compatible with a Vulkan SDK > 1.3.211.**
+
 This repository includes:
 
 1. a simple application (game),
