@@ -127,6 +127,11 @@ void FrameTech::Engine::initialize()
         m_state = ERROR;
         return;
     }
+    if (const auto result = m_render->createFramebuffers(); result.IsError())
+    {
+        m_state = ERROR;
+        return;
+    }
     assert(m_graphics_device.isInitialized());
     m_state = INITIALIZED;
 }
@@ -165,6 +170,9 @@ VResult FrameTech::Engine::createGraphicsInstance()
     VkInstanceCreateInfo create_info{
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
         .pApplicationInfo = &application_info,
+        // For macOS >= 1.3.216
+        // https://vulkan.lunarg.com/doc/sdk/1.3.216.0/mac/getting_started.html
+        .flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR,
         .enabledExtensionCount = extension_count,
         .ppEnabledExtensionNames = extension_names,
     };

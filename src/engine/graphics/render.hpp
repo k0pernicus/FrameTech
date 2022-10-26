@@ -38,6 +38,10 @@ namespace FrameTech
             /// @return A VResult type to know if the function succeeded
             /// or not.
             VResult createImageViews();
+            /// @brief Creates the framebuffers for the objects to render
+            /// @return A VResult type to know if the function succeeded
+            /// or not.
+            VResult createFramebuffers();
             /// @brief Creates the graphics pipeline
             /// @return A VResult type to know if the function succeeded
             /// or not.
@@ -58,6 +62,8 @@ namespace FrameTech
             /// @brief Literal views to different images - describe how
             /// to access images and which part of the images to access
             std::vector<VkImageView> m_image_views;
+            /// @brief Reference all of the VkImageView objects
+            std::vector<VkFramebuffer> m_framebuffers;
             /// @brief The graphics pipeline, associated to a Renderer
             /// TODO: check if the graphics pipeline belongs exclusively
             /// to the Render object or if it belongs to the engine directly

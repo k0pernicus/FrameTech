@@ -43,6 +43,13 @@ FrameTech::Graphics::Render::~Render()
             vkDestroyImageView(FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), image_view, nullptr);
         m_image_views.clear();
     }
+    if (m_framebuffers.size() > 0)
+    {
+        Log("< Destroying the framebuffers...");
+        for (auto framebuffer : m_framebuffers)
+            vkDestroyFramebuffer(FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), framebuffer, nullptr);
+        m_framebuffers.clear();
+    }
     m_instance = nullptr;
 }
 
@@ -72,6 +79,42 @@ VResult FrameTech::Graphics::Render::createSurface()
 VkSurfaceKHR* FrameTech::Graphics::Render::getSurface()
 {
     return &m_surface;
+}
+
+VResult FrameTech::Graphics::Render::createFramebuffers()
+{
+    Log("> There are %d framebuffers to create: ", m_image_views.size());
+    m_framebuffers.resize(m_image_views.size());
+    for (int i = 0; i < m_image_views.size(); ++i)
+    {
+        const auto image_view = m_image_views[i];
+        VkImageView pAttachments[] = {
+            image_view,
+        };
+        VkFramebufferCreateInfo framebuffer_info{};
+        framebuffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebuffer_info.renderPass = m_graphics_pipeline->getRenderPass();
+        framebuffer_info.attachmentCount = 1;
+        framebuffer_info.pAttachments = pAttachments;
+        framebuffer_info.height = FrameTech::Engine::getInstance()->m_swapchain->getExtent().height;
+        framebuffer_info.width = FrameTech::Engine::getInstance()->m_swapchain->getExtent().width;
+        framebuffer_info.layers = 1;
+
+        auto create_framebuffer_result_code = vkCreateFramebuffer(
+            FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+            &framebuffer_info,
+            nullptr,
+            &m_framebuffers[i]);
+
+        if (create_framebuffer_result_code == VK_SUCCESS)
+        {
+            Log("\t> Framebuffer at index %d has been successfully created...", i);
+            continue;
+        }
+        LogE("\t> Cannot create the framebuffer attached to the image at index %d", i);
+        return VResult::Error((char*)"> failed to create the framebuffers");
+    }
+    return VResult::Ok();
 }
 
 VResult FrameTech::Graphics::Render::createImageViews()

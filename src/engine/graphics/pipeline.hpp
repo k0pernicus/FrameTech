@@ -82,6 +82,9 @@ namespace FrameTech
             /// @return A VResult type to know if the function succeeded
             /// or not.
             VResult setupRenderPass();
+            /// @brief Returns the registered render pass object
+            /// @return A VkRenderPass object
+            VkRenderPass& getRenderPass();
 
         private:
             /// @brief Returns the size, as a `uint64_t` type, of a file located at `filepath`.

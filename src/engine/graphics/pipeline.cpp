@@ -159,6 +159,11 @@ static VkRect2D createScissor(const VkExtent2D& swapchain_extent)
     return scissor;
 }
 
+VkRenderPass& FrameTech::Graphics::Pipeline::getRenderPass()
+{
+    return m_render_pass;
+}
+
 VResult FrameTech::Graphics::Pipeline::setupRenderPass()
 {
     Log("> Setting up the render pass object of the graphics pipeline");
