@@ -3,7 +3,8 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/opt/homebrew/Cellar/glfw/3.3.8/include"
             ],
             "defines": [],
             "macFrameworkPath": [
