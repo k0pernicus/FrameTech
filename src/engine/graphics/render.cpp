@@ -292,5 +292,15 @@ VResult FrameTech::Graphics::Render::createGraphicsPipeline()
         LogE("< Error creating the graphics pipeline");
         return result;
     }
+    if (const auto result = m_command_pool->createPool(); result.IsError())
+    {
+        LogE("< Error creating the pool of the command buffer object");
+        return result;
+    }
+    if (const auto result = m_command_pool->createBuffer(); result.IsError())
+    {
+        LogE("< Error creating the buffer of the command buffer object");
+        return result;
+    }
     return VResult::Ok();
 }

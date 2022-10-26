@@ -10,6 +10,7 @@
 #define render_h
 
 #include "../../ftstd/result.h"
+#include "commandbuffer.hpp"
 #include "pipeline.hpp"
 #include "vulkan/vulkan.h"
 #include <vector>
@@ -65,16 +66,17 @@ namespace FrameTech
             /// @brief Reference all of the VkImageView objects
             std::vector<VkFramebuffer> m_framebuffers;
             /// @brief The graphics pipeline, associated to a Renderer
-            /// TODO: check if the graphics pipeline belongs exclusively
-            /// to the Render object or if it belongs to the engine directly
             std::unique_ptr<FrameTech::Graphics::Pipeline> m_graphics_pipeline = nullptr;
+            /// @brief Renders command pool
+            std::unique_ptr<FrameTech::Graphics::CommandBuffer> m_command_pool = nullptr;
             /// @brief Creates the shader module:
             /// 1. Read the SPIR-V shaders,
             /// 2. Create the shader modules,
             /// 3. Create the shader stages.
             /// @return A Result type to know if the function succeeded
             /// or not.
-            VResult createShaderModule();
+            VResult
+            createShaderModule();
         };
     } // namespace Graphics
 } // namespace FrameTech
