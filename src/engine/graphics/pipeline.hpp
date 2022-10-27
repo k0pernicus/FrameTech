@@ -85,6 +85,9 @@ namespace FrameTech
             /// @brief Returns the registered render pass object
             /// @return A VkRenderPass object
             VkRenderPass& getRenderPass();
+            /// @brief Returns the pipeline of this object
+            /// @return A VkPipeline object
+            VkPipeline getPipeline();
 
         private:
             /// @brief Returns the size, as a `uint64_t` type, of a file located at `filepath`.

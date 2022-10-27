@@ -21,6 +21,7 @@ FrameTech::Graphics::Render* FrameTech::Graphics::Render::m_instance{nullptr};
 FrameTech::Graphics::Render::Render()
 {
     m_graphics_pipeline = std::unique_ptr<FrameTech::Graphics::Pipeline>(new FrameTech::Graphics::Pipeline());
+    m_command_pool = std::unique_ptr<FrameTech::Graphics::CommandBuffer>(new FrameTech::Graphics::CommandBuffer());
 }
 
 FrameTech::Graphics::Render::~Render()
@@ -50,6 +51,11 @@ FrameTech::Graphics::Render::~Render()
             vkDestroyFramebuffer(FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), framebuffer, nullptr);
         m_framebuffers.clear();
     }
+    if (nullptr != m_command_pool)
+    {
+        Log("< Destroying the CommandBuffer object...");
+        m_command_pool = nullptr;
+    }
     m_instance = nullptr;
 }
 
@@ -60,6 +66,11 @@ FrameTech::Graphics::Render* FrameTech::Graphics::Render::getInstance()
         m_instance = new Render();
     }
     return m_instance;
+}
+
+std::vector<VkFramebuffer> FrameTech::Graphics::Render::getFramebuffers()
+{
+    return m_framebuffers;
 }
 
 VResult FrameTech::Graphics::Render::createSurface()
@@ -268,6 +279,17 @@ VResult FrameTech::Graphics::Render::createShaderModule()
     m_graphics_pipeline->setShaderModules(shader_modules);
     m_graphics_pipeline->setShaderStages(shader_stages);
     return VResult::Ok();
+}
+
+uint64_t FrameTech::Graphics::Render::getFrameIndex()
+{
+    return m_frame_index;
+}
+
+void FrameTech::Graphics::Render::updateFrameIndex(uint64_t current_frame)
+{
+    Log("> Current frame index: %d...", m_frame_index);
+    m_frame_index = current_frame % (m_framebuffers.size());
 }
 
 VResult FrameTech::Graphics::Render::createGraphicsPipeline()

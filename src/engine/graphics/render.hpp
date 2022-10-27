@@ -34,6 +34,8 @@ namespace FrameTech
             VResult createSurface();
             /// @brief Returns the KHR surface as a pointer
             VkSurfaceKHR* getSurface();
+            /// @brief Returns the framebuffers
+            std::vector<VkFramebuffer> getFramebuffers();
             /// @brief Creates the image views for the Render, from the
             /// images from the SwapChain object.
             /// @return A VResult type to know if the function succeeded
@@ -47,6 +49,12 @@ namespace FrameTech
             /// @return A VResult type to know if the function succeeded
             /// or not.
             VResult createGraphicsPipeline();
+            /// @brief Returns the frame index, or swap chain index
+            /// @return The current frame index
+            uint64_t getFrameIndex();
+            /// @brief Updates the current frame, or swap chain, index
+            /// Should not be called more than once per frame present
+            void updateFrameIndex(uint64_t current_frame);
 
         private:
             /// @brief Constructor
@@ -75,8 +83,9 @@ namespace FrameTech
             /// 3. Create the shader stages.
             /// @return A Result type to know if the function succeeded
             /// or not.
-            VResult
-            createShaderModule();
+            VResult createShaderModule();
+            /// @brief The current frame index, or swap chain index
+            uint64_t m_frame_index = 0;
         };
     } // namespace Graphics
 } // namespace FrameTech

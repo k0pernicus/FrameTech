@@ -20,7 +20,8 @@ namespace FrameTech
         class CommandBuffer
         {
         public:
-            static CommandBuffer* getInstance();
+            /// @brief Public constructor
+            CommandBuffer();
             ~CommandBuffer();
             /// @brief Returns the VkCommandPool object
             /// @return the VkCommandPool object
@@ -35,23 +36,17 @@ namespace FrameTech
             /// @return A VResult type
             VResult createBuffer();
             /// @brief Writes the commands we want to execute into a command buffer
-            VResult record(VkCommandBuffer command_buffer, uint32_t swapchain_index);
+            VResult record();
 
         private:
-            /// @brief Private constructor in order to create one and only one
-            /// CBP for the moment
-            CommandBuffer();
             /// @brief CommandBuffer should not be cloneable
             CommandBuffer(CommandBuffer& other) = delete;
             /// @brief CommandBuffer should not be assignable
             void operator=(const CommandBuffer& other) = delete;
-            /// @brief The internal instance (singleton) of
-            /// the CommandBuffer object
-            static CommandBuffer* m_instance;
-            VkCommandPool* m_pool = nullptr;
-            VkCommandBuffer* m_buffer = nullptr;
+            VkCommandPool m_pool;
+            VkCommandBuffer m_buffer;
         };
     } // namespace Graphics
 } // namespace FrameTech
 
-#endif commandbuffer_h // commandbuffer_h
+#endif // commandbuffer_h

@@ -378,3 +378,8 @@ VResult FrameTech::Graphics::Pipeline::create()
     }
     return VResult::Ok();
 }
+
+VkPipeline FrameTech::Graphics::Pipeline::getPipeline()
+{
+    return m_pipeline;
+}

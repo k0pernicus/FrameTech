@@ -94,6 +94,7 @@ void FrameTech::Application::drawFrame()
         // Force to pause the rendering thread
         // if (and only if) the time has not come yet
         m_app_timer->block_until(wait_until_ms);
+        m_engine->m_render->updateFrameIndex(m_current_frame);
         ++m_current_frame;
         return;
     }
@@ -131,4 +132,9 @@ void FrameTech::Application::run()
         break;
     }
     m_state = FrameTech::Application::State::CLOSING;
+}
+
+uint64_t FrameTech::Application::getCurrentFrame()
+{
+    return m_current_frame;
 }

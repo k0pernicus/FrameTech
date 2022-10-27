@@ -109,6 +109,8 @@ namespace FrameTech
         /// @param new_limit Set `new_limit` to `0` in order to disable the existing limit,
         /// and put it as default state.
         void forceRendererFPSLimit(uint8_t new_limit);
+        /// @brief Returns the current frame of the application
+        uint64_t getCurrentFrame();
     };
 
 } // namespace FrameTech
