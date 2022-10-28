@@ -13,7 +13,9 @@
 #include <fstream>
 #include <vector>
 
-FrameTech::Graphics::Pipeline::Pipeline() {}
+FrameTech::Graphics::Pipeline::Pipeline()
+{
+}
 
 FrameTech::Graphics::Pipeline::~Pipeline()
 {
@@ -44,6 +46,24 @@ FrameTech::Graphics::Pipeline::~Pipeline()
         Log("< Destroying the pipeline object...");
         vkDestroyPipeline(graphics_device, m_pipeline, nullptr);
         m_pipeline = VK_NULL_HANDLE;
+    }
+    if (nullptr != m_sync_image_ready)
+    {
+        Log("< Destroying the image ready signal semaphore...");
+        vkDestroySemaphore(graphics_device, m_sync_image_ready, nullptr);
+        m_sync_image_ready = nullptr;
+    }
+    if (nullptr != m_sync_present_done)
+    {
+        Log("< Destroying the present done signal semaphore...");
+        vkDestroySemaphore(graphics_device, m_sync_present_done, nullptr);
+        m_sync_present_done = nullptr;
+    }
+    if (nullptr != m_sync_cpu_gpu)
+    {
+        Log("< Destroying the fence...");
+        vkDestroyFence(graphics_device, m_sync_cpu_gpu, nullptr);
+        m_sync_cpu_gpu = nullptr;
     }
 }
 
@@ -382,4 +402,39 @@ VResult FrameTech::Graphics::Pipeline::create()
 VkPipeline FrameTech::Graphics::Pipeline::getPipeline()
 {
     return m_pipeline;
+}
+
+VResult FrameTech::Graphics::Pipeline::createSyncObjects() 
+{
+    auto graphics_device = FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+    if (nullptr != m_sync_image_ready)
+    {
+        VkSemaphoreCreateInfo create_info{};
+        create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+        if (VK_SUCCESS != vkCreateSemaphore(graphics_device, &create_info, nullptr, m_sync_image_ready))
+            return VResult::Error((char*)"< Failed to create the semaphore to signal image ready");
+    }
+    if (m_sync_present_done != m_sync_image_ready)
+    {
+        VkSemaphoreCreateInfo create_info{};
+        create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+        if (VK_SUCCESS != vkCreateSemaphore(graphics_device, &create_info, nullptr, m_sync_present_done))
+            return VResult::Error((char*)"< Failed to create the semaphore to signal present is done");
+    }
+    if (m_sync_cpu_gpu != m_sync_image_ready)
+    {
+        VkFenceCreateInfo create_info{};
+        create_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+        if (VK_SUCCESS != vkCreateFence(graphics_device, &create_info, nullptr, m_sync_cpu_gpu))
+            return VResult::Error((char*)"< Failed to create the fence");
+    }
+    return VResult::Ok();
+}
+
+static void FrameTech::Graphics::Pipeline::present()
+{
+}
+
+Result<int> FrameTech::Graphics::Pipeline::draw()
+{
 }

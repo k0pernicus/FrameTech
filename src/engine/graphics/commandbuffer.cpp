@@ -62,6 +62,10 @@ VResult FrameTech::Graphics::CommandBuffer::record()
     VkCommandBufferBeginInfo begin_info{
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
     };
+
+    // Reset the command buffer before any operation on the current buffer
+    vkResetCommandBuffer(m_buffer, 0);
+
     if (const auto begin_result_code = vkBeginCommandBuffer(m_buffer, &begin_info); begin_result_code != VK_SUCCESS)
     {
         return VResult::Error((char*)"< Error creating the command buffer");

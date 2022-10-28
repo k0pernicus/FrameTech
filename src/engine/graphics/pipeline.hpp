@@ -88,6 +88,10 @@ namespace FrameTech
             /// @brief Returns the pipeline of this object
             /// @return A VkPipeline object
             VkPipeline getPipeline();
+            /// @brief Draw the current frame
+            /// @return A result type that corresponds to the error status
+            /// of the draw function
+            Result<int> draw();
 
         private:
             /// @brief Returns the size, as a `uint64_t` type, of a file located at `filepath`.
@@ -100,6 +104,11 @@ namespace FrameTech
             /// Returns the length that is read, or `nullopt` if an error happened.
             /// **Warning**: this function is **not** data-race conditons bullet-proof.
             std::optional<uint64_t> readFile(const char* filepath, char** buffer, uint64_t buffer_length);
+            /// @brief Create all the sync objects (semaphores / fences) to use
+            /// in our pipeline / renderer
+            /// @return A VResult type to know if the creation has been successfuly
+            /// executed or not
+            VResult createSyncObjects();
             /// @brief The shader stages in the pipeline
             std::vector<VkPipelineShaderStageCreateInfo> m_shader_stages;
             /// @brief Stores the shader modules to create the pipeline object later
@@ -110,6 +119,14 @@ namespace FrameTech
             VkRenderPass m_render_pass = VK_NULL_HANDLE;
             /// @brief The pipeline object
             VkPipeline m_pipeline = VK_NULL_HANDLE;
+            /// @brief Sync object to signal that an image is ready to
+            /// be displayed
+            VkSemaphore* m_sync_image_ready = nullptr;
+            /// @brief Sync object to signal that the rendering
+            /// is done for the current frame
+            VkSemaphore* m_sync_present_done = nullptr;
+            /// @brief Sync object for CPU / GPU
+            VkFence* m_sync_cpu_gpu = nullptr;
         };
     } // namespace Graphics
 } // namespace FrameTech
