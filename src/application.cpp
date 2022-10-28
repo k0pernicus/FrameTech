@@ -99,6 +99,7 @@ void FrameTech::Application::drawFrame()
         return;
     }
     Log("Drawing frame %d", m_current_frame);
+    m_engine->m_render->updateFrameIndex(m_current_frame);
     ++m_current_frame;
 }
 
