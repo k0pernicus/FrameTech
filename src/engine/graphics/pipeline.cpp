@@ -50,19 +50,19 @@ FrameTech::Graphics::Pipeline::~Pipeline()
     if (nullptr != m_sync_image_ready)
     {
         Log("< Destroying the image ready signal semaphore...");
-        vkDestroySemaphore(graphics_device, m_sync_image_ready, nullptr);
+        vkDestroySemaphore(graphics_device, *m_sync_image_ready, nullptr);
         m_sync_image_ready = nullptr;
     }
     if (nullptr != m_sync_present_done)
     {
         Log("< Destroying the present done signal semaphore...");
-        vkDestroySemaphore(graphics_device, m_sync_present_done, nullptr);
+        vkDestroySemaphore(graphics_device, *m_sync_present_done, nullptr);
         m_sync_present_done = nullptr;
     }
     if (nullptr != m_sync_cpu_gpu)
     {
         Log("< Destroying the fence...");
-        vkDestroyFence(graphics_device, m_sync_cpu_gpu, nullptr);
+        vkDestroyFence(graphics_device, *m_sync_cpu_gpu, nullptr);
         m_sync_cpu_gpu = nullptr;
     }
 }
@@ -256,7 +256,7 @@ VResult FrameTech::Graphics::Pipeline::preconfigure()
         return VResult::Error((char*)"Failed to create the pipeline layout!");
     }
 
-    return VResult::Ok();
+    return createSyncObjects();
 }
 
 VResult FrameTech::Graphics::Pipeline::create()
@@ -404,8 +404,9 @@ VkPipeline FrameTech::Graphics::Pipeline::getPipeline()
     return m_pipeline;
 }
 
-VResult FrameTech::Graphics::Pipeline::createSyncObjects() 
+VResult FrameTech::Graphics::Pipeline::createSyncObjects()
 {
+    Log("> Creating the sync objects");
     auto graphics_device = FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
     if (nullptr != m_sync_image_ready)
     {
@@ -414,27 +415,41 @@ VResult FrameTech::Graphics::Pipeline::createSyncObjects() 
         if (VK_SUCCESS != vkCreateSemaphore(graphics_device, &create_info, nullptr, m_sync_image_ready))
             return VResult::Error((char*)"< Failed to create the semaphore to signal image ready");
     }
-    if (m_sync_present_done != m_sync_image_ready)
+    if (nullptr != m_sync_image_ready)
     {
         VkSemaphoreCreateInfo create_info{};
         create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
         if (VK_SUCCESS != vkCreateSemaphore(graphics_device, &create_info, nullptr, m_sync_present_done))
             return VResult::Error((char*)"< Failed to create the semaphore to signal present is done");
     }
-    if (m_sync_cpu_gpu != m_sync_image_ready)
+    if (nullptr != m_sync_image_ready)
     {
         VkFenceCreateInfo create_info{};
         create_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+        create_info.flags = VK_FENCE_CREATE_SIGNALED_BIT; // This allows to not wait for the first wait
         if (VK_SUCCESS != vkCreateFence(graphics_device, &create_info, nullptr, m_sync_cpu_gpu))
             return VResult::Error((char*)"< Failed to create the fence");
     }
     return VResult::Ok();
 }
 
-static void FrameTech::Graphics::Pipeline::present()
+void FrameTech::Graphics::Pipeline::present()
 {
 }
 
 Result<int> FrameTech::Graphics::Pipeline::draw()
 {
+    // Wait that all fences are sync...
+    vkWaitForFences(
+        FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+        1,
+        m_sync_cpu_gpu,
+        VK_TRUE,
+        UINT64_MAX);
+    // ... and reset them
+    vkResetFences(
+        FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+        1,
+        m_sync_cpu_gpu);
+    return Result<int>::Error((char*)"Draw function threw an error");
 }

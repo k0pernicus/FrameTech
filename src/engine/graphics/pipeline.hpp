@@ -92,6 +92,9 @@ namespace FrameTech
             /// @return A result type that corresponds to the error status
             /// of the draw function
             Result<int> draw();
+            /// @brief Present the current image to the screen
+            /// TODO: should return a VResult
+            void present();
 
         private:
             /// @brief Returns the size, as a `uint64_t` type, of a file located at `filepath`.
