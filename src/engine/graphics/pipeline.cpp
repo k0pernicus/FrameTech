@@ -218,12 +218,24 @@ VResult FrameTech::Graphics::Pipeline::setupRenderPass()
         },
     };
 
-    VkRenderPassCreateInfo render_pass_info{};
-    render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-    render_pass_info.attachmentCount = NB_ATTACHMENTS;
-    render_pass_info.pAttachments = attachments;
-    render_pass_info.subpassCount = NB_SUBPASSES;
-    render_pass_info.pSubpasses = subpasses;
+    VkSubpassDependency dependency{
+        .srcSubpass = VK_SUBPASS_EXTERNAL, // Implicit subpass before or after the render pass
+        .dstSubpass = 0,                   // our subpass
+        .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        .srcAccessMask = 0,
+        .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+    };
+
+    VkRenderPassCreateInfo render_pass_info{
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+        .attachmentCount = NB_ATTACHMENTS,
+        .pAttachments = attachments,
+        .subpassCount = NB_SUBPASSES,
+        .pSubpasses = subpasses,
+        .dependencyCount = 1,
+        .pDependencies = &dependency,
+    };
 
     const auto create_result_code = vkCreateRenderPass(
         FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
@@ -438,6 +450,20 @@ VResult FrameTech::Graphics::Pipeline::createSyncObjects()
 
 void FrameTech::Graphics::Pipeline::present()
 {
+    VkSemaphore signal[] = {*m_sync_present_done};
+    VkSwapchainKHR swapchains[] = {
+        FrameTech::Engine::getInstance()->m_swapchain->getSwapchainDevice()};
+    VkPresentInfoKHR present_info{
+        .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = signal,
+        .swapchainCount = 1,
+        .pSwapchains = swapchains,
+        .pImageIndices = &FrameTech::Engine::getInstance()->m_render->getFrameIndex(),
+    };
+    vkQueuePresentKHR(
+        FrameTech::Engine::getInstance()->m_graphics_device.getPresentsQueue(),
+        &present_info);
 }
 
 Result<int> FrameTech::Graphics::Pipeline::draw()
