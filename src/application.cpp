@@ -87,7 +87,7 @@ void FrameTech::Application::drawFrame()
     if (wait_ms > 0.0)
     {
         uint64_t wait_until_ms = Timer::get_time_limit(wait_ms);
-        Log("Drawing frame %d...", m_current_frame);
+        // Log("Drawing frame %d...", m_current_frame);
 
         m_engine->m_render->getGraphicsPipeline()->draw();
         m_engine->m_render->getGraphicsPipeline()->present();
@@ -99,7 +99,7 @@ void FrameTech::Application::drawFrame()
         ++m_current_frame;
         return;
     }
-    Log("Drawing frame %d", m_current_frame);
+    // Log("Drawing frame %d", m_current_frame);
     m_engine->m_render->getGraphicsPipeline()->draw();
     m_engine->m_render->getGraphicsPipeline()->present();
     m_engine->m_render->updateFrameIndex(m_current_frame);

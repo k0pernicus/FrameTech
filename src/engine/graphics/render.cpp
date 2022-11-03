@@ -288,7 +288,7 @@ uint32_t& FrameTech::Graphics::Render::getFrameIndex()
 
 void FrameTech::Graphics::Render::updateFrameIndex(uint64_t current_frame)
 {
-    Log("> Current frame index: %d...", m_frame_index);
+    // Log("> Current frame index: %d...", m_frame_index);
     m_frame_index = current_frame % (m_framebuffers.size());
 }
 
