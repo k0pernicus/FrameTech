@@ -326,7 +326,7 @@ VResult FrameTech::Graphics::Pipeline::create()
     // should be enabled
     VkPipelineInputAssemblyStateCreateInfo assembly_state_create_info{
         .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
-        .topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST,
+        .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
         // Setting VK_TRUE to primitiveRestartEnable returns a validation
         // error (VUID-VkPipelineInputAssemblyStateCreateInfo-topology-00428)
         .primitiveRestartEnable = VK_FALSE,
@@ -342,9 +342,6 @@ VResult FrameTech::Graphics::Pipeline::create()
         .frontFace = VK_FRONT_FACE_CLOCKWISE,
         .depthBiasEnable = VK_FALSE,
     };
-    // rasterizer_state_create_info.depthBiasConstantFactor = 0.0f;
-    // rasterizer_state_create_info.depthBiasClamp = 0.0f;
-    // rasterizer_state_create_info.depthBiasSlopeFactor = 0.0f;
 
     // TODO: Check if needs another GPU feature
     VkPipelineMultisampleStateCreateInfo multisample_state_create_info{
