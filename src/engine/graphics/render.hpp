@@ -49,9 +49,9 @@ namespace FrameTech
             /// @return A VResult type to know if the function succeeded
             /// or not.
             VResult createGraphicsPipeline();
-            /// @brief Returns the frame index, or swap chain index
-            /// @return The current frame index
-            uint64_t getFrameIndex();
+            /// @brief Returns a reference to the current frame index, or swap chain index
+            /// @return A reference to the current frame index
+            uint32_t& getFrameIndex();
             /// @brief Updates the current frame, or swap chain, index
             /// Should not be called more than once per frame present
             void updateFrameIndex(uint64_t current_frame);
@@ -89,7 +89,7 @@ namespace FrameTech
             /// or not.
             VResult createShaderModule();
             /// @brief The current frame index, or swap chain index
-            uint64_t m_frame_index = 0;
+            uint32_t m_frame_index = 0;
         };
     } // namespace Graphics
 } // namespace FrameTech

@@ -281,7 +281,7 @@ VResult FrameTech::Graphics::Render::createShaderModule()
     return VResult::Ok();
 }
 
-uint64_t FrameTech::Graphics::Render::getFrameIndex()
+uint32_t& FrameTech::Graphics::Render::getFrameIndex()
 {
     return m_frame_index;
 }

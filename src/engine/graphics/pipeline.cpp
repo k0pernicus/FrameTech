@@ -456,14 +456,13 @@ Result<int> FrameTech::Graphics::Pipeline::draw()
         m_sync_cpu_gpu);
 
     // Acquire the new frame
-    uint32_t image_index;
     vkAcquireNextImageKHR(
         FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
         FrameTech::Engine::getInstance()->m_swapchain->getSwapchainDevice(),
         UINT64_MAX,
         *m_sync_image_ready,
         VK_NULL_HANDLE,
-        &image_index);
+        &FrameTech::Engine::getInstance()->m_render->getFrameIndex());
 
     // Reset the command buffer
     auto command_buffer = FrameTech::Engine::getInstance()->m_render->getCommandBuffer();
