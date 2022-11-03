@@ -408,22 +408,25 @@ VResult FrameTech::Graphics::Pipeline::createSyncObjects()
 {
     Log("> Creating the sync objects");
     auto graphics_device = FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
-    if (nullptr != m_sync_image_ready)
+    if (nullptr == m_sync_image_ready)
     {
+        m_sync_image_ready = new VkSemaphore();
         VkSemaphoreCreateInfo create_info{};
         create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
         if (VK_SUCCESS != vkCreateSemaphore(graphics_device, &create_info, nullptr, m_sync_image_ready))
             return VResult::Error((char*)"< Failed to create the semaphore to signal image ready");
     }
-    if (nullptr != m_sync_image_ready)
+    if (nullptr == m_sync_present_done)
     {
+        m_sync_present_done = new VkSemaphore();
         VkSemaphoreCreateInfo create_info{};
         create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
         if (VK_SUCCESS != vkCreateSemaphore(graphics_device, &create_info, nullptr, m_sync_present_done))
             return VResult::Error((char*)"< Failed to create the semaphore to signal present is done");
     }
-    if (nullptr != m_sync_image_ready)
+    if (nullptr == m_sync_cpu_gpu)
     {
+        m_sync_cpu_gpu = new VkFence();
         VkFenceCreateInfo create_info{};
         create_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
         create_info.flags = VK_FENCE_CREATE_SIGNALED_BIT; // This allows to not wait for the first wait
