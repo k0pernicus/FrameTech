@@ -454,5 +454,50 @@ Result<int> FrameTech::Graphics::Pipeline::draw()
         FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
         1,
         m_sync_cpu_gpu);
-    return Result<int>::Error((char*)"Draw function threw an error");
+
+    // Acquire the new frame
+    uint32_t image_index;
+    vkAcquireNextImageKHR(
+        FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+        FrameTech::Engine::getInstance()->m_swapchain->getSwapchainDevice(),
+        UINT64_MAX,
+        *m_sync_image_ready,
+        VK_NULL_HANDLE,
+        &image_index);
+
+    // Reset the command buffer
+    auto command_buffer = FrameTech::Engine::getInstance()->m_render->getCommandBuffer();
+    if (command_buffer == nullptr)
+        return Result<int>::Error((char*)"Cannot get the command buffer in the draw call");
+    vkResetCommandBuffer(
+        *(command_buffer.get()->getBuffer()),
+        0);
+    // Record the current command
+    FrameTech::Engine::getInstance()->m_render->getCommandBuffer()->record();
+    // Submit
+    VkSemaphore wait_semaphores[] = {*m_sync_image_ready};
+    VkSemaphore signal_semaphores[] = {*m_sync_present_done};
+    VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+    VkSubmitInfo submit_info{
+        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .waitSemaphoreCount = 1, // TODO: to change for something more idiomatic / maintainable
+        .pWaitSemaphores = wait_semaphores,
+        .pWaitDstStageMask = wait_stages,
+        .commandBufferCount = 1,
+        .pCommandBuffers = command_buffer->getBuffer(),
+        .signalSemaphoreCount = 1, // TODO: to change for something more idiomatic / maintainable
+        .pSignalSemaphores = signal_semaphores,
+    };
+
+    if (const auto submit_result_code = vkQueueSubmit(
+            FrameTech::Engine::getInstance()->m_graphics_device.getGraphicsQueue(),
+            1,
+            &submit_info,
+            *m_sync_cpu_gpu);
+        submit_result_code != VK_SUCCESS)
+    {
+        return Result<int>::Error((char*)"Error submitting the queue in Draw call");
+    }
+
+    return Result<int>::Ok(0);
 }
