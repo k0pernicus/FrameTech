@@ -72,8 +72,6 @@ namespace FrameTech
         FrameTech::Engine::State getState();
         ~Engine();
 
-        /// @brief The graphics pipeline
-        FrameTech::Graphics::Pipeline m_pipeline = FrameTech::Graphics::Pipeline();
         /// @brief The engine instance
         VkInstance m_graphics_instance = NULL;
         /// @brief The physical device
