@@ -72,6 +72,12 @@ namespace FrameTech
             uint32_t m_graphics_queue_family_index = 0;
             /// @brief Store the index of the presents queue family
             uint32_t m_presents_queue_family_index = 0;
+            /// @brief Returns the Graphics queue of the logical device
+            /// @return The Graphics queue of the logical device
+            VkQueue& getGraphicsQueue();
+            /// @brief Returns the Present queue of the logical device
+            /// @return The Present queue of the logical device
+            VkQueue& getPresentsQueue();
 
         private:
             /// @brief The physical device that has been picked

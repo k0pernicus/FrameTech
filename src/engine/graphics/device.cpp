@@ -351,3 +351,13 @@ VkPhysicalDevice FrameTech::Graphics::Device::getPhysicalDevice() const
 {
     return m_physical_device;
 }
+
+VkQueue& FrameTech::Graphics::Device::getGraphicsQueue()
+{
+    return m_graphics_queue;
+}
+
+VkQueue& FrameTech::Graphics::Device::getPresentsQueue()
+{
+    return m_presents_queue;
+}
