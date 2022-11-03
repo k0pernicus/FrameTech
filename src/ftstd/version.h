@@ -91,7 +91,7 @@ public:
     /// @param version A string to save the Version representation in it.
     void toString(char* version) const
     {
-        sprintf(version, "%d.%d.%d", this->m_major, this->m_minor, this->m_bug_fix);
+        snprintf(version, 8, "%d.%d.%d", this->m_major, this->m_minor, this->m_bug_fix);
     }
 };
 
