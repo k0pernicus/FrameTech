@@ -20,8 +20,8 @@ FrameTech::Graphics::Render* FrameTech::Graphics::Render::m_instance{nullptr};
 
 FrameTech::Graphics::Render::Render()
 {
-    m_graphics_pipeline = std::unique_ptr<FrameTech::Graphics::Pipeline>(new FrameTech::Graphics::Pipeline());
-    m_command_pool = std::unique_ptr<FrameTech::Graphics::CommandBuffer>(new FrameTech::Graphics::CommandBuffer());
+    m_graphics_pipeline = std::shared_ptr<FrameTech::Graphics::Pipeline>(new FrameTech::Graphics::Pipeline());
+    m_command_buffer = std::shared_ptr<FrameTech::Graphics::CommandBuffer>(new FrameTech::Graphics::CommandBuffer());
 }
 
 FrameTech::Graphics::Render::~Render()
@@ -51,10 +51,10 @@ FrameTech::Graphics::Render::~Render()
             vkDestroyFramebuffer(FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), framebuffer, nullptr);
         m_framebuffers.clear();
     }
-    if (nullptr != m_command_pool)
+    if (nullptr != m_command_buffer)
     {
         Log("< Destroying the CommandBuffer object...");
-        m_command_pool = nullptr;
+        m_command_buffer = nullptr;
     }
     m_instance = nullptr;
 }
@@ -115,7 +115,7 @@ VResult FrameTech::Graphics::Render::createFramebuffers()
             FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
             &framebuffer_info,
             nullptr,
-            &m_framebuffers[i]);
+            &(m_framebuffers[i]));
 
         if (create_framebuffer_result_code == VK_SUCCESS)
         {
@@ -314,15 +314,25 @@ VResult FrameTech::Graphics::Render::createGraphicsPipeline()
         LogE("< Error creating the graphics pipeline");
         return result;
     }
-    if (const auto result = m_command_pool->createPool(); result.IsError())
+    if (const auto result = m_command_buffer->createPool(); result.IsError())
     {
         LogE("< Error creating the pool of the command buffer object");
         return result;
     }
-    if (const auto result = m_command_pool->createBuffer(); result.IsError())
+    if (const auto result = m_command_buffer->createBuffer(); result.IsError())
     {
         LogE("< Error creating the buffer of the command buffer object");
         return result;
     }
     return VResult::Ok();
+}
+
+std::shared_ptr<FrameTech::Graphics::Pipeline> FrameTech::Graphics::Render::getGraphicsPipeline() const
+{
+    return m_graphics_pipeline;
+}
+
+std::shared_ptr<FrameTech::Graphics::CommandBuffer> FrameTech::Graphics::Render::getCommandBuffer() const
+{
+    return m_command_buffer;
 }
