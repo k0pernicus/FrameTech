@@ -80,7 +80,7 @@ VResult FrameTech::Graphics::CommandBuffer::record()
     VkClearValue clear_color = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
     VkRenderPassBeginInfo render_pass_begin_info{
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-        .renderPass = FrameTech::Engine::getInstance()->m_pipeline.getRenderPass(),
+        .renderPass = FrameTech::Engine::getInstance()->m_render->getGraphicsPipeline()->getRenderPass(),
         .framebuffer = framebuffers[swapchain_index],
         .renderArea.offset = {0, 0},
         .renderArea.extent = FrameTech::Engine::getInstance()->m_swapchain->getExtent(),
@@ -93,7 +93,7 @@ VResult FrameTech::Graphics::CommandBuffer::record()
     vkCmdBindPipeline(
         m_buffer,
         VK_PIPELINE_BIND_POINT_GRAPHICS,
-        FrameTech::Engine::getInstance()->m_pipeline.getPipeline());
+        FrameTech::Engine::getInstance()->m_render->getGraphicsPipeline()->getPipeline());
 
     // Setup the viewport and scissor as dynamic
     // TODO: fix this in the fixed function
