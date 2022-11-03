@@ -89,7 +89,8 @@ void FrameTech::Application::drawFrame()
         uint64_t wait_until_ms = Timer::get_time_limit(wait_ms);
         Log("Drawing frame %d...", m_current_frame);
 
-        // TODO: Draw command
+        m_engine->m_render->getGraphicsPipeline()->draw();
+        m_engine->m_render->getGraphicsPipeline()->present();
 
         // Force to pause the rendering thread
         // if (and only if) the time has not come yet
