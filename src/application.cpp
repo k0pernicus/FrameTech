@@ -124,7 +124,6 @@ void FrameTech::Application::run()
             Log("> Application loop...");
             m_FPS_limit.has_value() ? Log("> Application is running at %d FPS", m_FPS_limit.value()) : Log("> Application is running at unlimited frame");
             m_state = FrameTech::Application::State::RUNNING;
-            // TODO: Record the duration in the loop
             // TODO: Each second, added the FPS number in recorded_frames
             // TODO: Increase the index : recorded_frames_index = (recorded_frames_index + 1) % FPS_RECORDS;
             while (!glfwWindowShouldClose(m_app_window) && m_state == FrameTech::Application::State::RUNNING)
