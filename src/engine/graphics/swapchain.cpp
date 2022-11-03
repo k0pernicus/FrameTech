@@ -271,3 +271,8 @@ const VkExtent2D& FrameTech::Graphics::SwapChain::getExtent() const
 {
     return m_extent;
 }
+
+const VkSwapchainKHR& FrameTech::Graphics::SwapChain::getSwapchainDevice() const
+{
+    return m_swapchain;
+}

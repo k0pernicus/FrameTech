@@ -70,6 +70,9 @@ namespace FrameTech
             /// @brief Returns the image extent stored in the swapchain.
             /// @return A reference to a VkExtent2D value;
             const VkExtent2D& getExtent() const;
+            /// @brief Returns a reference to the internal swapchain device
+            /// @return A reference to the swapchain device
+            const VkSwapchainKHR& getSwapchainDevice() const;
 
         private:
             SwapChain();
