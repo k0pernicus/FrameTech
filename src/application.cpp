@@ -130,6 +130,7 @@ void FrameTech::Application::run()
                 drawFrame();
             }
             Log("< ...Application loop");
+            vkDeviceWaitIdle(m_engine->m_graphics_device.getLogicalDevice());
         }
         break;
     }
