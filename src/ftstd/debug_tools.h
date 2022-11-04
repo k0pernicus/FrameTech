@@ -50,6 +50,8 @@ void build_log(FILE* stream, const char* prefix, Args... message)
 
 #pragma GCC diagnostic pop
 
+namespace ftstd
+{
 /// @brief Debug log statement
 #define Log(...) build_log(stdout, nullptr, __VA_ARGS__)
 /// @brief Error log statement
@@ -64,10 +66,13 @@ void build_log(FILE* stream, const char* prefix, Args... message)
 #define WARN_CT_UNIMPLEMENTED static_assert(0)
 /// @brief Warn the developer of a possible bug
 #define WARN assert(0)
+} // namespace ftstd
 
 #else
 // PROFILE & RELEASE
 
+namespace ftstd
+{
 /// @brief Debug log statement
 #define Log(...)
 /// @brief Error log statement
@@ -80,6 +85,7 @@ void build_log(FILE* stream, const char* prefix, Args... message)
 #define WARN_CT_UNIMPLEMENTED
 /// @brief Warn the developer of a possible bug
 #define WARN
+} // namespace ftstd
 
 #endif
 
