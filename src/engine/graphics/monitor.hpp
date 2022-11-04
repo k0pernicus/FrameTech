@@ -23,11 +23,11 @@ namespace frametech
         /// GLFWmonitor object
         struct MonitorProperties
         {
-            int m_width = 0;
-            int m_height = 0;
+            int m_width = 0;  // in pixels
+            int m_height = 0; // in pixels
             char m_name[MONITOR_NAME_LEN];
-            const GLFWvidmode* m_available_video_modes;
-            const GLFWvidmode* m_current_video_mode;
+            const GLFWvidmode* m_available_video_modes = nullptr;
+            const GLFWvidmode* m_current_video_mode = nullptr;
         };
         /// @brief Wraps a GLFWmonitor object
         class Monitor
