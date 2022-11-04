@@ -27,7 +27,7 @@ int main(int argc, const char* argv[])
         Project::ENGINE_VERSION.toString(c_version);
         Log("Engine '%s' (version: %s)", Project::ENGINE_NAME, c_version);
     }
-    std::unique_ptr<FrameTech::Application> app(FrameTech::Application::getInstance(Project::APPLICATION_NAME));
+    std::unique_ptr<frametech::Application> app(frametech::Application::getInstance(Project::APPLICATION_NAME));
 #ifdef ENABLE_EXCEPTIONS
     Log("/!\\ Exceptions are enabled /!\\");
     try

@@ -17,7 +17,7 @@
 #include "vulkan/vulkan.h"
 #include <cstdlib>
 
-namespace FrameTech
+namespace frametech
 {
 
     class Engine
@@ -57,7 +57,7 @@ namespace FrameTech
         VResult createSwapChain();
         /// @brief Stores the internal state of the unique
         /// Engine object
-        FrameTech::Engine::State m_state;
+        frametech::Engine::State m_state;
 
     public:
         /// @brief Get the singleton Engine object
@@ -69,20 +69,20 @@ namespace FrameTech
         void initialize();
         /// @brief Returns the internal state of the unique
         /// Engine object
-        FrameTech::Engine::State getState();
+        frametech::Engine::State getState();
         ~Engine();
 
         /// @brief The engine instance
         VkInstance m_graphics_instance = NULL;
         /// @brief The physical device
-        FrameTech::Graphics::Device m_graphics_device = FrameTech::Graphics::Device();
+        frametech::graphics::Device m_graphics_device = frametech::graphics::Device();
         /// @brief The renderer of the engine
-        std::unique_ptr<FrameTech::Graphics::Render> m_render;
+        std::unique_ptr<frametech::graphics::Render> m_render;
         /// @brief The swapchain of the engine
-        std::unique_ptr<FrameTech::Graphics::SwapChain> m_swapchain;
+        std::unique_ptr<frametech::graphics::SwapChain> m_swapchain;
         ;
     };
 
-} // namespace FrameTech
+} // namespace frametech
 
 #endif // engine_hpp

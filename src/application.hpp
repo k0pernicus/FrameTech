@@ -22,7 +22,7 @@
 #define FPS_RECORDS 10
 #endif
 
-namespace FrameTech
+namespace frametech
 {
 
     /// @brief The default height, in pixels, of the window application
@@ -68,7 +68,7 @@ namespace FrameTech
         /// Optional value as the default value is NULL
         std::optional<uint8_t> m_FPS_limit = Project::APPLICATION_FPS_LIMIT;
         /// @brief The unique instance of the Engine object
-        std::unique_ptr<FrameTech::Engine> m_engine;
+        std::unique_ptr<frametech::Engine> m_engine;
         /// @brief Recorded frames to make
         /// FPS stats on latest records
         uint8_t recorded_frames[FPS_RECORDS];
@@ -78,7 +78,7 @@ namespace FrameTech
         /// @brief A private timer
         std::unique_ptr<Timer> m_app_timer = nullptr;
         /// @brief The monitor to set / display the application
-        FrameTech::Graphics::Monitor m_monitor;
+        frametech::graphics::Monitor m_monitor;
 
     public:
         /// @brief Private destructor
@@ -116,6 +116,6 @@ namespace FrameTech
         uint64_t getCurrentFrame();
     };
 
-} // namespace FrameTech
+} // namespace frametech
 
 #endif /* application_hpp */

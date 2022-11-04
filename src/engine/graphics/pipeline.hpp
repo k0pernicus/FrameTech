@@ -15,9 +15,9 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-namespace FrameTech
+namespace frametech
 {
-    namespace Graphics
+    namespace graphics
     {
         namespace Shader
         {
@@ -131,7 +131,7 @@ namespace FrameTech
             /// @brief Sync object for CPU / GPU
             VkFence* m_sync_cpu_gpu = nullptr;
         };
-    } // namespace Graphics
-} // namespace FrameTech
+    } // namespace graphics
+} // namespace frametech
 
 #endif /* pipeline_hpp */

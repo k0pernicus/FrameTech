@@ -14,9 +14,9 @@
 #include <cstdint>
 #include <utility>
 
-namespace FrameTech
+namespace frametech
 {
-    namespace Graphics
+    namespace graphics
     {
         constexpr size_t MONITOR_NAME_LEN = 32;
         /// @brief Stores the properties of the current / used
@@ -65,7 +65,7 @@ namespace FrameTech
             /// @return A boolean value
             bool foundPrimaryMonitor() const;
         };
-    } // namespace Graphics
-} // namespace FrameTech
+    } // namespace graphics
+} // namespace frametech
 
 #endif /* monitor_h */

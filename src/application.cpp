@@ -10,37 +10,37 @@
 #include "ftstd/timer.h"
 #include "project.hpp"
 
-FrameTech::Application* FrameTech::Application::m_instance{nullptr};
+frametech::Application* frametech::Application::m_instance{nullptr};
 
-FrameTech::Application::Application(const char* app_title)
+frametech::Application::Application(const char* app_title)
 {
     m_app_title = app_title;
     m_app_timer = std::unique_ptr<Timer>(new Timer());
 }
 
-FrameTech::Application::~Application()
+frametech::Application::~Application()
 {
     clean();
     Log("< Closing the Application object...");
     m_instance = nullptr;
 }
 
-GLFWwindow* FrameTech::Application::getWindow() const
+GLFWwindow* frametech::Application::getWindow() const
 {
     return m_app_window;
 }
 
-FrameTech::Application* FrameTech::Application::getInstance(const char* app_title)
+frametech::Application* frametech::Application::getInstance(const char* app_title)
 {
     if (m_instance == nullptr)
     {
         Log("> Instanciating a new Application singleton");
-        m_instance = new FrameTech::Application(app_title);
+        m_instance = new frametech::Application(app_title);
     }
     return m_instance;
 }
 
-void FrameTech::Application::clean()
+void frametech::Application::clean()
 {
     Log("< Cleaning the Application object");
     m_app_title = nullptr;
@@ -50,7 +50,7 @@ void FrameTech::Application::clean()
     glfwTerminate();
 }
 
-void FrameTech::Application::initWindow()
+void frametech::Application::initWindow()
 {
     Log("> Initializing the Application window");
     glfwInit();                                   // Initialize the GLFW library
@@ -60,20 +60,20 @@ void FrameTech::Application::initWindow()
     if (!m_monitor.foundPrimaryMonitor())
         m_monitor.scanForPrimaryMonitor();
     // The last parameter in glfwCreateWindow is only for OpenGL - no need to setup it here
-    m_app_window = glfwCreateWindow(FrameTech::DEFAULT_WINDOW_WIDTH,
-                                    FrameTech::DEFAULT_WINDOW_HEIGHT,
+    m_app_window = glfwCreateWindow(frametech::DEFAULT_WINDOW_WIDTH,
+                                    frametech::DEFAULT_WINDOW_HEIGHT,
                                     m_app_title,
                                     nullptr,
                                     nullptr);
 }
 
-void FrameTech::Application::initEngine()
+void frametech::Application::initEngine()
 {
-    m_engine = std::unique_ptr<FrameTech::Engine>(FrameTech::Engine::getInstance());
+    m_engine = std::unique_ptr<frametech::Engine>(frametech::Engine::getInstance());
     m_engine->initialize();
 }
 
-void FrameTech::Application::forceRendererFPSLimit(uint8_t new_limit)
+void frametech::Application::forceRendererFPSLimit(uint8_t new_limit)
 {
     if (m_FPS_limit == std::nullopt)
         Log("Setting FPS limit to %d", new_limit);
@@ -84,7 +84,7 @@ void FrameTech::Application::forceRendererFPSLimit(uint8_t new_limit)
     m_FPS_limit = new_limit > 0 ? std::optional<uint8_t>(new_limit) : std::nullopt;
 }
 
-void FrameTech::Application::drawFrame()
+void frametech::Application::drawFrame()
 {
     const double wait_ms = (m_FPS_limit == std::nullopt) ? 0.0 : (1000 / m_FPS_limit.value());
     if (wait_ms > 0.0)
@@ -109,27 +109,27 @@ void FrameTech::Application::drawFrame()
     ++m_current_frame;
 }
 
-void FrameTech::Application::run()
+void frametech::Application::run()
 {
     switch (m_engine->getState())
     {
-        case FrameTech::Engine::State::UNINITIALIZED:
+        case frametech::Engine::State::UNINITIALIZED:
         {
             LogE("< Running the application if the engine is uninitialized is forbidden!");
         }
-        case FrameTech::Engine::State::ERROR: // Used by UNINITIALIZED as well
+        case frametech::Engine::State::ERROR: // Used by UNINITIALIZED as well
         {
-            m_state = FrameTech::Application::State::SHOULD_BE_CLOSED;
+            m_state = frametech::Application::State::SHOULD_BE_CLOSED;
         }
         break;
-        case FrameTech::Engine::State::INITIALIZED:
+        case frametech::Engine::State::INITIALIZED:
         {
             Log("> Application loop...");
             m_FPS_limit.has_value() ? Log("> Application is running at %d FPS", m_FPS_limit.value()) : Log("> Application is running at unlimited frame");
-            m_state = FrameTech::Application::State::RUNNING;
+            m_state = frametech::Application::State::RUNNING;
             // TODO: Each second, added the FPS number in recorded_frames
             // TODO: Increase the index : recorded_frames_index = (recorded_frames_index + 1) % FPS_RECORDS;
-            while (!glfwWindowShouldClose(m_app_window) && m_state == FrameTech::Application::State::RUNNING)
+            while (!glfwWindowShouldClose(m_app_window) && m_state == frametech::Application::State::RUNNING)
             {
                 glfwPollEvents();
                 drawFrame();
@@ -139,10 +139,10 @@ void FrameTech::Application::run()
         }
         break;
     }
-    m_state = FrameTech::Application::State::CLOSING;
+    m_state = frametech::Application::State::CLOSING;
 }
 
-uint64_t FrameTech::Application::getCurrentFrame()
+uint64_t frametech::Application::getCurrentFrame()
 {
     return m_current_frame;
 }

@@ -12,9 +12,9 @@
 #include "../../ftstd/result.h"
 #include <vulkan/vulkan.h>
 
-namespace FrameTech
+namespace frametech
 {
-    namespace Graphics
+    namespace graphics
     {
         /// @brief Commands buffer
         class CommandBuffer
@@ -46,7 +46,7 @@ namespace FrameTech
             VkCommandPool m_pool;
             VkCommandBuffer m_buffer;
         };
-    } // namespace Graphics
-} // namespace FrameTech
+    } // namespace graphics
+} // namespace frametech
 
 #endif // commandbuffer_h

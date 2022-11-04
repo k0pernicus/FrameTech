@@ -64,14 +64,14 @@ static void listSupportedExtensions()
         Log("\t* %d -> %s", i, supported_extensions[i].extensionName);
 }
 
-FrameTech::Engine* FrameTech::Engine::m_instance{nullptr};
+frametech::Engine* frametech::Engine::m_instance{nullptr};
 
-FrameTech::Engine::Engine()
+frametech::Engine::Engine()
 {
     m_state = UNINITIALIZED;
 }
 
-FrameTech::Engine::~Engine()
+frametech::Engine::~Engine()
 {
     Log("< Closing the Engine object...");
     m_swapchain = nullptr;
@@ -82,7 +82,7 @@ FrameTech::Engine::~Engine()
     m_instance = nullptr;
 }
 
-void FrameTech::Engine::initialize()
+void frametech::Engine::initialize()
 {
     if (m_state == INITIALIZED)
         return;
@@ -136,27 +136,27 @@ void FrameTech::Engine::initialize()
     m_state = INITIALIZED;
 }
 
-FrameTech::Engine* FrameTech::Engine::getInstance()
+frametech::Engine* frametech::Engine::getInstance()
 {
     if (m_instance == nullptr)
     {
         Log("> Instanciating a new Engine singleton");
-        m_instance = new FrameTech::Engine();
+        m_instance = new frametech::Engine();
     }
     return m_instance;
 }
 
-FrameTech::Engine::State FrameTech::Engine::getState()
+frametech::Engine::State frametech::Engine::getState()
 {
     return m_state;
 }
 
-VResult FrameTech::Engine::pickPhysicalDevice()
+VResult frametech::Engine::pickPhysicalDevice()
 {
     return m_graphics_device.listDevices();
 }
 
-VResult FrameTech::Engine::createGraphicsInstance()
+VResult frametech::Engine::createGraphicsInstance()
 {
     listSupportedExtensions();
     // Get the supported extensions
@@ -226,20 +226,20 @@ VResult FrameTech::Engine::createGraphicsInstance()
     return VResult::Ok();
 }
 
-VResult FrameTech::Engine::createRenderDevice()
+VResult frametech::Engine::createRenderDevice()
 {
     Log("> Creating the render device...");
     if (m_render == nullptr)
-        m_render = std::unique_ptr<FrameTech::Graphics::Render>(FrameTech::Graphics::Render::getInstance());
+        m_render = std::unique_ptr<frametech::graphics::Render>(frametech::graphics::Render::getInstance());
     VResult result = m_render->createSurface();
     return result;
 }
 
-VResult FrameTech::Engine::createSwapChain()
+VResult frametech::Engine::createSwapChain()
 {
     Log("> Creating the swapchain...");
     if (m_swapchain == nullptr)
-        m_swapchain = std::unique_ptr<FrameTech::Graphics::SwapChain>(FrameTech::Graphics::SwapChain::getInstance());
+        m_swapchain = std::unique_ptr<frametech::graphics::SwapChain>(frametech::graphics::SwapChain::getInstance());
     m_swapchain->queryDetails();
     return m_swapchain->create();
 }

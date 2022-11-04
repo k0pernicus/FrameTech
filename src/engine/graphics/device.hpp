@@ -13,9 +13,9 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-namespace FrameTech
+namespace frametech
 {
-    namespace Graphics
+    namespace graphics
     {
         /// @brief Stores the state of a Graphics queue
         enum QueueState
@@ -96,7 +96,7 @@ namespace FrameTech
             /// the graphics queue
             VkQueue m_presents_queue = VK_NULL_HANDLE;
         };
-    } // namespace Graphics
-} // namespace FrameTech
+    } // namespace graphics
+} // namespace frametech
 
 #endif // device_h

@@ -102,7 +102,7 @@ static void listAvailableExtensions(const VkPhysicalDevice& physical_device)
     }
 }
 
-void FrameTech::Graphics::Device::Destroy()
+void frametech::graphics::Device::Destroy()
 {
     if (m_logical_device)
     {
@@ -111,7 +111,7 @@ void FrameTech::Graphics::Device::Destroy()
     }
 }
 
-FrameTech::Graphics::Device::~Device()
+frametech::graphics::Device::~Device()
 {
     Destroy();
     m_queue_support.clear();
@@ -121,24 +121,24 @@ FrameTech::Graphics::Device::~Device()
     Log("< Destroying the physical, and logical, devices...");
 }
 
-uint32_t FrameTech::Graphics::Device::getNumberDevices() const
+uint32_t frametech::graphics::Device::getNumberDevices() const
 {
     uint32_t device_count{};
-    vkEnumeratePhysicalDevices(FrameTech::Engine::getInstance()->m_graphics_instance, &device_count, nullptr);
+    vkEnumeratePhysicalDevices(frametech::Engine::getInstance()->m_graphics_instance, &device_count, nullptr);
     return device_count;
 }
 
-VResult FrameTech::Graphics::Device::listDevices()
+VResult frametech::graphics::Device::listDevices()
 {
     uint32_t device_count{};
-    vkEnumeratePhysicalDevices(FrameTech::Engine::getInstance()->m_graphics_instance, &device_count, nullptr);
+    vkEnumeratePhysicalDevices(frametech::Engine::getInstance()->m_graphics_instance, &device_count, nullptr);
     if (device_count == 0)
     {
 
         return VResult::Error((char*)"no supported physical device");
     }
     std::vector<VkPhysicalDevice> devices(device_count);
-    vkEnumeratePhysicalDevices(FrameTech::Engine::getInstance()->m_graphics_instance, &device_count, devices.data());
+    vkEnumeratePhysicalDevices(frametech::Engine::getInstance()->m_graphics_instance, &device_count, devices.data());
     for (const auto& device : devices)
     {
         if (isDeviceSuitable(device))
@@ -153,12 +153,12 @@ VResult FrameTech::Graphics::Device::listDevices()
     return VResult::Error((char*)"no suitable physical device");
 }
 
-bool FrameTech::Graphics::Device::isInitialized() const
+bool frametech::graphics::Device::isInitialized() const
 {
     return m_physical_device != VK_NULL_HANDLE;
 }
 
-Result<uint32_t> FrameTech::Graphics::Device::getQueueFamilies()
+Result<uint32_t> frametech::graphics::Device::getQueueFamilies()
 {
     assert(isInitialized());
     if (!isInitialized())
@@ -193,7 +193,7 @@ Result<uint32_t> FrameTech::Graphics::Device::getQueueFamilies()
         vkGetPhysicalDeviceSurfaceSupportKHR(
             m_physical_device,
             i,
-            *FrameTech::Graphics::Render::getInstance()->getSurface(),
+            *frametech::graphics::Render::getInstance()->getSurface(),
             &present_supported);
         Log("\t\t* present feature supported? %s", present_supported ? "true!" : "false...");
         m_queue_support[i] |= present_supported ? SupportFeatures::PRESENTS : SupportFeatures::NOONE;
@@ -219,7 +219,7 @@ Result<uint32_t> FrameTech::Graphics::Device::getQueueFamilies()
     return Result<uint32_t>::Ok(total_queue_families);
 }
 
-VResult FrameTech::Graphics::Device::createLogicalDevice()
+VResult frametech::graphics::Device::createLogicalDevice()
 {
     assert(m_physical_device);
     if (m_physical_device == VK_NULL_HANDLE)
@@ -342,22 +342,22 @@ VResult FrameTech::Graphics::Device::createLogicalDevice()
     return VResult::Ok();
 }
 
-VkDevice FrameTech::Graphics::Device::getLogicalDevice() const
+VkDevice frametech::graphics::Device::getLogicalDevice() const
 {
     return m_logical_device;
 }
 
-VkPhysicalDevice FrameTech::Graphics::Device::getPhysicalDevice() const
+VkPhysicalDevice frametech::graphics::Device::getPhysicalDevice() const
 {
     return m_physical_device;
 }
 
-VkQueue& FrameTech::Graphics::Device::getGraphicsQueue()
+VkQueue& frametech::graphics::Device::getGraphicsQueue()
 {
     return m_graphics_queue;
 }
 
-VkQueue& FrameTech::Graphics::Device::getPresentsQueue()
+VkQueue& frametech::graphics::Device::getPresentsQueue()
 {
     return m_presents_queue;
 }

@@ -9,20 +9,20 @@
 #include "../../ftstd/debug_tools.h"
 #include <GLFW/glfw3.h>
 
-FrameTech::Graphics::Monitor::Monitor() {}
+frametech::graphics::Monitor::Monitor() {}
 
-FrameTech::Graphics::Monitor::~Monitor()
+frametech::graphics::Monitor::~Monitor()
 {
 }
 
-std::pair<GLFWmonitor**, int> FrameTech::Graphics::Monitor::scanForMonitors()
+std::pair<GLFWmonitor**, int> frametech::graphics::Monitor::scanForMonitors()
 {
     int nb_monitors{};
     GLFWmonitor** monitors = glfwGetMonitors(&nb_monitors);
     return std::pair<GLFWmonitor**, int>({monitors, nb_monitors});
 }
 
-VResult FrameTech::Graphics::Monitor::scanForPrimaryMonitor()
+VResult frametech::graphics::Monitor::scanForPrimaryMonitor()
 {
     GLFWmonitor* primary = glfwGetPrimaryMonitor();
     if (primary == nullptr)
@@ -35,29 +35,29 @@ VResult FrameTech::Graphics::Monitor::scanForPrimaryMonitor()
     return VResult::Ok();
 }
 
-VResult FrameTech::Graphics::Monitor::choosePrimaryMonitor(uint32_t index)
+VResult frametech::graphics::Monitor::choosePrimaryMonitor(uint32_t index)
 {
     // TODO with callbacks
     WARN_RT_UNIMPLEMENTED;
     return VResult::Ok();
 }
 
-FrameTech::Graphics::MonitorProperties& FrameTech::Graphics::Monitor::getCurrentProperties()
+frametech::graphics::MonitorProperties& frametech::graphics::Monitor::getCurrentProperties()
 {
     return m_primary_monitor_properties;
 }
 
-bool FrameTech::Graphics::Monitor::foundPrimaryMonitor() const
+bool frametech::graphics::Monitor::foundPrimaryMonitor() const
 {
     return m_primary_monitor != nullptr;
 }
 
-VResult FrameTech::Graphics::Monitor::queryProperties()
+VResult frametech::graphics::Monitor::queryProperties()
 {
     if (m_primary_monitor == nullptr)
         return VResult::Error((char*)"No primary monitor to query");
     int nb_video_modes{};
-    m_primary_monitor_properties = FrameTech::Graphics::MonitorProperties{};
+    m_primary_monitor_properties = frametech::graphics::MonitorProperties{};
     m_primary_monitor_properties.m_available_video_modes = glfwGetVideoModes(m_primary_monitor, &nb_video_modes);
     m_primary_monitor_properties.m_current_video_mode = glfwGetVideoMode(m_primary_monitor);
     glfwGetMonitorPhysicalSize(
@@ -66,6 +66,6 @@ VResult FrameTech::Graphics::Monitor::queryProperties()
         &m_primary_monitor_properties.m_height);
     const auto monitor_name = glfwGetMonitorName(m_primary_monitor);
     if (nullptr != monitor_name)
-        strncpy(m_primary_monitor_properties.m_name, monitor_name, FrameTech::Graphics::MONITOR_NAME_LEN);
+        strncpy(m_primary_monitor_properties.m_name, monitor_name, frametech::graphics::MONITOR_NAME_LEN);
     return VResult::Ok();
 }

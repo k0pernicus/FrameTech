@@ -13,13 +13,13 @@
 #include <fstream>
 #include <vector>
 
-FrameTech::Graphics::Pipeline::Pipeline()
+frametech::graphics::Pipeline::Pipeline()
 {
 }
 
-FrameTech::Graphics::Pipeline::~Pipeline()
+frametech::graphics::Pipeline::~Pipeline()
 {
-    const auto graphics_device = FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+    const auto graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
     if (m_shader_modules.size() > 0)
     {
         Log("< Destroying the shader modules...");
@@ -67,7 +67,7 @@ FrameTech::Graphics::Pipeline::~Pipeline()
     }
 }
 
-std::optional<uint64_t> FrameTech::Graphics::Pipeline::fileSize(const char* filepath)
+std::optional<uint64_t> frametech::graphics::Pipeline::fileSize(const char* filepath)
 {
     try
     {
@@ -81,7 +81,7 @@ std::optional<uint64_t> FrameTech::Graphics::Pipeline::fileSize(const char* file
     }
 }
 
-std::optional<uint64_t> FrameTech::Graphics::Pipeline::readFile(const char* filepath,
+std::optional<uint64_t> frametech::graphics::Pipeline::readFile(const char* filepath,
                                                                 char** buffer,
                                                                 uint64_t buffer_length)
 {
@@ -109,7 +109,7 @@ std::optional<uint64_t> FrameTech::Graphics::Pipeline::readFile(const char* file
     return std::nullopt;
 }
 
-Result<std::vector<FrameTech::Graphics::Shader::Module>> FrameTech::Graphics::Pipeline::createGraphicsApplication(const char* vertex_shader_filepath,
+Result<std::vector<frametech::graphics::Shader::Module>> frametech::graphics::Pipeline::createGraphicsApplication(const char* vertex_shader_filepath,
                                                                                                                   const char* fragment_shader_filepath)
 {
     // Get the length
@@ -121,7 +121,7 @@ Result<std::vector<FrameTech::Graphics::Shader::Module>> FrameTech::Graphics::Pi
     if (vs_file_size_opt == std::nullopt || fs_file_size_opt == std::nullopt)
     {
         LogE("< Cannot create the program");
-        return Result<std::vector<FrameTech::Graphics::Shader::Module>>::Error((char*)"vertex or fragment shader is NULL");
+        return Result<std::vector<frametech::graphics::Shader::Module>>::Error((char*)"vertex or fragment shader is NULL");
     }
     // Get the content of the VS
     const auto vs_file_size = vs_file_size_opt.value();
@@ -133,28 +133,28 @@ Result<std::vector<FrameTech::Graphics::Shader::Module>> FrameTech::Graphics::Pi
     auto fs_buffer = new char[fs_file_size];
     readFile(fragment_shader_filepath, &fs_buffer, fs_file_size);
     Log("> For FS file '%s', read file ok (%d bytes)", fragment_shader_filepath, fs_file_size);
-    std::vector<FrameTech::Graphics::Shader::Module> shader_modules(
-        {FrameTech::Graphics::Shader::Module{
+    std::vector<frametech::graphics::Shader::Module> shader_modules(
+        {frametech::graphics::Shader::Module{
              .m_tag = (char*)fragment_shader_filepath,
              .m_code = fs_buffer,
              .m_size = fs_file_size,
-             .m_type = FrameTech::Graphics::Shader::FRAGMENT_SHADER,
+             .m_type = frametech::graphics::Shader::FRAGMENT_SHADER,
          },
-         FrameTech::Graphics::Shader::Module{
+         frametech::graphics::Shader::Module{
              .m_tag = (char*)vertex_shader_filepath,
              .m_code = vs_buffer,
              .m_size = vs_file_size,
-             .m_type = FrameTech::Graphics::Shader::VERTEX_SHADER,
+             .m_type = frametech::graphics::Shader::VERTEX_SHADER,
          }});
-    return Result<std::vector<FrameTech::Graphics::Shader::Module>>::Ok(shader_modules);
+    return Result<std::vector<frametech::graphics::Shader::Module>>::Ok(shader_modules);
 }
 
-void FrameTech::Graphics::Pipeline::setShaderModules(const std::vector<VkShaderModule> shader_modules)
+void frametech::graphics::Pipeline::setShaderModules(const std::vector<VkShaderModule> shader_modules)
 {
     m_shader_modules = shader_modules;
 }
 
-void FrameTech::Graphics::Pipeline::setShaderStages(const std::vector<VkPipelineShaderStageCreateInfo> stages)
+void frametech::graphics::Pipeline::setShaderStages(const std::vector<VkPipelineShaderStageCreateInfo> stages)
 {
     m_shader_stages = stages;
 }
@@ -179,12 +179,12 @@ static VkRect2D createScissor(const VkExtent2D& swapchain_extent)
     return scissor;
 }
 
-VkRenderPass& FrameTech::Graphics::Pipeline::getRenderPass()
+VkRenderPass& frametech::graphics::Pipeline::getRenderPass()
 {
     return m_render_pass;
 }
 
-VResult FrameTech::Graphics::Pipeline::setupRenderPass()
+VResult frametech::graphics::Pipeline::setupRenderPass()
 {
     Log("> Setting up the render pass object of the graphics pipeline");
 
@@ -192,7 +192,7 @@ VResult FrameTech::Graphics::Pipeline::setupRenderPass()
     // Setup the color attachment format & samples
     VkAttachmentDescription attachments[NB_ATTACHMENTS] = {
         VkAttachmentDescription{
-            .format = FrameTech::Engine::getInstance()->m_swapchain->getImageFormat().format,
+            .format = frametech::Engine::getInstance()->m_swapchain->getImageFormat().format,
             .samples = VK_SAMPLE_COUNT_1_BIT,        // No multi-sampling: 1 sample
             .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,   // Before rendering: clear the framebuffer to black before drawing
             .storeOp = VK_ATTACHMENT_STORE_OP_STORE, // After rendering: store in memory to read it again later
@@ -238,7 +238,7 @@ VResult FrameTech::Graphics::Pipeline::setupRenderPass()
     };
 
     const auto create_result_code = vkCreateRenderPass(
-        FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+        frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
         &render_pass_info,
         nullptr,
         &m_render_pass);
@@ -250,7 +250,7 @@ VResult FrameTech::Graphics::Pipeline::setupRenderPass()
     return VResult::Ok();
 }
 
-VResult FrameTech::Graphics::Pipeline::preconfigure()
+VResult frametech::graphics::Pipeline::preconfigure()
 {
     Log("> Preconfiguring the graphics pipeline");
 
@@ -258,7 +258,7 @@ VResult FrameTech::Graphics::Pipeline::preconfigure()
     pipeline_layout_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 
     const auto create_result_code = vkCreatePipelineLayout(
-        FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+        frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
         &pipeline_layout_create_info,
         nullptr,
         &m_layout);
@@ -271,7 +271,7 @@ VResult FrameTech::Graphics::Pipeline::preconfigure()
     return createSyncObjects();
 }
 
-VResult FrameTech::Graphics::Pipeline::create()
+VResult frametech::graphics::Pipeline::create()
 {
     Log("> Creating the graphics pipeline");
     if (m_shader_stages.size() == 0)
@@ -298,7 +298,7 @@ VResult FrameTech::Graphics::Pipeline::create()
 
     // TODO: change for dynamic state, in order to pass the viewport & scissor
     // through the command buffer
-    const VkExtent2D& swapchain_extent = FrameTech::Engine::getInstance()->m_swapchain->getExtent();
+    const VkExtent2D& swapchain_extent = frametech::Engine::getInstance()->m_swapchain->getExtent();
     const VkViewport viewport = createViewport(swapchain_extent.height, swapchain_extent.width);
     const VkRect2D scissor = createScissor(swapchain_extent);
     VkPipelineViewportStateCreateInfo viewport_state_create_info{
@@ -394,7 +394,7 @@ VResult FrameTech::Graphics::Pipeline::create()
     };
 
     const auto create_result_code = vkCreateGraphicsPipelines(
-        FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+        frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
         VK_NULL_HANDLE,
         1,
         &pipeline_info,
@@ -408,15 +408,15 @@ VResult FrameTech::Graphics::Pipeline::create()
     return VResult::Ok();
 }
 
-VkPipeline FrameTech::Graphics::Pipeline::getPipeline()
+VkPipeline frametech::graphics::Pipeline::getPipeline()
 {
     return m_pipeline;
 }
 
-VResult FrameTech::Graphics::Pipeline::createSyncObjects()
+VResult frametech::graphics::Pipeline::createSyncObjects()
 {
     Log("> Creating the sync objects");
-    auto graphics_device = FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+    auto graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
     if (nullptr == m_sync_image_ready)
     {
         m_sync_image_ready = new VkSemaphore();
@@ -445,57 +445,57 @@ VResult FrameTech::Graphics::Pipeline::createSyncObjects()
     return VResult::Ok();
 }
 
-void FrameTech::Graphics::Pipeline::present()
+void frametech::graphics::Pipeline::present()
 {
     VkSemaphore signal[] = {*m_sync_present_done};
     VkSwapchainKHR swapchains[] = {
-        FrameTech::Engine::getInstance()->m_swapchain->getSwapchainDevice()};
+        frametech::Engine::getInstance()->m_swapchain->getSwapchainDevice()};
     VkPresentInfoKHR present_info{
         .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
         .waitSemaphoreCount = 1,
         .pWaitSemaphores = signal,
         .swapchainCount = 1,
         .pSwapchains = swapchains,
-        .pImageIndices = &FrameTech::Engine::getInstance()->m_render->getFrameIndex(),
+        .pImageIndices = &frametech::Engine::getInstance()->m_render->getFrameIndex(),
     };
     vkQueuePresentKHR(
-        FrameTech::Engine::getInstance()->m_graphics_device.getPresentsQueue(),
+        frametech::Engine::getInstance()->m_graphics_device.getPresentsQueue(),
         &present_info);
 }
 
-Result<int> FrameTech::Graphics::Pipeline::draw()
+Result<int> frametech::graphics::Pipeline::draw()
 {
     // Wait that all fences are sync...
     vkWaitForFences(
-        FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+        frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
         1,
         m_sync_cpu_gpu,
         VK_TRUE,
         UINT64_MAX);
     // ... and reset them
     vkResetFences(
-        FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+        frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
         1,
         m_sync_cpu_gpu);
 
     // Acquire the new frame
     vkAcquireNextImageKHR(
-        FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
-        FrameTech::Engine::getInstance()->m_swapchain->getSwapchainDevice(),
+        frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+        frametech::Engine::getInstance()->m_swapchain->getSwapchainDevice(),
         UINT64_MAX,
         *m_sync_image_ready,
         VK_NULL_HANDLE,
-        &FrameTech::Engine::getInstance()->m_render->getFrameIndex());
+        &frametech::Engine::getInstance()->m_render->getFrameIndex());
 
     // Reset the command buffer
-    auto command_buffer = FrameTech::Engine::getInstance()->m_render->getCommandBuffer();
+    auto command_buffer = frametech::Engine::getInstance()->m_render->getCommandBuffer();
     if (command_buffer == nullptr)
         return Result<int>::Error((char*)"Cannot get the command buffer in the draw call");
     vkResetCommandBuffer(
         *(command_buffer.get()->getBuffer()),
         0);
     // Record the current command
-    FrameTech::Engine::getInstance()->m_render->getCommandBuffer()->record();
+    frametech::Engine::getInstance()->m_render->getCommandBuffer()->record();
     // Submit
     VkSemaphore wait_semaphores[] = {*m_sync_image_ready};
     VkSemaphore signal_semaphores[] = {*m_sync_present_done};
@@ -512,7 +512,7 @@ Result<int> FrameTech::Graphics::Pipeline::draw()
     };
 
     if (const auto submit_result_code = vkQueueSubmit(
-            FrameTech::Engine::getInstance()->m_graphics_device.getGraphicsQueue(),
+            frametech::Engine::getInstance()->m_graphics_device.getGraphicsQueue(),
             1,
             &submit_info,
             *m_sync_cpu_gpu);

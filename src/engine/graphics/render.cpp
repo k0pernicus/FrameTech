@@ -16,15 +16,15 @@
 // #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-FrameTech::Graphics::Render* FrameTech::Graphics::Render::m_instance{nullptr};
+frametech::graphics::Render* frametech::graphics::Render::m_instance{nullptr};
 
-FrameTech::Graphics::Render::Render()
+frametech::graphics::Render::Render()
 {
-    m_graphics_pipeline = std::shared_ptr<FrameTech::Graphics::Pipeline>(new FrameTech::Graphics::Pipeline());
-    m_command_buffer = std::shared_ptr<FrameTech::Graphics::CommandBuffer>(new FrameTech::Graphics::CommandBuffer());
+    m_graphics_pipeline = std::shared_ptr<frametech::graphics::Pipeline>(new frametech::graphics::Pipeline());
+    m_command_buffer = std::shared_ptr<frametech::graphics::CommandBuffer>(new frametech::graphics::CommandBuffer());
 }
 
-FrameTech::Graphics::Render::~Render()
+frametech::graphics::Render::~Render()
 {
     if (m_graphics_pipeline != nullptr)
     {
@@ -34,21 +34,21 @@ FrameTech::Graphics::Render::~Render()
     if (m_surface != VK_NULL_HANDLE)
     {
         Log("< Destroying the window surface...");
-        vkDestroySurfaceKHR(FrameTech::Engine::getInstance()->m_graphics_instance, m_surface, nullptr);
+        vkDestroySurfaceKHR(frametech::Engine::getInstance()->m_graphics_instance, m_surface, nullptr);
         m_surface = VK_NULL_HANDLE;
     }
     if (m_image_views.size() > 0)
     {
         Log("< Destroying the image views...");
         for (auto image_view : m_image_views)
-            vkDestroyImageView(FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), image_view, nullptr);
+            vkDestroyImageView(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), image_view, nullptr);
         m_image_views.clear();
     }
     if (m_framebuffers.size() > 0)
     {
         Log("< Destroying the framebuffers...");
         for (auto framebuffer : m_framebuffers)
-            vkDestroyFramebuffer(FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), framebuffer, nullptr);
+            vkDestroyFramebuffer(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), framebuffer, nullptr);
         m_framebuffers.clear();
     }
     if (nullptr != m_command_buffer)
@@ -59,7 +59,7 @@ FrameTech::Graphics::Render::~Render()
     m_instance = nullptr;
 }
 
-FrameTech::Graphics::Render* FrameTech::Graphics::Render::getInstance()
+frametech::graphics::Render* frametech::graphics::Render::getInstance()
 {
     if (m_instance == nullptr)
     {
@@ -68,16 +68,16 @@ FrameTech::Graphics::Render* FrameTech::Graphics::Render::getInstance()
     return m_instance;
 }
 
-std::vector<VkFramebuffer> FrameTech::Graphics::Render::getFramebuffers()
+std::vector<VkFramebuffer> frametech::graphics::Render::getFramebuffers()
 {
     return m_framebuffers;
 }
 
-VResult FrameTech::Graphics::Render::createSurface()
+VResult frametech::graphics::Render::createSurface()
 {
     const auto window_surface_result = glfwCreateWindowSurface(
-        FrameTech::Engine::getInstance()->m_graphics_instance,
-        FrameTech::Application::getInstance(Project::APPLICATION_NAME)->getWindow(),
+        frametech::Engine::getInstance()->m_graphics_instance,
+        frametech::Application::getInstance(Project::APPLICATION_NAME)->getWindow(),
         nullptr,
         &m_surface);
     if (window_surface_result == VK_SUCCESS)
@@ -87,12 +87,12 @@ VResult FrameTech::Graphics::Render::createSurface()
     return VResult::Error((char*)"failed to create a window surface");
 }
 
-VkSurfaceKHR* FrameTech::Graphics::Render::getSurface()
+VkSurfaceKHR* frametech::graphics::Render::getSurface()
 {
     return &m_surface;
 }
 
-VResult FrameTech::Graphics::Render::createFramebuffers()
+VResult frametech::graphics::Render::createFramebuffers()
 {
     Log("> There are %d framebuffers to create: ", m_image_views.size());
     m_framebuffers.resize(m_image_views.size());
@@ -107,12 +107,12 @@ VResult FrameTech::Graphics::Render::createFramebuffers()
         framebuffer_info.renderPass = m_graphics_pipeline->getRenderPass();
         framebuffer_info.attachmentCount = 1;
         framebuffer_info.pAttachments = pAttachments;
-        framebuffer_info.height = FrameTech::Engine::getInstance()->m_swapchain->getExtent().height;
-        framebuffer_info.width = FrameTech::Engine::getInstance()->m_swapchain->getExtent().width;
+        framebuffer_info.height = frametech::Engine::getInstance()->m_swapchain->getExtent().height;
+        framebuffer_info.width = frametech::Engine::getInstance()->m_swapchain->getExtent().width;
         framebuffer_info.layers = 1;
 
         auto create_framebuffer_result_code = vkCreateFramebuffer(
-            FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+            frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
             &framebuffer_info,
             nullptr,
             &(m_framebuffers[i]));
@@ -128,9 +128,9 @@ VResult FrameTech::Graphics::Render::createFramebuffers()
     return VResult::Ok();
 }
 
-VResult FrameTech::Graphics::Render::createImageViews()
+VResult frametech::graphics::Render::createImageViews()
 {
-    const auto swapchain_images = FrameTech::Engine::getInstance()->m_swapchain->getImages();
+    const auto swapchain_images = frametech::Engine::getInstance()->m_swapchain->getImages();
     const size_t nb_swapchain_images = swapchain_images.size();
     m_image_views.resize(nb_swapchain_images);
     Log("> %d image views to create (for the render object)", nb_swapchain_images);
@@ -143,7 +143,7 @@ VResult FrameTech::Graphics::Render::createImageViews()
             .image = swapchain_images[i],
             // How the image data should be interpreted
             .viewType = VK_IMAGE_VIEW_TYPE_2D, // could be 1D / 2D / 3D texture, or cube maps
-            .format = FrameTech::Engine::getInstance()->m_swapchain->getImageFormat().format,
+            .format = frametech::Engine::getInstance()->m_swapchain->getImageFormat().format,
             // Default mapping
             .components.r = VK_COMPONENT_SWIZZLE_IDENTITY,
             .components.g = VK_COMPONENT_SWIZZLE_IDENTITY,
@@ -155,7 +155,7 @@ VResult FrameTech::Graphics::Render::createImageViews()
             .subresourceRange.baseArrayLayer = 0,
             .subresourceRange.layerCount = 1,
         };
-        const auto image_view_result = vkCreateImageView(FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+        const auto image_view_result = vkCreateImageView(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
                                                          &image_view_create_info,
                                                          nullptr,
                                                          &m_image_views[i]);
@@ -185,15 +185,15 @@ VResult FrameTech::Graphics::Render::createImageViews()
     return VResult::Ok();
 }
 
-VResult FrameTech::Graphics::Render::createShaderModule()
+VResult frametech::graphics::Render::createShaderModule()
 {
     // TODO: vector of ShaderModule type
-    const Result<std::vector<FrameTech::Graphics::Shader::Module>> shaders_compile_result = m_graphics_pipeline->createGraphicsApplication(
+    const Result<std::vector<frametech::graphics::Shader::Module>> shaders_compile_result = m_graphics_pipeline->createGraphicsApplication(
         "shaders/basic_triangle.vert.spv",
         "shaders/basic_triangle.frag.spv");
     if (shaders_compile_result.IsError())
         return VResult::Error((char*)"cannot compile the application shaders");
-    const std::vector<FrameTech::Graphics::Shader::Module> shaders_compiled = shaders_compile_result.GetValue();
+    const std::vector<frametech::graphics::Shader::Module> shaders_compiled = shaders_compile_result.GetValue();
     if (shaders_compiled.size() == 0)
     {
         LogW("No compiled shaders - check if alright");
@@ -213,7 +213,7 @@ VResult FrameTech::Graphics::Render::createShaderModule()
         // Create the shader module in order to create the stage right after
         VkShaderModule shader_module;
         const auto shader_module_creation_result = vkCreateShaderModule(
-            FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+            frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
             &shader_module_create_info,
             nullptr,
             &shader_module);
@@ -281,18 +281,18 @@ VResult FrameTech::Graphics::Render::createShaderModule()
     return VResult::Ok();
 }
 
-uint32_t& FrameTech::Graphics::Render::getFrameIndex()
+uint32_t& frametech::graphics::Render::getFrameIndex()
 {
     return m_frame_index;
 }
 
-void FrameTech::Graphics::Render::updateFrameIndex(uint64_t current_frame)
+void frametech::graphics::Render::updateFrameIndex(uint64_t current_frame)
 {
     // Log("> Current frame index: %d...", m_frame_index);
     m_frame_index = current_frame % (m_framebuffers.size());
 }
 
-VResult FrameTech::Graphics::Render::createGraphicsPipeline()
+VResult frametech::graphics::Render::createGraphicsPipeline()
 {
     if (const auto result = createShaderModule(); result.IsError())
     {
@@ -327,12 +327,12 @@ VResult FrameTech::Graphics::Render::createGraphicsPipeline()
     return VResult::Ok();
 }
 
-std::shared_ptr<FrameTech::Graphics::Pipeline> FrameTech::Graphics::Render::getGraphicsPipeline() const
+std::shared_ptr<frametech::graphics::Pipeline> frametech::graphics::Render::getGraphicsPipeline() const
 {
     return m_graphics_pipeline;
 }
 
-std::shared_ptr<FrameTech::Graphics::CommandBuffer> FrameTech::Graphics::Render::getCommandBuffer() const
+std::shared_ptr<frametech::graphics::CommandBuffer> frametech::graphics::Render::getCommandBuffer() const
 {
     return m_command_buffer;
 }

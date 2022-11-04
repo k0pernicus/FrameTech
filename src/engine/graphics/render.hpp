@@ -15,9 +15,9 @@
 #include "vulkan/vulkan.h"
 #include <vector>
 
-namespace FrameTech
+namespace frametech
 {
-    namespace Graphics
+    namespace graphics
     {
         /// @brief Contains a basic Renderer
         class Render
@@ -56,9 +56,9 @@ namespace FrameTech
             /// Should not be called more than once per frame present
             void updateFrameIndex(uint64_t current_frame);
             /// @brief Returns the associated CommandBuffer object if it exists
-            std::shared_ptr<FrameTech::Graphics::CommandBuffer> getCommandBuffer() const;
+            std::shared_ptr<frametech::graphics::CommandBuffer> getCommandBuffer() const;
             /// @brief Returns the associated Graphics pipeline object if it exists
-            std::shared_ptr<FrameTech::Graphics::Pipeline> getGraphicsPipeline() const;
+            std::shared_ptr<frametech::graphics::Pipeline> getGraphicsPipeline() const;
 
         private:
             /// @brief Constructor
@@ -78,9 +78,9 @@ namespace FrameTech
             /// @brief Reference all of the VkImageView objects
             std::vector<VkFramebuffer> m_framebuffers;
             /// @brief The graphics pipeline, associated to a Renderer
-            std::shared_ptr<FrameTech::Graphics::Pipeline> m_graphics_pipeline = nullptr;
+            std::shared_ptr<frametech::graphics::Pipeline> m_graphics_pipeline = nullptr;
             /// @brief Renders command pool
-            std::shared_ptr<FrameTech::Graphics::CommandBuffer> m_command_buffer = nullptr;
+            std::shared_ptr<frametech::graphics::CommandBuffer> m_command_buffer = nullptr;
             /// @brief Creates the shader module:
             /// 1. Read the SPIR-V shaders,
             /// 2. Create the shader modules,
@@ -91,7 +91,7 @@ namespace FrameTech
             /// @brief The current frame index, or swap chain index
             uint32_t m_frame_index = 0;
         };
-    } // namespace Graphics
-} // namespace FrameTech
+    } // namespace graphics
+} // namespace frametech
 
 #endif // render_h

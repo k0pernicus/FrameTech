@@ -14,9 +14,9 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-namespace FrameTech
+namespace frametech
 {
-    namespace Graphics
+    namespace graphics
     {
 
         /// @brief The maximum number of buffers / images
@@ -97,7 +97,7 @@ namespace FrameTech
             /// @brief The present mode used to handle images
             VkPresentModeKHR m_present_mode;
         };
-    } // namespace Graphics
-} // namespace FrameTech
+    } // namespace graphics
+} // namespace frametech
 
 #endif // swapchain_h

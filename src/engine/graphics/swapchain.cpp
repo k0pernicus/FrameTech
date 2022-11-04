@@ -66,7 +66,7 @@ static Result<VkPresentModeKHR> choosePresentMode(const std::vector<VkPresentMod
 static Result<VkExtent2D> chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
 {
     int window_height, window_width;
-    glfwGetFramebufferSize(FrameTech::Application::getInstance(Project::APPLICATION_NAME)->getWindow(), &window_width, &window_height);
+    glfwGetFramebufferSize(frametech::Application::getInstance(Project::APPLICATION_NAME)->getWindow(), &window_width, &window_height);
     VkExtent2D final_extent = {
         static_cast<uint32_t>(window_width),
         static_cast<uint32_t>(window_height),
@@ -76,27 +76,27 @@ static Result<VkExtent2D> chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capab
     return Result<VkExtent2D>::Ok(final_extent);
 }
 
-FrameTech::Graphics::SwapChain* FrameTech::Graphics::SwapChain::m_instance{nullptr};
+frametech::graphics::SwapChain* frametech::graphics::SwapChain::m_instance{nullptr};
 
-FrameTech::Graphics::SwapChain* FrameTech::Graphics::SwapChain::getInstance()
+frametech::graphics::SwapChain* frametech::graphics::SwapChain::getInstance()
 {
     if (m_instance == nullptr)
     {
-        m_instance = new FrameTech::Graphics::SwapChain();
+        m_instance = new frametech::graphics::SwapChain();
     }
     return m_instance;
 }
 
-FrameTech::Graphics::SwapChain::SwapChain()
+frametech::graphics::SwapChain::SwapChain()
 {
 }
 
-FrameTech::Graphics::SwapChain::~SwapChain()
+frametech::graphics::SwapChain::~SwapChain()
 {
     Log("< Destroying the swapchain...");
     if (m_swapchain != VK_NULL_HANDLE)
     {
-        vkDestroySwapchainKHR(FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+        vkDestroySwapchainKHR(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
                               m_swapchain,
                               nullptr);
         m_swapchain = VK_NULL_HANDLE;
@@ -105,11 +105,11 @@ FrameTech::Graphics::SwapChain::~SwapChain()
         m_instance = nullptr;
 }
 
-void FrameTech::Graphics::SwapChain::queryDetails()
+void frametech::graphics::SwapChain::queryDetails()
 {
-    FrameTech::Graphics::SwapChainSupportDetails support_details{};
-    const auto physical_device = FrameTech::Engine::getInstance()->m_graphics_device.getPhysicalDevice();
-    const auto surface = FrameTech::Engine::getInstance()->m_render->getSurface();
+    frametech::graphics::SwapChainSupportDetails support_details{};
+    const auto physical_device = frametech::Engine::getInstance()->m_graphics_device.getPhysicalDevice();
+    const auto surface = frametech::Engine::getInstance()->m_render->getSurface();
 
     assert(surface);
     if (surface == nullptr)
@@ -139,7 +139,7 @@ void FrameTech::Graphics::SwapChain::queryDetails()
     m_details = support_details;
 }
 
-VResult FrameTech::Graphics::SwapChain::checkDetails()
+VResult frametech::graphics::SwapChain::checkDetails()
 {
     if ((m_details.capabilities.minImageCount <= MAX_BUFFERS && m_details.capabilities.maxImageCount >= MAX_BUFFERS) &&
         (!m_details.formats.empty() && !m_details.present_modes.empty()) &&
@@ -151,7 +151,7 @@ VResult FrameTech::Graphics::SwapChain::checkDetails()
     return VResult::Error((char*)"The supported images count is incorrect");
 }
 
-VResult FrameTech::Graphics::SwapChain::create()
+VResult frametech::graphics::SwapChain::create()
 {
     // Check that the details are correct
     if (const auto result = checkDetails(); result.IsError())
@@ -176,7 +176,7 @@ VResult FrameTech::Graphics::SwapChain::create()
     VkSwapchainCreateInfoKHR create_info{
 
         .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
-        .surface = (*FrameTech::Engine::getInstance()->m_render->getSurface()),
+        .surface = (*frametech::Engine::getInstance()->m_render->getSurface()),
         .minImageCount = MAX_BUFFERS,
         .imageFormat = m_format.format,
         .imageColorSpace = m_format.colorSpace,
@@ -185,8 +185,8 @@ VResult FrameTech::Graphics::SwapChain::create()
         .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, // color attachment, use VK_IMAGE_USAGE_TRANSFER_DST_BIT instead
     };
     uint32_t indices[2] = {
-        FrameTech::Engine::getInstance()->m_graphics_device.m_graphics_queue_family_index,
-        FrameTech::Engine::getInstance()->m_graphics_device.m_presents_queue_family_index,
+        frametech::Engine::getInstance()->m_graphics_device.m_graphics_queue_family_index,
+        frametech::Engine::getInstance()->m_graphics_device.m_presents_queue_family_index,
     };
     // TODO: check if the indices car really be equal to each other
     // https://github.com/Overv/VulkanTutorial/issues/233
@@ -206,7 +206,7 @@ VResult FrameTech::Graphics::SwapChain::create()
     // WARNING: resize feature does not work
     create_info.oldSwapchain = VK_NULL_HANDLE;
 
-    const auto result = vkCreateSwapchainKHR(FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+    const auto result = vkCreateSwapchainKHR(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
                                              &create_info,
                                              nullptr,
                                              &m_swapchain);
@@ -215,13 +215,13 @@ VResult FrameTech::Graphics::SwapChain::create()
     {
         uint32_t image_count;
         vkGetSwapchainImagesKHR(
-            FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+            frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
             m_swapchain,
             &image_count,
             nullptr);
         m_images.resize(image_count);
         vkGetSwapchainImagesKHR(
-            FrameTech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+            frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
             m_swapchain,
             &image_count,
             m_images.data());
@@ -257,22 +257,22 @@ VResult FrameTech::Graphics::SwapChain::create()
     return VResult::Error(error_msg);
 }
 
-const std::vector<VkImage>& FrameTech::Graphics::SwapChain::getImages() const
+const std::vector<VkImage>& frametech::graphics::SwapChain::getImages() const
 {
     return m_images;
 }
 
-const VkSurfaceFormatKHR& FrameTech::Graphics::SwapChain::getImageFormat() const
+const VkSurfaceFormatKHR& frametech::graphics::SwapChain::getImageFormat() const
 {
     return m_format;
 }
 
-const VkExtent2D& FrameTech::Graphics::SwapChain::getExtent() const
+const VkExtent2D& frametech::graphics::SwapChain::getExtent() const
 {
     return m_extent;
 }
 
-const VkSwapchainKHR& FrameTech::Graphics::SwapChain::getSwapchainDevice() const
+const VkSwapchainKHR& frametech::graphics::SwapChain::getSwapchainDevice() const
 {
     return m_swapchain;
 }
