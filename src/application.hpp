@@ -10,6 +10,7 @@
 #define application_hpp
 
 #include "engine/engine.hpp"
+#include "engine/graphics/monitor.hpp"
 #include "ftstd/timer.h"
 #include "project.hpp"
 #include <GLFW/glfw3.h>
@@ -76,6 +77,8 @@ namespace FrameTech
         uint8_t recorded_frames_index = 0;
         /// @brief A private timer
         std::unique_ptr<Timer> m_app_timer = nullptr;
+        /// @brief The monitor to set / display the application
+        FrameTech::Graphics::Monitor m_monitor;
 
     public:
         /// @brief Private destructor

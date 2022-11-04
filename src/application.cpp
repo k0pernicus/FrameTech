@@ -56,6 +56,9 @@ void FrameTech::Application::initWindow()
     glfwInit();                                   // Initialize the GLFW library
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // No OpenGL context, as we use Vulkan
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);   // No resizable option for the window
+    // Initialize the monitor object
+    if (!m_monitor.foundPrimaryMonitor())
+        m_monitor.scanForPrimaryMonitor();
     // The last parameter in glfwCreateWindow is only for OpenGL - no need to setup it here
     m_app_window = glfwCreateWindow(FrameTech::DEFAULT_WINDOW_WIDTH,
                                     FrameTech::DEFAULT_WINDOW_HEIGHT,
