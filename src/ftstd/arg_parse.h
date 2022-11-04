@@ -29,6 +29,12 @@ const int LONG_FLAG_PREFIX_LEN = strlen(LONG_FLAG_PREFIX);
 /// @brief The maximum number of characters for a flag
 const int MAX_FLAG_LEN = 32;
 
+/// @brief Shortcut to set copy the string source to the string destination
+#define COPY_FLAG_STRING(dst, src) strncpy(dst, src, MAX_FLAG_LEN)
+
+/// @brief Sets to the string destination a single NULL character (NULL)
+#define RESET_FLAG_STRING(dst) COPY_FLAG_STRING(dst, "\0")
+
 /// @brief Returns if the argument, passed as parameter, is a flag or not
 /// @param arg A characters array that could represents a flag: a string with a
 /// SMALL_FLAG_PREFIX or LONG_FLAG_PREFIX prefix
@@ -63,20 +69,16 @@ public:
             return;
         bool found_flag = false;
         char flag_to_match[MAX_FLAG_LEN];
-        strncpy(flag_to_match, "\0", MAX_FLAG_LEN);
+        RESET_FLAG_STRING(flag_to_match);
         for (int i = 0; i < argc; ++i)
         {
             const bool is_flag = foundFlag(argv[i]);
-            if (is_flag && found_flag)
-            {
-                LogW("Found flag '%s' at %dth position, but already found flag '%s' before...", argv[i], i, flag_to_match);
-                strncpy(flag_to_match, argv[i], MAX_FLAG_LEN);
-                continue;
-            }
             if (is_flag)
             {
+                if (found_flag)
+                    LogW("Found flag '%s' at %dth position, but already found flag '%s' before...", argv[i], i, flag_to_match);
                 found_flag = true;
-                strncpy(flag_to_match, argv[i], MAX_FLAG_LEN);
+                COPY_FLAG_STRING(flag_to_match, argv[i]);
                 continue;
             }
             // Not a flag
@@ -85,15 +87,16 @@ public:
                 // Keep track of the string - the string will be freed
                 // in the deallocator
                 char* flag_name = new char[MAX_FLAG_LEN];
-                strncpy(flag_name, flag_to_match, MAX_FLAG_LEN);
-                // Insert and free the old name
+                COPY_FLAG_STRING(flag_name, flag_to_match);
+                // Fill the DS and free the old name
                 arguments.insert(std::pair<const char*, const char*>(flag_name, argv[i]));
-                strncpy(flag_to_match, (char*)"\0", MAX_FLAG_LEN);
+                RESET_FLAG_STRING(flag_to_match);
                 found_flag = false;
             }
         }
         found_flag = false;
-        strncpy(flag_to_match, (char*)"\0", MAX_FLAG_LEN);
+        RESET_FLAG_STRING(flag_to_match);
+        ;
     }
 
     ~ArgParse()
