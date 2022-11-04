@@ -78,7 +78,8 @@
         "algorithm": "cpp",
         "span": "cpp",
         "filesystem": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "map": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled",
 }
