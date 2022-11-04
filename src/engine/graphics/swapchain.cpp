@@ -31,14 +31,14 @@ constexpr VkPresentModeKHR PREFERED_PRESENTATION_MODE = VK_PRESENT_MODE_FIFO_KHR
 /// @return A format that would corresponds to the engine basic needs.
 /// If the "perfect" format combination has not been found, then it
 /// returns the first element of the array.
-static Result<VkSurfaceFormatKHR> chooseFormat(const std::vector<VkSurfaceFormatKHR>& formats)
+static ftstd::Result<VkSurfaceFormatKHR> chooseFormat(const std::vector<VkSurfaceFormatKHR>& formats)
 {
     for (const VkSurfaceFormatKHR format : formats)
     {
         if (format.format == PREFERED_SURFACE_FORMAT && format.colorSpace == PREFERED_COLOR_SPACE_FORMAT)
-            return Result<VkSurfaceFormatKHR>::Ok(format);
+            return ftstd::Result<VkSurfaceFormatKHR>::Ok(format);
     }
-    return Result<VkSurfaceFormatKHR>::Ok(formats[0]);
+    return ftstd::Result<VkSurfaceFormatKHR>::Ok(formats[0]);
 }
 
 /// @brief Internal function to choose automatically a good Presentation Mode
@@ -47,14 +47,14 @@ static Result<VkSurfaceFormatKHR> chooseFormat(const std::vector<VkSurfaceFormat
 /// to the screen.
 /// @param formats The list of available presentation modes to choose from
 /// @return A present mode that would corresponds to the engine basic needs
-static Result<VkPresentModeKHR> choosePresentMode(const std::vector<VkPresentModeKHR>& present_modes)
+static ftstd::Result<VkPresentModeKHR> choosePresentMode(const std::vector<VkPresentModeKHR>& present_modes)
 {
     for (const VkPresentModeKHR mode : present_modes)
     {
         if (mode == PREFERED_PRESENTATION_MODE)
-            return Result<VkPresentModeKHR>::Ok(mode);
+            return ftstd::Result<VkPresentModeKHR>::Ok(mode);
     }
-    return Result<VkPresentModeKHR>::Error((char*)"Our prefered presentation mode is not found");
+    return ftstd::Result<VkPresentModeKHR>::Error((char*)"Our prefered presentation mode is not found");
 }
 
 /// @brief Internal function to choose automatically a good capability
@@ -63,7 +63,7 @@ static Result<VkPresentModeKHR> choosePresentMode(const std::vector<VkPresentMod
 /// exactly equal to the resolution of the window that we're drawing to (in pixels).
 /// @param formats The list of available capabilities to choose from
 /// @return A capability that would corresponds to the engine basic needs
-static Result<VkExtent2D> chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
+static ftstd::Result<VkExtent2D> chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
 {
     int window_height, window_width;
     glfwGetFramebufferSize(frametech::Application::getInstance(Project::APPLICATION_NAME)->getWindow(), &window_width, &window_height);
@@ -73,7 +73,7 @@ static Result<VkExtent2D> chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capab
     };
     final_extent.width = std::clamp(final_extent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
     final_extent.height = std::clamp(final_extent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
-    return Result<VkExtent2D>::Ok(final_extent);
+    return ftstd::Result<VkExtent2D>::Ok(final_extent);
 }
 
 frametech::graphics::SwapChain* frametech::graphics::SwapChain::m_instance{nullptr};
@@ -139,19 +139,19 @@ void frametech::graphics::SwapChain::queryDetails()
     m_details = support_details;
 }
 
-VResult frametech::graphics::SwapChain::checkDetails()
+ftstd::VResult frametech::graphics::SwapChain::checkDetails()
 {
     if ((m_details.capabilities.minImageCount <= MAX_BUFFERS && m_details.capabilities.maxImageCount >= MAX_BUFFERS) &&
         (!m_details.formats.empty() && !m_details.present_modes.empty()) &&
         (m_details.capabilities.minImageCount > 0))
     {
-        return VResult::Ok();
+        return ftstd::VResult::Ok();
     }
     LogW("< The swapchain only supports between %d and %d images (max)", m_details.capabilities.minImageCount, m_details.capabilities.maxImageCount);
-    return VResult::Error((char*)"The supported images count is incorrect");
+    return ftstd::VResult::Error((char*)"The supported images count is incorrect");
 }
 
-VResult frametech::graphics::SwapChain::create()
+ftstd::VResult frametech::graphics::SwapChain::create()
 {
     // Check that the details are correct
     if (const auto result = checkDetails(); result.IsError())
@@ -159,15 +159,15 @@ VResult frametech::graphics::SwapChain::create()
 
     const auto format_result = chooseFormat(m_details.formats);
     if (format_result.IsError())
-        return VResult::Error((char*)"Did not found any good format for the swapchain");
+        return ftstd::VResult::Error((char*)"Did not found any good format for the swapchain");
 
     const auto present_mode_result = choosePresentMode(m_details.present_modes);
     if (present_mode_result.IsError())
-        return VResult::Error((char*)"Did not found any good presentation mode for the swapchain");
+        return ftstd::VResult::Error((char*)"Did not found any good presentation mode for the swapchain");
 
     const auto swap_extent_result = chooseSwapExtent(m_details.capabilities);
     if (swap_extent_result.IsError())
-        return VResult::Error((char*)"Did not found any good extent for the swapchain");
+        return ftstd::VResult::Error((char*)"Did not found any good extent for the swapchain");
 
     m_present_mode = present_mode_result.GetValue();
     m_format = format_result.GetValue();
@@ -225,7 +225,7 @@ VResult frametech::graphics::SwapChain::create()
             m_swapchain,
             &image_count,
             m_images.data());
-        return VResult::Ok();
+        return ftstd::VResult::Ok();
     }
 
     char* error_msg;
@@ -254,7 +254,7 @@ VResult frametech::graphics::SwapChain::create()
             error_msg = (char*)"undocumented error";
     }
     LogE("> vkCreateSwapchainKHR: %s", error_msg);
-    return VResult::Error(error_msg);
+    return ftstd::VResult::Error(error_msg);
 }
 
 const std::vector<VkImage>& frametech::graphics::SwapChain::getImages() const

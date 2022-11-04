@@ -56,11 +56,11 @@ namespace frametech
             /// supported number of images for the swapchain, and if there
             /// is at least one supported image format and one
             /// presentation mode
-            VResult checkDetails();
+            ftstd::VResult checkDetails();
             /// @brief Creates the Vulkan swapchain object
             /// This function should not be called before `queryDetails`
             /// and `checkDetails` functions!
-            VResult create();
+            ftstd::VResult create();
             /// @brief Returns the number of images stored in the
             /// SwapChain object
             const std::vector<VkImage>& getImages() const;

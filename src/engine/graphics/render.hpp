@@ -31,7 +31,7 @@ namespace frametech
             /// @brief Presents rendered images to a window.
             /// @return A Result type to know if the surface abstraction
             /// has been created.
-            VResult createSurface();
+            ftstd::VResult createSurface();
             /// @brief Returns the KHR surface as a pointer
             VkSurfaceKHR* getSurface();
             /// @brief Returns the framebuffers
@@ -40,15 +40,15 @@ namespace frametech
             /// images from the SwapChain object.
             /// @return A VResult type to know if the function succeeded
             /// or not.
-            VResult createImageViews();
+            ftstd::VResult createImageViews();
             /// @brief Creates the framebuffers for the objects to render
             /// @return A VResult type to know if the function succeeded
             /// or not.
-            VResult createFramebuffers();
+            ftstd::VResult createFramebuffers();
             /// @brief Creates the graphics pipeline
             /// @return A VResult type to know if the function succeeded
             /// or not.
-            VResult createGraphicsPipeline();
+            ftstd::VResult createGraphicsPipeline();
             /// @brief Returns a reference to the current frame index, or swap chain index
             /// @return A reference to the current frame index
             uint32_t& getFrameIndex();
@@ -87,7 +87,7 @@ namespace frametech
             /// 3. Create the shader stages.
             /// @return A Result type to know if the function succeeded
             /// or not.
-            VResult createShaderModule();
+            ftstd::VResult createShaderModule();
             /// @brief The current frame index, or swap chain index
             uint32_t m_frame_index = 0;
         };

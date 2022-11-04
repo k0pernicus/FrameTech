@@ -22,24 +22,24 @@ std::pair<GLFWmonitor**, int> frametech::graphics::Monitor::scanForMonitors()
     return std::pair<GLFWmonitor**, int>({monitors, nb_monitors});
 }
 
-VResult frametech::graphics::Monitor::scanForPrimaryMonitor()
+ftstd::VResult frametech::graphics::Monitor::scanForPrimaryMonitor()
 {
     GLFWmonitor* primary = glfwGetPrimaryMonitor();
     if (primary == nullptr)
-        return VResult::Error((char*)"Error getting the primary monitor of the physical device");
+        return ftstd::VResult::Error((char*)"Error getting the primary monitor of the physical device");
     m_primary_monitor = primary;
     if (const auto query_result_code = queryProperties(); query_result_code.IsError())
     {
         LogE("> Error querying information about the primary monitor");
     }
-    return VResult::Ok();
+    return ftstd::VResult::Ok();
 }
 
-VResult frametech::graphics::Monitor::choosePrimaryMonitor(uint32_t index)
+ftstd::VResult frametech::graphics::Monitor::choosePrimaryMonitor(uint32_t index)
 {
     // TODO with callbacks
     WARN_RT_UNIMPLEMENTED;
-    return VResult::Ok();
+    return ftstd::VResult::Ok();
 }
 
 frametech::graphics::MonitorProperties& frametech::graphics::Monitor::getCurrentProperties()
@@ -52,10 +52,10 @@ bool frametech::graphics::Monitor::foundPrimaryMonitor() const
     return m_primary_monitor != nullptr;
 }
 
-VResult frametech::graphics::Monitor::queryProperties()
+ftstd::VResult frametech::graphics::Monitor::queryProperties()
 {
     if (m_primary_monitor == nullptr)
-        return VResult::Error((char*)"No primary monitor to query");
+        return ftstd::VResult::Error((char*)"No primary monitor to query");
     int nb_video_modes{};
     m_primary_monitor_properties = frametech::graphics::MonitorProperties{};
     m_primary_monitor_properties.m_available_video_modes = glfwGetVideoModes(m_primary_monitor, &nb_video_modes);
@@ -67,5 +67,5 @@ VResult frametech::graphics::Monitor::queryProperties()
     const auto monitor_name = glfwGetMonitorName(m_primary_monitor);
     if (nullptr != monitor_name)
         strncpy(m_primary_monitor_properties.m_name, monitor_name, frametech::graphics::MONITOR_NAME_LEN);
-    return VResult::Ok();
+    return ftstd::VResult::Ok();
 }

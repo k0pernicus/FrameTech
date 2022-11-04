@@ -15,7 +15,7 @@ frametech::Application* frametech::Application::m_instance{nullptr};
 frametech::Application::Application(const char* app_title)
 {
     m_app_title = app_title;
-    m_app_timer = std::unique_ptr<Timer>(new Timer());
+    m_app_timer = std::unique_ptr<ftstd::Timer>(new ftstd::Timer());
 }
 
 frametech::Application::~Application()
@@ -89,7 +89,7 @@ void frametech::Application::drawFrame()
     const double wait_ms = (m_FPS_limit == std::nullopt) ? 0.0 : (1000 / m_FPS_limit.value());
     if (wait_ms > 0.0)
     {
-        uint64_t wait_until_ms = Timer::get_time_limit(wait_ms);
+        uint64_t wait_until_ms = ftstd::Timer::get_time_limit(wait_ms);
         // Log("Drawing frame %d...", m_current_frame);
 
         m_engine->m_render->getGraphicsPipeline()->draw();

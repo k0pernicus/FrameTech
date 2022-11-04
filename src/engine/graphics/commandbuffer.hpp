@@ -31,12 +31,12 @@ namespace frametech
             VkCommandBuffer* getBuffer();
             /// @brief Creates the command pool
             /// @return A VResult type
-            VResult createPool();
+            ftstd::VResult createPool();
             /// @brief Creates the command buffer
             /// @return A VResult type
-            VResult createBuffer();
+            ftstd::VResult createBuffer();
             /// @brief Writes the commands we want to execute into a command buffer
-            VResult record();
+            ftstd::VResult record();
 
         private:
             /// @brief CommandBuffer should not be cloneable

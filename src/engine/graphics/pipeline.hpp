@@ -55,7 +55,7 @@ namespace frametech
             /// @brief Read each shader file passed as parameter, if those exist.
             /// **Warning**: this function is **not** data-race conditons bullet-proof.
             /// TODO: Real return type.
-            Result<std::vector<Shader::Module>> createGraphicsApplication(
+            ftstd::Result<std::vector<Shader::Module>> createGraphicsApplication(
                 const char* vertex_shader_filepath,
                 const char* fragment_shader_filepath);
             /// @brief Set the shader stages
@@ -68,20 +68,20 @@ namespace frametech
             /// has been created
             /// @return A VResult type to know if the function succeeded
             /// or not.
-            VResult create();
+            ftstd::VResult create();
             /// @brief Pre-configures the graphics pipeline:
             /// 1. Creates the shader module,
             /// 2. Configure the fixed functions,
             /// 3. TODO: ...
             /// @return A Result type to know if the function succeeded
             /// or not.
-            VResult preconfigure();
+            ftstd::VResult preconfigure();
             /// @brief Setup the framebuffer attachments that will be used
             /// while rendering, like color and depth buffers, how many
             /// samples do we want to use, etc...
             /// @return A VResult type to know if the function succeeded
             /// or not.
-            VResult setupRenderPass();
+            ftstd::VResult setupRenderPass();
             /// @brief Returns the registered render pass object
             /// @return A VkRenderPass object
             VkRenderPass& getRenderPass();
@@ -91,7 +91,7 @@ namespace frametech
             /// @brief Draw the current frame
             /// @return A result type that corresponds to the error status
             /// of the draw function
-            Result<int> draw();
+            ftstd::Result<int> draw();
             /// @brief Present the current image to the screen
             /// TODO: should return a VResult
             void present();
@@ -111,7 +111,7 @@ namespace frametech
             /// in our pipeline / renderer
             /// @return A VResult type to know if the creation has been successfuly
             /// executed or not
-            VResult createSyncObjects();
+            ftstd::VResult createSyncObjects();
             /// @brief The shader stages in the pipeline
             std::vector<VkPipelineShaderStageCreateInfo> m_shader_stages;
             /// @brief Stores the shader modules to create the pipeline object later

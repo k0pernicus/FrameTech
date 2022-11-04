@@ -16,7 +16,7 @@
 
 int main(int argc, const char* argv[])
 {
-    ArgParse arg_parse = ArgParse(argc, argv);
+    auto arg_parse = ftstd::ArgParse(argc, argv);
     {
         char c_version[18];
         Project::APPLICATION_VERSION.toString(c_version);

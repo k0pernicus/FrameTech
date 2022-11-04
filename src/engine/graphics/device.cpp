@@ -128,14 +128,14 @@ uint32_t frametech::graphics::Device::getNumberDevices() const
     return device_count;
 }
 
-VResult frametech::graphics::Device::listDevices()
+ftstd::VResult frametech::graphics::Device::listDevices()
 {
     uint32_t device_count{};
     vkEnumeratePhysicalDevices(frametech::Engine::getInstance()->m_graphics_instance, &device_count, nullptr);
     if (device_count == 0)
     {
 
-        return VResult::Error((char*)"no supported physical device");
+        return ftstd::VResult::Error((char*)"no supported physical device");
     }
     std::vector<VkPhysicalDevice> devices(device_count);
     vkEnumeratePhysicalDevices(frametech::Engine::getInstance()->m_graphics_instance, &device_count, devices.data());
@@ -146,11 +146,11 @@ VResult frametech::graphics::Device::listDevices()
             m_physical_device = device;
             Log("\t... is suitable!");
             listAvailableExtensions(device);
-            return VResult::Ok();
+            return ftstd::VResult::Ok();
         }
         Log("\t... is **not** suitable!");
     }
-    return VResult::Error((char*)"no suitable physical device");
+    return ftstd::VResult::Error((char*)"no suitable physical device");
 }
 
 bool frametech::graphics::Device::isInitialized() const
@@ -158,12 +158,12 @@ bool frametech::graphics::Device::isInitialized() const
     return m_physical_device != VK_NULL_HANDLE;
 }
 
-Result<uint32_t> frametech::graphics::Device::getQueueFamilies()
+ftstd::Result<uint32_t> frametech::graphics::Device::getQueueFamilies()
 {
     assert(isInitialized());
     if (!isInitialized())
     {
-        return Result<uint32_t>::Error((char*)"The physical device has not been setup");
+        return ftstd::Result<uint32_t>::Error((char*)"The physical device has not been setup");
     }
     uint32_t total_queue_families = 0;
 
@@ -171,7 +171,7 @@ Result<uint32_t> frametech::graphics::Device::getQueueFamilies()
     if (total_queue_families == 0)
     {
         Log("No queue families for the selected physical device");
-        return Result<uint32_t>::Ok(total_queue_families);
+        return ftstd::Result<uint32_t>::Ok(total_queue_families);
     }
     std::vector<VkQueueFamilyProperties> found_queue_families(total_queue_families);
     m_queue_support.resize((size_t)total_queue_families);
@@ -213,18 +213,18 @@ Result<uint32_t> frametech::graphics::Device::getQueueFamilies()
     }
     if (!supports_graphics || !supports_present)
     {
-        return Result<uint32_t>::Error((char*)"support for graphics and / or present family queues is incorrect");
+        return ftstd::Result<uint32_t>::Error((char*)"support for graphics and / or present family queues is incorrect");
     }
 
-    return Result<uint32_t>::Ok(total_queue_families);
+    return ftstd::Result<uint32_t>::Ok(total_queue_families);
 }
 
-VResult frametech::graphics::Device::createLogicalDevice()
+ftstd::VResult frametech::graphics::Device::createLogicalDevice()
 {
     assert(m_physical_device);
     if (m_physical_device == VK_NULL_HANDLE)
     {
-        return VResult::Error((char*)"The physical device has not been setup");
+        return ftstd::VResult::Error((char*)"The physical device has not been setup");
     }
 
     const SupportFeatures supported_flags[2] = {SupportFeatures::GRAPHICS, SupportFeatures::PRESENTS};
@@ -255,7 +255,7 @@ VResult frametech::graphics::Device::createLogicalDevice()
         took_indices[queue_index] = first_index;
         if (first_index >= m_queue_support.size())
         {
-            return VResult::Error((char*)"No any READY queue for the physical device");
+            return ftstd::VResult::Error((char*)"No any READY queue for the physical device");
         }
         // Set the first indexed queue as USED
         m_queue_states[first_index] = QueueState::USED;
@@ -279,7 +279,7 @@ VResult frametech::graphics::Device::createLogicalDevice()
                 break;
             default:
                 LogE("unknown flag for SupportFeatures: %d", supported_flag);
-                return VResult::Error((char*)"found unknown flag for SupportFeatures");
+                return ftstd::VResult::Error((char*)"found unknown flag for SupportFeatures");
         }
     }
 
@@ -327,7 +327,7 @@ VResult frametech::graphics::Device::createLogicalDevice()
                 error_msg = (char*)"undocumented error";
         }
         LogE("> vkCreateDevice: %s", error_msg);
-        return VResult::Error((char*)"Cannot create the logical device");
+        return ftstd::VResult::Error((char*)"Cannot create the logical device");
     }
     Log("> Logical device has been created");
 
@@ -339,7 +339,7 @@ VResult frametech::graphics::Device::createLogicalDevice()
     // Let's use 0 by default for queue index as we create one queue per logical device
     vkGetDeviceQueue(m_logical_device, m_presents_queue_family_index, 0, &m_presents_queue);
 
-    return VResult::Ok();
+    return ftstd::VResult::Ok();
 }
 
 VkDevice frametech::graphics::Device::getLogicalDevice() const

@@ -109,8 +109,8 @@ std::optional<uint64_t> frametech::graphics::Pipeline::readFile(const char* file
     return std::nullopt;
 }
 
-Result<std::vector<frametech::graphics::Shader::Module>> frametech::graphics::Pipeline::createGraphicsApplication(const char* vertex_shader_filepath,
-                                                                                                                  const char* fragment_shader_filepath)
+ftstd::Result<std::vector<frametech::graphics::Shader::Module>> frametech::graphics::Pipeline::createGraphicsApplication(const char* vertex_shader_filepath,
+                                                                                                                         const char* fragment_shader_filepath)
 {
     // Get the length
     const auto vs_file_size_opt = fileSize(vertex_shader_filepath);
@@ -121,7 +121,7 @@ Result<std::vector<frametech::graphics::Shader::Module>> frametech::graphics::Pi
     if (vs_file_size_opt == std::nullopt || fs_file_size_opt == std::nullopt)
     {
         LogE("< Cannot create the program");
-        return Result<std::vector<frametech::graphics::Shader::Module>>::Error((char*)"vertex or fragment shader is NULL");
+        return ftstd::Result<std::vector<frametech::graphics::Shader::Module>>::Error((char*)"vertex or fragment shader is NULL");
     }
     // Get the content of the VS
     const auto vs_file_size = vs_file_size_opt.value();
@@ -146,7 +146,7 @@ Result<std::vector<frametech::graphics::Shader::Module>> frametech::graphics::Pi
              .m_size = vs_file_size,
              .m_type = frametech::graphics::Shader::VERTEX_SHADER,
          }});
-    return Result<std::vector<frametech::graphics::Shader::Module>>::Ok(shader_modules);
+    return ftstd::Result<std::vector<frametech::graphics::Shader::Module>>::Ok(shader_modules);
 }
 
 void frametech::graphics::Pipeline::setShaderModules(const std::vector<VkShaderModule> shader_modules)
@@ -184,7 +184,7 @@ VkRenderPass& frametech::graphics::Pipeline::getRenderPass()
     return m_render_pass;
 }
 
-VResult frametech::graphics::Pipeline::setupRenderPass()
+ftstd::VResult frametech::graphics::Pipeline::setupRenderPass()
 {
     Log("> Setting up the render pass object of the graphics pipeline");
 
@@ -245,12 +245,12 @@ VResult frametech::graphics::Pipeline::setupRenderPass()
 
     if (create_result_code != VK_SUCCESS)
     {
-        return VResult::Error((char*)"Failed to create the render pass");
+        return ftstd::VResult::Error((char*)"Failed to create the render pass");
     }
-    return VResult::Ok();
+    return ftstd::VResult::Ok();
 }
 
-VResult frametech::graphics::Pipeline::preconfigure()
+ftstd::VResult frametech::graphics::Pipeline::preconfigure()
 {
     Log("> Preconfiguring the graphics pipeline");
 
@@ -265,23 +265,23 @@ VResult frametech::graphics::Pipeline::preconfigure()
 
     if (create_result_code != VK_SUCCESS)
     {
-        return VResult::Error((char*)"Failed to create the pipeline layout!");
+        return ftstd::VResult::Error((char*)"Failed to create the pipeline layout!");
     }
 
     return createSyncObjects();
 }
 
-VResult frametech::graphics::Pipeline::create()
+ftstd::VResult frametech::graphics::Pipeline::create()
 {
     Log("> Creating the graphics pipeline");
     if (m_shader_stages.size() == 0)
     {
-        return VResult::Error((char*)"No shader stages to finalize the graphics pipeline creation - ok?");
+        return ftstd::VResult::Error((char*)"No shader stages to finalize the graphics pipeline creation - ok?");
     }
 
     if (m_layout == VK_NULL_HANDLE)
     {
-        return VResult::Error((char*)"Cannot create the graphics pipeline without pipeline layout information");
+        return ftstd::VResult::Error((char*)"Cannot create the graphics pipeline without pipeline layout information");
     }
 
     // TODO: make this array as a class parameter
@@ -403,9 +403,9 @@ VResult frametech::graphics::Pipeline::create()
 
     if (create_result_code != VK_SUCCESS)
     {
-        return VResult::Error((char*)"Failed to create the main graphics pipeline");
+        return ftstd::VResult::Error((char*)"Failed to create the main graphics pipeline");
     }
-    return VResult::Ok();
+    return ftstd::VResult::Ok();
 }
 
 VkPipeline frametech::graphics::Pipeline::getPipeline()
@@ -413,7 +413,7 @@ VkPipeline frametech::graphics::Pipeline::getPipeline()
     return m_pipeline;
 }
 
-VResult frametech::graphics::Pipeline::createSyncObjects()
+ftstd::VResult frametech::graphics::Pipeline::createSyncObjects()
 {
     Log("> Creating the sync objects");
     auto graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
@@ -423,7 +423,7 @@ VResult frametech::graphics::Pipeline::createSyncObjects()
         VkSemaphoreCreateInfo create_info{};
         create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
         if (VK_SUCCESS != vkCreateSemaphore(graphics_device, &create_info, nullptr, m_sync_image_ready))
-            return VResult::Error((char*)"< Failed to create the semaphore to signal image ready");
+            return ftstd::VResult::Error((char*)"< Failed to create the semaphore to signal image ready");
     }
     if (nullptr == m_sync_present_done)
     {
@@ -431,7 +431,7 @@ VResult frametech::graphics::Pipeline::createSyncObjects()
         VkSemaphoreCreateInfo create_info{};
         create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
         if (VK_SUCCESS != vkCreateSemaphore(graphics_device, &create_info, nullptr, m_sync_present_done))
-            return VResult::Error((char*)"< Failed to create the semaphore to signal present is done");
+            return ftstd::VResult::Error((char*)"< Failed to create the semaphore to signal present is done");
     }
     if (nullptr == m_sync_cpu_gpu)
     {
@@ -440,9 +440,9 @@ VResult frametech::graphics::Pipeline::createSyncObjects()
         create_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
         create_info.flags = VK_FENCE_CREATE_SIGNALED_BIT; // This allows to not wait for the first wait
         if (VK_SUCCESS != vkCreateFence(graphics_device, &create_info, nullptr, m_sync_cpu_gpu))
-            return VResult::Error((char*)"< Failed to create the fence");
+            return ftstd::VResult::Error((char*)"< Failed to create the fence");
     }
-    return VResult::Ok();
+    return ftstd::VResult::Ok();
 }
 
 void frametech::graphics::Pipeline::present()
@@ -463,7 +463,7 @@ void frametech::graphics::Pipeline::present()
         &present_info);
 }
 
-Result<int> frametech::graphics::Pipeline::draw()
+ftstd::Result<int> frametech::graphics::Pipeline::draw()
 {
     // Wait that all fences are sync...
     vkWaitForFences(
@@ -490,7 +490,7 @@ Result<int> frametech::graphics::Pipeline::draw()
     // Reset the command buffer
     auto command_buffer = frametech::Engine::getInstance()->m_render->getCommandBuffer();
     if (command_buffer == nullptr)
-        return Result<int>::Error((char*)"Cannot get the command buffer in the draw call");
+        return ftstd::Result<int>::Error((char*)"Cannot get the command buffer in the draw call");
     vkResetCommandBuffer(
         *(command_buffer.get()->getBuffer()),
         0);
@@ -518,8 +518,8 @@ Result<int> frametech::graphics::Pipeline::draw()
             *m_sync_cpu_gpu);
         submit_result_code != VK_SUCCESS)
     {
-        return Result<int>::Error((char*)"Error submitting the queue in Draw call");
+        return ftstd::Result<int>::Error((char*)"Error submitting the queue in Draw call");
     }
 
-    return Result<int>::Ok(0);
+    return ftstd::Result<int>::Ok(0);
 }

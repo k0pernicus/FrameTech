@@ -46,7 +46,7 @@ namespace frametech
             uint32_t getNumberDevices() const;
             /// @brief Lists the devices that **may** be suitable for our needs.
             /// @return `true` if the function founds a suitable physical device, otherwise `false`.
-            VResult listDevices();
+            ftstd::VResult listDevices();
             /// @brief Returns if the device is suitable for graphical needs or not.
             /// @param device The device to check.
             /// To be suitable, the device must:
@@ -57,11 +57,11 @@ namespace frametech
             /// @return If the device follows the previously explicited rules.
             bool isInitialized() const;
             /// @brief Find supported queues on the device
-            Result<uint32_t> getQueueFamilies();
+            ftstd::Result<uint32_t> getQueueFamilies();
             /// @brief Returns if any queue is available to use
             bool isAnyQueueAvailable() const;
             /// @brief Creates a logical device based on the setted physical device
-            VResult createLogicalDevice();
+            ftstd::VResult createLogicalDevice();
             /// @brief Returns the logical device
             VkDevice getLogicalDevice() const;
             /// @brief Returns the logical device

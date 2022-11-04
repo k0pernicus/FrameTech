@@ -24,9 +24,9 @@ namespace Project
     constexpr uint8_t const ENGINE_VERSION_BUGFIX_NUMBER = 0;
 
     /// @brief The Version object to represent / formalize the version of the application
-    const Version ENGINE_VERSION = Version(ENGINE_VERSION_MAJOR_NUMBER,
-                                           ENGINE_VERSION_MINOR_NUMBER,
-                                           ENGINE_VERSION_BUGFIX_NUMBER);
+    const ftstd::Version ENGINE_VERSION = ftstd::Version(ENGINE_VERSION_MAJOR_NUMBER,
+                                                         ENGINE_VERSION_MINOR_NUMBER,
+                                                         ENGINE_VERSION_BUGFIX_NUMBER);
 
 } // namespace Project
 

@@ -48,13 +48,13 @@ namespace frametech
         /// @brief The single internal instance of the Engine object
         static Engine* m_instance;
         /// @brief Creates the Vulkan instance of the Engine
-        VResult createGraphicsInstance();
+        ftstd::VResult createGraphicsInstance();
         /// @brief Choose and picks a physical device
-        VResult pickPhysicalDevice();
+        ftstd::VResult pickPhysicalDevice();
         /// @brief Creates the render device
-        VResult createRenderDevice();
+        ftstd::VResult createRenderDevice();
         /// @brief Creates the swapchain
-        VResult createSwapChain();
+        ftstd::VResult createSwapChain();
         /// @brief Stores the internal state of the unique
         /// Engine object
         frametech::Engine::State m_state;

@@ -41,7 +41,7 @@ namespace frametech
             MonitorProperties m_primary_monitor_properties{};
             /// @brief Internal call to query all properties about the primary monitor
             /// @return A VResult type
-            VResult queryProperties();
+            ftstd::VResult queryProperties();
 
         public:
             Monitor();
@@ -53,11 +53,11 @@ namespace frametech
             std::pair<GLFWmonitor**, int> scanForMonitors();
             /// @brief Scans for a primary monitor
             /// @return A VResult type
-            VResult scanForPrimaryMonitor();
+            ftstd::VResult scanForPrimaryMonitor();
             /// @brief Allows the user to select the primary monitor he wants
             /// @param index An index to use in the list of available monitors
             /// @return A VResult type
-            VResult choosePrimaryMonitor(uint32_t index);
+            ftstd::VResult choosePrimaryMonitor(uint32_t index);
             /// @brief Returns the properties of the primary monitor
             /// @return The properties of the primary monitor
             MonitorProperties& getCurrentProperties();

@@ -20,7 +20,7 @@ frametech::graphics::CommandBuffer::~CommandBuffer()
     m_buffer = nullptr;
 };
 
-VResult frametech::graphics::CommandBuffer::createPool()
+ftstd::VResult frametech::graphics::CommandBuffer::createPool()
 {
     VkCommandPoolCreateInfo pool_create_info{
         .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
@@ -33,14 +33,14 @@ VResult frametech::graphics::CommandBuffer::createPool()
         nullptr,
         &m_pool);
     if (create_result == VK_SUCCESS)
-        return VResult::Ok();
-    return VResult::Error((char*)"> Error creating the command pool in the command buffer object");
+        return ftstd::VResult::Ok();
+    return ftstd::VResult::Error((char*)"> Error creating the command pool in the command buffer object");
 }
 
-VResult frametech::graphics::CommandBuffer::createBuffer()
+ftstd::VResult frametech::graphics::CommandBuffer::createBuffer()
 {
     if (m_pool == nullptr)
-        return VResult::Error((char*)"> Error creating the buffer: no memory pool");
+        return ftstd::VResult::Error((char*)"> Error creating the buffer: no memory pool");
     VkCommandBufferAllocateInfo alloc_info{};
     alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     alloc_info.commandPool = (m_pool);
@@ -52,11 +52,11 @@ VResult frametech::graphics::CommandBuffer::createBuffer()
         &alloc_info,
         &m_buffer);
     if (create_result == VK_SUCCESS)
-        return VResult::Ok();
-    return VResult::Error((char*)"> Error creating the buffer in the command buffer object");
+        return ftstd::VResult::Ok();
+    return ftstd::VResult::Error((char*)"> Error creating the buffer in the command buffer object");
 }
 
-VResult frametech::graphics::CommandBuffer::record()
+ftstd::VResult frametech::graphics::CommandBuffer::record()
 {
     const auto swapchain_index = frametech::Engine::getInstance()->m_render->getFrameIndex();
     VkCommandBufferBeginInfo begin_info{
@@ -68,13 +68,13 @@ VResult frametech::graphics::CommandBuffer::record()
 
     if (const auto begin_result_code = vkBeginCommandBuffer(m_buffer, &begin_info); begin_result_code != VK_SUCCESS)
     {
-        return VResult::Error((char*)"< Error creating the command buffer");
+        return ftstd::VResult::Error((char*)"< Error creating the command buffer");
     }
 
     const std::vector<VkFramebuffer> framebuffers = frametech::Engine::getInstance()->m_render->getFramebuffers();
     if (swapchain_index >= framebuffers.size())
     {
-        return VResult::Error((char*)"< The swapchain_index parameter is incorrect: not enough framebuffers");
+        return ftstd::VResult::Error((char*)"< The swapchain_index parameter is incorrect: not enough framebuffers");
     }
 
     VkClearValue clear_color = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
@@ -119,10 +119,10 @@ VResult frametech::graphics::CommandBuffer::record()
     vkCmdEndRenderPass(m_buffer);
     if (const auto end_command_buffer_result_code = vkEndCommandBuffer(m_buffer); end_command_buffer_result_code != VK_SUCCESS)
     {
-        return VResult::Error((char*)"< Error recording the command buffer");
+        return ftstd::VResult::Error((char*)"< Error recording the command buffer");
     }
 
-    return VResult::Ok();
+    return ftstd::VResult::Ok();
 }
 
 VkCommandBuffer* frametech::graphics::CommandBuffer::getBuffer()

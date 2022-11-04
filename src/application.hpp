@@ -76,7 +76,7 @@ namespace frametech
         /// record
         uint8_t recorded_frames_index = 0;
         /// @brief A private timer
-        std::unique_ptr<Timer> m_app_timer = nullptr;
+        std::unique_ptr<ftstd::Timer> m_app_timer = nullptr;
         /// @brief The monitor to set / display the application
         frametech::graphics::Monitor m_monitor;
 

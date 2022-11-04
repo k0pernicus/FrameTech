@@ -73,7 +73,7 @@ std::vector<VkFramebuffer> frametech::graphics::Render::getFramebuffers()
     return m_framebuffers;
 }
 
-VResult frametech::graphics::Render::createSurface()
+ftstd::VResult frametech::graphics::Render::createSurface()
 {
     const auto window_surface_result = glfwCreateWindowSurface(
         frametech::Engine::getInstance()->m_graphics_instance,
@@ -82,9 +82,9 @@ VResult frametech::graphics::Render::createSurface()
         &m_surface);
     if (window_surface_result == VK_SUCCESS)
     {
-        return VResult::Ok();
+        return ftstd::VResult::Ok();
     }
-    return VResult::Error((char*)"failed to create a window surface");
+    return ftstd::VResult::Error((char*)"failed to create a window surface");
 }
 
 VkSurfaceKHR* frametech::graphics::Render::getSurface()
@@ -92,7 +92,7 @@ VkSurfaceKHR* frametech::graphics::Render::getSurface()
     return &m_surface;
 }
 
-VResult frametech::graphics::Render::createFramebuffers()
+ftstd::VResult frametech::graphics::Render::createFramebuffers()
 {
     Log("> There are %d framebuffers to create: ", m_image_views.size());
     m_framebuffers.resize(m_image_views.size());
@@ -123,12 +123,12 @@ VResult frametech::graphics::Render::createFramebuffers()
             continue;
         }
         LogE("\t> Cannot create the framebuffer attached to the image at index %d", i);
-        return VResult::Error((char*)"> failed to create the framebuffers");
+        return ftstd::VResult::Error((char*)"> failed to create the framebuffers");
     }
-    return VResult::Ok();
+    return ftstd::VResult::Ok();
 }
 
-VResult frametech::graphics::Render::createImageViews()
+ftstd::VResult frametech::graphics::Render::createImageViews()
 {
     const auto swapchain_images = frametech::Engine::getInstance()->m_swapchain->getImages();
     const size_t nb_swapchain_images = swapchain_images.size();
@@ -180,24 +180,24 @@ VResult frametech::graphics::Render::createImageViews()
                 break;
         }
         LogE("Error creating the image view %d: %s", i, error_msg);
-        return VResult::Error(error_msg);
+        return ftstd::VResult::Error(error_msg);
     }
-    return VResult::Ok();
+    return ftstd::VResult::Ok();
 }
 
-VResult frametech::graphics::Render::createShaderModule()
+ftstd::VResult frametech::graphics::Render::createShaderModule()
 {
     // TODO: vector of ShaderModule type
-    const Result<std::vector<frametech::graphics::Shader::Module>> shaders_compile_result = m_graphics_pipeline->createGraphicsApplication(
+    const ftstd::Result<std::vector<frametech::graphics::Shader::Module>> shaders_compile_result = m_graphics_pipeline->createGraphicsApplication(
         "shaders/basic_triangle.vert.spv",
         "shaders/basic_triangle.frag.spv");
     if (shaders_compile_result.IsError())
-        return VResult::Error((char*)"cannot compile the application shaders");
+        return ftstd::VResult::Error((char*)"cannot compile the application shaders");
     const std::vector<frametech::graphics::Shader::Module> shaders_compiled = shaders_compile_result.GetValue();
     if (shaders_compiled.size() == 0)
     {
         LogW("No compiled shaders - check if alright");
-        VResult::Ok();
+        ftstd::VResult::Ok();
     }
     int shader_index = 0;
     std::vector<VkPipelineShaderStageCreateInfo> shader_stages(shaders_compiled.size());
@@ -236,7 +236,7 @@ VResult frametech::graphics::Render::createShaderModule()
                     break;
             }
             LogE("< Error creation the shader module: %s", error_msg);
-            return VResult::Error(error_msg);
+            return ftstd::VResult::Error(error_msg);
         }
 
         // TODO: create the shader stages
@@ -274,11 +274,11 @@ VResult frametech::graphics::Render::createShaderModule()
     {
         WARN;
         LogW("> There is %d shader stages, instead of %d", shader_stages.size(), shaders_compiled.size());
-        return VResult::Error((char*)"cannot set NULL shader stages");
+        return ftstd::VResult::Error((char*)"cannot set NULL shader stages");
     }
     m_graphics_pipeline->setShaderModules(shader_modules);
     m_graphics_pipeline->setShaderStages(shader_stages);
-    return VResult::Ok();
+    return ftstd::VResult::Ok();
 }
 
 uint32_t& frametech::graphics::Render::getFrameIndex()
@@ -292,7 +292,7 @@ void frametech::graphics::Render::updateFrameIndex(uint64_t current_frame)
     m_frame_index = current_frame % (m_framebuffers.size());
 }
 
-VResult frametech::graphics::Render::createGraphicsPipeline()
+ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
 {
     if (const auto result = createShaderModule(); result.IsError())
     {
@@ -324,7 +324,7 @@ VResult frametech::graphics::Render::createGraphicsPipeline()
         LogE("< Error creating the buffer of the command buffer object");
         return result;
     }
-    return VResult::Ok();
+    return ftstd::VResult::Ok();
 }
 
 std::shared_ptr<frametech::graphics::Pipeline> frametech::graphics::Render::getGraphicsPipeline() const
