@@ -32,7 +32,8 @@ int main(int argc, const char* argv[])
     Log("/!\\ Exceptions are enabled /!\\");
     try
     {
-        app->initWindow();
+        if (const auto result_code = app->initWindow(); result_code.IsError())
+            return EXIT_FAILURE;
         app->initEngine();
         app->run();
     }
@@ -42,7 +43,8 @@ int main(int argc, const char* argv[])
         return EXIT_FAILURE;
     }
 #else
-    app->initWindow();
+    if (const auto result_code = app->initWindow(); result_code.IsError())
+        return EXIT_FAILURE;
     app->initEngine();
     app->run();
 #endif

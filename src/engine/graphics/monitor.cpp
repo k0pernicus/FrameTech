@@ -33,10 +33,10 @@ ftstd::VResult frametech::graphics::Monitor::scanForPrimaryMonitor()
         LogE("> Error querying information about the primary monitor");
     }
     Log("> Principal monitor properties:");
-    Log("\t> Tag: '%s'", m_primary_monitor_properties.m_name);
-    Log("\t> Height %d / Width %d", m_primary_monitor_properties.m_height, m_primary_monitor_properties.m_width);
+    Log("\t> tag: '%s'", m_primary_monitor_properties.m_name);
+    Log("\t> height: %d pixels, width: %d pixels", m_primary_monitor_properties.m_height, m_primary_monitor_properties.m_width);
     if (nullptr != m_primary_monitor_properties.m_current_video_mode)
-        Log("\t> Refresh rate: %d Hz", m_primary_monitor_properties.m_current_video_mode->refreshRate);
+        Log("\t> refresh rate: %d Hz", m_primary_monitor_properties.m_current_video_mode->refreshRate);
     return ftstd::VResult::Ok();
 }
 

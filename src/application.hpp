@@ -93,7 +93,7 @@ namespace frametech
         /// @brief Init the clean process to destroy internal instances
         void clean();
         /// @brief Initialize the app window
-        void initWindow();
+        ftstd::VResult initWindow();
         /// @brief Initialize the app's graphics engine
         void initEngine();
         /// @brief Run the app and wait until the user close it

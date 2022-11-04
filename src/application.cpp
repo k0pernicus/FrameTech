@@ -50,21 +50,29 @@ void frametech::Application::clean()
     glfwTerminate();
 }
 
-void frametech::Application::initWindow()
+ftstd::VResult frametech::Application::initWindow()
 {
     Log("> Initializing the Application window");
     glfwInit();                                   // Initialize the GLFW library
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // No OpenGL context, as we use Vulkan
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);   // No resizable option for the window
+    // Check for Vulkan support
+    if (!glfwVulkanSupported())
+    {
+        return ftstd::VResult::Error((char*)"Vulkan is not supported");
+    }
     // Initialize the monitor object
     if (!m_monitor.foundPrimaryMonitor())
-        m_monitor.scanForPrimaryMonitor();
+        if (const auto scan_result_code = m_monitor.scanForPrimaryMonitor(); scan_result_code.IsError())
+            return ftstd::VResult::Error((char*)"Error getting the primary monitor");
+
     // The last parameter in glfwCreateWindow is only for OpenGL - no need to setup it here
     m_app_window = glfwCreateWindow(frametech::DEFAULT_WINDOW_WIDTH,
                                     frametech::DEFAULT_WINDOW_HEIGHT,
                                     m_app_title,
                                     nullptr,
                                     nullptr);
+    return ftstd::VResult::Ok();
 }
 
 void frametech::Application::initEngine()
