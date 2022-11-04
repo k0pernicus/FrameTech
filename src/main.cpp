@@ -8,6 +8,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include "application.hpp"
 #include "engine/project.hpp"
+#include "ftstd/arg_parse.h"
 #include "ftstd/debug_tools.h"
 #include "project.hpp"
 #include <GLFW/glfw3.h>
@@ -15,6 +16,7 @@
 
 int main(int argc, const char* argv[])
 {
+    ArgParse arg_parse = ArgParse(argc, argv);
     {
         char c_version[18];
         Project::APPLICATION_VERSION.toString(c_version);
