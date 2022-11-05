@@ -445,25 +445,7 @@ ftstd::VResult frametech::graphics::Pipeline::createSyncObjects()
     return ftstd::VResult::Ok();
 }
 
-void frametech::graphics::Pipeline::present()
-{
-    VkSemaphore signal[] = {*m_sync_present_done};
-    VkSwapchainKHR swapchains[] = {
-        frametech::Engine::getInstance()->m_swapchain->getSwapchainDevice()};
-    VkPresentInfoKHR present_info{
-        .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-        .waitSemaphoreCount = 1,
-        .pWaitSemaphores = signal,
-        .swapchainCount = 1,
-        .pSwapchains = swapchains,
-        .pImageIndices = &frametech::Engine::getInstance()->m_render->getFrameIndex(),
-    };
-    vkQueuePresentKHR(
-        frametech::Engine::getInstance()->m_graphics_device.getPresentsQueue(),
-        &present_info);
-}
-
-ftstd::Result<int> frametech::graphics::Pipeline::draw()
+void frametech::graphics::Pipeline::acquireImage()
 {
     // Wait that all fences are sync...
     vkWaitForFences(
@@ -486,7 +468,28 @@ ftstd::Result<int> frametech::graphics::Pipeline::draw()
         *m_sync_image_ready,
         VK_NULL_HANDLE,
         &frametech::Engine::getInstance()->m_render->getFrameIndex());
+}
 
+void frametech::graphics::Pipeline::present()
+{
+    VkSemaphore signal[] = {*m_sync_present_done};
+    VkSwapchainKHR swapchains[] = {
+        frametech::Engine::getInstance()->m_swapchain->getSwapchainDevice()};
+    VkPresentInfoKHR present_info{
+        .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = signal,
+        .swapchainCount = 1,
+        .pSwapchains = swapchains,
+        .pImageIndices = &frametech::Engine::getInstance()->m_render->getFrameIndex(),
+    };
+    vkQueuePresentKHR(
+        frametech::Engine::getInstance()->m_graphics_device.getPresentsQueue(),
+        &present_info);
+}
+
+ftstd::Result<int> frametech::graphics::Pipeline::draw()
+{
     // Reset the command buffer
     auto command_buffer = frametech::Engine::getInstance()->m_render->getCommandBuffer();
     if (command_buffer == nullptr)

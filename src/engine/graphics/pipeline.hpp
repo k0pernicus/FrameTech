@@ -88,6 +88,8 @@ namespace frametech
             /// @brief Returns the pipeline of this object
             /// @return A VkPipeline object
             VkPipeline getPipeline();
+            /// @brief Performs the acquire image call
+            void acquireImage();
             /// @brief Draw the current frame
             /// @return A result type that corresponds to the error status
             /// of the draw function
