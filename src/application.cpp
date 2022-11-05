@@ -65,7 +65,6 @@ ftstd::VResult frametech::Application::initWindow()
     if (!m_monitor.foundPrimaryMonitor())
         if (const auto scan_result_code = m_monitor.scanForPrimaryMonitor(); scan_result_code.IsError())
             return ftstd::VResult::Error((char*)"Error getting the primary monitor");
-
     // The last parameter in glfwCreateWindow is only for OpenGL - no need to setup it here
     m_app_window = glfwCreateWindow(frametech::DEFAULT_WINDOW_WIDTH,
                                     frametech::DEFAULT_WINDOW_HEIGHT,
@@ -133,6 +132,19 @@ void frametech::Application::run()
         case frametech::Engine::State::INITIALIZED:
         {
             Log("> Application loop...");
+            if (m_FPS_limit.has_value() && nullptr != m_monitor.getCurrentProperties().m_current_video_mode)
+            {
+                // Set the refresh rate of the monitor by default
+                const auto monitor_refresh_rate = m_monitor.getCurrentProperties().m_current_video_mode->refreshRate;
+                const auto c_FPS_limit = m_FPS_limit.value();
+                // Cap to the supported refrest rate
+                // As an example: no 120FPS is the monitor is capped to 60Hz
+                if (c_FPS_limit > monitor_refresh_rate)
+                {
+                    LogW("The monitor is using a refresh rate lower than the current cap setting (set to %d) - engine lowered it to %d FPS", c_FPS_limit, monitor_refresh_rate);
+                    m_FPS_limit = monitor_refresh_rate;
+                }
+            }
             m_FPS_limit.has_value() ? Log("> Application is running at %d FPS", m_FPS_limit.value()) : Log("> Application is running at unlimited frame");
             m_state = frametech::Application::State::RUNNING;
             // TODO: Each second, added the FPS number in recorded_frames
