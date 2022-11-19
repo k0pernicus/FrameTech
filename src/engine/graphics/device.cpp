@@ -28,9 +28,15 @@ const std::vector<const char*> REQUIRED_EXTENSIONS = {
 };
 #endif
 
-/// @brief The name of the Apple M1 chip, which is the
-/// only exception choosing a physical device
+/// @brief The name of the Apple M1 chip, which is part of the
+/// exceptions choosing a physical device
+/// TODO: regex instead
 const char* APPLE_M1_NAME = (char*)"Apple M1";
+
+/// @brief The name of the Apple M1 chip, which is part of the
+/// exceptions choosing a physical device
+/// TODO: regex instead
+const char* APPLE_M2_NAME = (char*)"Apple M2";
 
 /// @brief Boolean flag to know if the physical graphical device
 /// needs to support geometry shaders
@@ -48,7 +54,8 @@ static bool isDeviceSuitable(const VkPhysicalDevice& device)
 
     Log("> Checking device '%s' (with ID '%d')", properties.deviceName, properties.deviceID);
 
-    const bool is_apple_silicon = strcmp(properties.deviceName, APPLE_M1_NAME) == 0;
+    const bool is_apple_silicon = (strcmp(properties.deviceName, APPLE_M1_NAME) == 0 ||
+                                   strcmp(properties.deviceName, APPLE_M2_NAME) == 0);
     Log("\t* is Apple Silicon? %s", is_apple_silicon ? "true!" : "false...");
 
     const bool is_discrete_gpu = properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
