@@ -15,7 +15,10 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
+/// @brief Application version, as a string
 char S_APP_VERSION[18];
+
+/// @brief Engine version, as a string
 char S_ENGINE_VERSION[18];
 
 int main(int argc, const char* argv[])
