@@ -8,7 +8,7 @@
 #include "commandbuffer.hpp"
 #include "../engine.hpp"
 
-#ifdef _IMGUI
+#ifdef IMGUI
 #include "imgui.h"
 #include "imgui_impl_vulkan.h"
 #endif
@@ -121,7 +121,7 @@ ftstd::VResult frametech::graphics::CommandBuffer::record()
     // TODO: change to dynamic draw command
     vkCmdDraw(m_buffer, 3, 1, 0, 0);
 
-#ifdef _IMGUI
+#ifdef IMGUI
     ImGui::Render();
     ImDrawData* draw_data = ImGui::GetDrawData();
     ImGui_ImplVulkan_RenderDrawData(draw_data, m_buffer);

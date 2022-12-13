@@ -1,12 +1,14 @@
-CFLAGS = -std=c++17 -I. -I$(VULKAN_SDK)/include -I/usr/local/include -I/opt/homebrew/include -I./extern/imgui -I./extern/imgui/backends
-CFLAGS_DEBUG = $(CFLAGS) -Werror -Wall -g -DDEBUG -D_IMGUI
+CFLAGS = -std=c++17 -I. -I$(VULKAN_SDK)/include -I/usr/local/include -I/opt/homebrew/include
+CFLAGS += -I./extern/imgui -I./extern/imgui/backends # for imgui setup
+CFLAGS_DEBUG = $(CFLAGS) -Werror -Wall -g -DDEBUG -DIMGUI
 CFLAGS_RELEASE = $(CFLAGS) -O2 -DNDEBUG -DNO_AVG_FPS_RECORDS
 
 LDFLAGS = -L$(VULKAN_SDK)/lib `pkg-config --static --libs glfw3` -lvulkan
 
-SOURCES = src/*.cpp src/engine/*.cpp src/engine/graphics/*.cpp extern/imgui/*.cpp extern/imgui/backends/*.cpp
-HEADERS = src/*.hpp src/engine/*.hpp src/engine/graphics/*.hpp extern/imgui/*.h extern/imgui/backends/*.h
-ALL_SOURCES = $(SOURCES) $(HEADERS)
+IMGUI_SOURCES = extern/imgui/*.cpp extern/imgui/backends/*.cpp
+IMGUI_HEADERS = extern/imgui/*.h extern/imgui/backends/*.h
+SOURCES = src/*.cpp src/engine/*.cpp src/engine/graphics/*.cpp $(IMGUI_SOURCES)
+HEADERS = src/*.hpp src/engine/*.hpp src/engine/graphics/*.hpp $(IMGUI_HEADERS)
 
 MKDIR_P = mkdir -p
 OUTPUT_BASE = ./bin
@@ -16,12 +18,12 @@ OUTPUT_RELEASE = $(OUTPUT_BASE)/release/$(BIN)
 
 SHADERS_DIR = shaders
 
-debug: clean_sources $(ALL_SOURCES)
+debug: clean_sources
 	export VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation
 	$(MKDIR_P) $(OUTPUT_BASE)/debug
 	clang++ $(CFLAGS_DEBUG) -o $(OUTPUT_DEBUG) $(SOURCES) $(LDFLAGS)
 
-release: clean_sources $(ALL_SOURCES)
+release: clean_sources
 	export VK_INSTANCE_LAYERS=None
 	$(MKDIR_P) $(OUTPUT_BASE)/release
 	clang++ $(CFLAGS_RELEASE) -o $(OUTPUT_RELEASE) $(SOURCES) $(LDFLAGS)

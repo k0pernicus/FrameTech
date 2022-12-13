@@ -16,7 +16,7 @@
 #include <GLFW/glfw3.h>
 #include <optional>
 
-#ifdef _IMGUI
+#ifdef IMGUI
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_vulkan.h"
@@ -32,9 +32,9 @@ namespace frametech
 {
 
     /// @brief The default height, in pixels, of the window application
-    constexpr uint32_t const DEFAULT_WINDOW_HEIGHT = 1080;
+    constexpr uint32_t const DEFAULT_WINDOW_HEIGHT = 720;
     /// @brief The default width, in pixels, of the window application
-    constexpr uint32_t const DEFAULT_WINDOW_WIDTH = 1920;
+    constexpr uint32_t const DEFAULT_WINDOW_WIDTH = 1280;
 
     /// @brief `Application` handles the entire application / engine.
     /// This class is **not** thread-safe!
@@ -60,16 +60,22 @@ namespace frametech
             CLOSING
         };
         static Application* m_instance;
-#ifdef _IMGUI
-        /// @brief imgui window
+#ifdef IMGUI
+        /// @brief ImGui window
         static ImGui_ImplVulkanH_Window m_imgui_app_window;
-        /// @brief Setup the imgui window & API
+        /// @brief Setup the ImGui window & API
         void setupImGui();
         /// @brief Upload the ImGui font to avoid rendering error(s)
         ftstd::VResult uploadImGuiFont();
+        /// @brief The draw function for ImGui
+        void drawImGui();
 #endif
         /// @brief App window
         GLFWwindow* m_app_window = nullptr;
+        /// @brief The windows width size
+        int m_app_width = 0;
+        /// @brief The windows height size
+        int m_app_height = 0;
         /// @brief App title
         const char* m_app_title = nullptr;
         /// @brief Constructor of the Application - should be private as Application is a Singleton
@@ -128,6 +134,9 @@ namespace frametech
         void forceRendererFPSLimit(uint8_t new_limit);
         /// @brief Returns the current frame of the application
         uint64_t getCurrentFrame();
+        /// @brief Get the current window size
+        /// @return The window size, as a pair of int: height x width
+        std::pair<int, int> getWindowSize() const noexcept;
     };
 
 } // namespace frametech

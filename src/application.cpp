@@ -10,10 +10,16 @@
 #include "ftstd/timer.h"
 #include "project.hpp"
 
-#ifdef _IMGUI
+#ifdef IMGUI
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_vulkan.h"
+
+/// @brief Stores if the ImGui demo window should be rendered or not
+bool CLOSE_IMGUI_APP = false;
+
+extern char S_APP_VERSION[18];
+extern char S_ENGINE_VERSION[18];
 #endif
 
 frametech::Application* frametech::Application::m_instance{nullptr};
@@ -71,16 +77,18 @@ ftstd::VResult frametech::Application::initWindow()
     if (!m_monitor.foundPrimaryMonitor())
         if (const auto scan_result_code = m_monitor.scanForPrimaryMonitor(); scan_result_code.IsError())
             return ftstd::VResult::Error((char*)"Error getting the primary monitor");
+    m_app_height = frametech::DEFAULT_WINDOW_HEIGHT;
+    m_app_width = frametech::DEFAULT_WINDOW_WIDTH;
     // The last parameter in glfwCreateWindow is only for OpenGL - no need to setup it here
-    m_app_window = glfwCreateWindow(frametech::DEFAULT_WINDOW_WIDTH,
-                                    frametech::DEFAULT_WINDOW_HEIGHT,
+    m_app_window = glfwCreateWindow(m_app_width,
+                                    m_app_height,
                                     m_app_title,
                                     nullptr,
                                     nullptr);
     return ftstd::VResult::Ok();
 }
 
-#ifdef _IMGUI
+#ifdef IMGUI
 /// @brief This function should NOT be called **BEFORE** the
 /// Vulkan window setup
 void frametech::Application::setupImGui()
@@ -164,6 +172,43 @@ ftstd::VResult frametech::Application::uploadImGuiFont()
     Log("< Ending up uploading ImGui font...");
     return ftstd::VResult::Ok();
 }
+
+void frametech::Application::drawImGui()
+{
+    // Optimization technique
+    if (!ImGui::Begin("FrameTech", &CLOSE_IMGUI_APP))
+    {
+        ImGui::End();
+        return;
+    }
+
+    if (ImGui::CollapsingHeader("App debug info"))
+    {
+        ImGui::Text("App title: '%s'", m_app_title);
+        ImGui::Text("App version: %s", S_APP_VERSION);
+        ImGui::Text("Engine version: %s", S_ENGINE_VERSION);
+        ImGui::Text("App average %.3f ms/frame (%.1f FPS) (%llu drawed frames)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate, m_current_frame);
+        if (ImGui::TreeNode("Framebuffers properties"))
+        {
+            ImGui::Text("Size: %dx%d", m_app_width, m_app_height);
+            ImGui::TreePop();
+            ImGui::Separator();
+        }
+    }
+
+    ImGui::Separator();
+
+    if (ImGui::CollapsingHeader("Monitor properties"))
+    {
+        const auto monitor_properties = m_monitor.getCurrentProperties();
+        ImGui::Text("Name: %s", monitor_properties.m_name);
+        ImGui::Text("Size: %dx%d", monitor_properties.m_width, monitor_properties.m_height);
+    }
+
+    ImGui::Separator();
+
+    ImGui::End();
+}
 #endif
 
 void frametech::Application::initEngine()
@@ -214,7 +259,7 @@ void frametech::Application::drawFrame()
 
 void frametech::Application::run()
 {
-#ifdef _IMGUI
+#ifdef IMGUI
     setupImGui();
     uploadImGuiFont();
 #endif
@@ -245,7 +290,7 @@ void frametech::Application::run()
                     m_FPS_limit = monitor_refresh_rate;
                 }
             }
-#ifdef _DEBUG
+#ifdef DEBUG
             m_FPS_limit.has_value() ? Log("> Application is running at %d FPS", m_FPS_limit.value()) : Log("> Application is running at unlimited frame");
 #endif
             m_state = frametech::Application::State::RUNNING;
@@ -254,25 +299,16 @@ void frametech::Application::run()
             while (!glfwWindowShouldClose(m_app_window) && m_state == frametech::Application::State::RUNNING)
             {
                 glfwPollEvents();
-#ifdef _IMGUI
-                Log(">> Starting the Dear ImGui frame");
+#ifdef IMGUI
+                Log(">> Rendering ImGui");
                 // Start the Dear ImGui frame
                 ImGui_ImplVulkan_NewFrame();
                 ImGui_ImplGlfw_NewFrame();
                 ImGui::NewFrame();
-                // Draw demo window
-                bool show_demo_window = true;
-                if (show_demo_window)
-                    Log(">> Showing ImGui demo window");
-                else
-                    Log(">> Not showing ImGui demo window");
-                ImGui::ShowDemoWindow(&show_demo_window);
+                drawImGui();
 #endif
                 // drawFrame includes the acquisition, draw, and present processes
                 drawFrame();
-#ifdef _IMGUI
-                Log("<< Rendering ImGui");
-#endif
             }
             Log("< ...Application loop");
             vkDeviceWaitIdle(m_engine->m_graphics_device.getLogicalDevice());
