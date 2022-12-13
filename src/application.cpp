@@ -245,7 +245,9 @@ void frametech::Application::run()
                     m_FPS_limit = monitor_refresh_rate;
                 }
             }
+#ifdef _DEBUG
             m_FPS_limit.has_value() ? Log("> Application is running at %d FPS", m_FPS_limit.value()) : Log("> Application is running at unlimited frame");
+#endif
             m_state = frametech::Application::State::RUNNING;
             // TODO: Each second, added the FPS number in recorded_frames
             // TODO: Increase the index : recorded_frames_index = (recorded_frames_index + 1) % FPS_RECORDS;

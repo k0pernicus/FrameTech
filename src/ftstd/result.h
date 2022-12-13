@@ -97,11 +97,6 @@ namespace ftstd
         /// @param result The result value, which is not an error.
         static Result Ok(T c_result)
         {
-            if constexpr (std::is_same<T, void>::value)
-            {
-                return Ok();
-                return;
-            }
             Result result;
             result.m_error = RESULT_OK;
             result.m_error_exp = nullptr;
