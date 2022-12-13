@@ -16,15 +16,13 @@ This engine is divided in several namespaces, or parts, like `Graphics`.
 
 ## About externs
 
-This repository includes extern repositories / dependencies, like `imgui`.
-
-Do not forget to run a `git submodule update` after cloning the _FrameTech_ repository.
+This repository includes extern repositories / dependencies, like `imgui`.  
+Do not forget to run a `git submodule update` after cloning the _FrameTech_ repository.  
+Thanks to Omar Cornut & the ImGui team for providing a such great tool for free, to the developers.
 
 ## TODO
 
-1. DONE: Get the monitor via GLFW, and set the refresh rate based on the monitor device output,
-2. Improve the shaders bindings,
-3. Make a todo statement about what to move from pipeline / render / swapchain / ... to ...,
-4. Make a proper FPS count + display it on screen,
-5. Make the configuration external to the build (like FPS limit),
-6. Multi-platforms.
+1. Improve the shaders bindings,
+2. Make a todo statement about what to move from pipeline / render / swapchain / ... to ...,
+3. Make the configuration external to the build (like FPS limit),
+4. Multi-platforms.
