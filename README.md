@@ -14,6 +14,12 @@ The custom standard library, `ftstd` (for "FrameTech STanDard library"), is enou
 
 This engine is divided in several namespaces, or parts, like `Graphics`.
 
+## About externs
+
+This repository includes extern repositories / dependencies, like `imgui`.
+
+Do not forget to run a `git submodule update` after cloning the _FrameTech_ repository.
+
 ## TODO
 
 1. DONE: Get the monitor via GLFW, and set the refresh rate based on the monitor device output,
