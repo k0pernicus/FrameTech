@@ -1,11 +1,11 @@
-CFLAGS = -std=c++17 -I. -I$(VULKAN_SDK)/include -I/usr/local/include -I/opt/homebrew/include
-CFLAGS_DEBUG = $(CFLAGS) -Werror -Wall -g -DDEBUG
+CFLAGS = -std=c++17 -I. -I$(VULKAN_SDK)/include -I/usr/local/include -I/opt/homebrew/include -I./extern/imgui -I./extern/imgui/backends
+CFLAGS_DEBUG = $(CFLAGS) -Werror -Wall -g -DDEBUG -D_IMGUI
 CFLAGS_RELEASE = $(CFLAGS) -O2 -DNDEBUG -DNO_AVG_FPS_RECORDS
 
 LDFLAGS = -L$(VULKAN_SDK)/lib `pkg-config --static --libs glfw3` -lvulkan
 
-SOURCES = src/*.cpp src/engine/*.cpp src/engine/graphics/*.cpp
-HEADERS = src/*.hpp src/engine/*.hpp src/engine/graphics/*.hpp
+SOURCES = src/*.cpp src/engine/*.cpp src/engine/graphics/*.cpp extern/imgui/*.cpp extern/imgui/backends/*.cpp
+HEADERS = src/*.hpp src/engine/*.hpp src/engine/graphics/*.hpp extern/imgui/*.h extern/imgui/backends/*.h
 ALL_SOURCES = $(SOURCES) $(HEADERS)
 
 MKDIR_P = mkdir -p

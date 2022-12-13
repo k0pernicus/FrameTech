@@ -55,9 +55,13 @@ namespace frametech
         ftstd::VResult createRenderDevice();
         /// @brief Creates the swapchain
         ftstd::VResult createSwapChain();
+        /// @brief Creates the descriptor pool
+        ftstd::VResult createDescriptorPool();
         /// @brief Stores the internal state of the unique
         /// Engine object
         frametech::Engine::State m_state;
+        /// @brief Descriptor pool
+        VkDescriptorPool m_descriptor_pool = VK_NULL_HANDLE;
 
     public:
         /// @brief Get the singleton Engine object
@@ -80,7 +84,8 @@ namespace frametech
         std::unique_ptr<frametech::graphics::Render> m_render;
         /// @brief The swapchain of the engine
         std::unique_ptr<frametech::graphics::SwapChain> m_swapchain;
-        ;
+        /// @brief Returns a VkDescriptorPool object, associated to the current object
+        VkDescriptorPool getDescriptorPool() const noexcept;
     };
 
 } // namespace frametech

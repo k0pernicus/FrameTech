@@ -5,6 +5,7 @@
 //  Created by Antonin on 18/09/2022.
 //
 
+#define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
 #include "application.hpp"
 #include "engine/project.hpp"

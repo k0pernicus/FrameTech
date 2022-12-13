@@ -16,6 +16,12 @@
 #include <GLFW/glfw3.h>
 #include <optional>
 
+#ifdef _IMGUI
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_vulkan.h"
+#endif
+
 #ifdef NO_AVG_FPS_RECORDS
 #define FPS_RECORDS 1
 #else
@@ -26,9 +32,9 @@ namespace frametech
 {
 
     /// @brief The default height, in pixels, of the window application
-    constexpr uint32_t const DEFAULT_WINDOW_HEIGHT = 580;
+    constexpr uint32_t const DEFAULT_WINDOW_HEIGHT = 1080;
     /// @brief The default width, in pixels, of the window application
-    constexpr uint32_t const DEFAULT_WINDOW_WIDTH = 700;
+    constexpr uint32_t const DEFAULT_WINDOW_WIDTH = 1920;
 
     /// @brief `Application` handles the entire application / engine.
     /// This class is **not** thread-safe!
@@ -54,6 +60,14 @@ namespace frametech
             CLOSING
         };
         static Application* m_instance;
+#ifdef _IMGUI
+        /// @brief imgui window
+        static ImGui_ImplVulkanH_Window m_imgui_app_window;
+        /// @brief Setup the imgui window & API
+        void setupImGui();
+        /// @brief Upload the ImGui font to avoid rendering error(s)
+        ftstd::VResult uploadImGuiFont();
+#endif
         /// @brief App window
         GLFWwindow* m_app_window = nullptr;
         /// @brief App title

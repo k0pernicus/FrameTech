@@ -10,6 +10,12 @@
 #include "ftstd/timer.h"
 #include "project.hpp"
 
+#ifdef _IMGUI
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_vulkan.h"
+#endif
+
 frametech::Application* frametech::Application::m_instance{nullptr};
 
 frametech::Application::Application(const char* app_title)
@@ -74,6 +80,92 @@ ftstd::VResult frametech::Application::initWindow()
     return ftstd::VResult::Ok();
 }
 
+#ifdef _IMGUI
+/// @brief This function should NOT be called **BEFORE** the
+/// Vulkan window setup
+void frametech::Application::setupImGui()
+{
+    Log("> Setup ImGui...");
+    // Setting up imgui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+    Log(">> ImGui context has been correctly created");
+    ImGui::StyleColorsDark();
+    Log(">> Setting up the Vulkan renderer...");
+
+    ImGui_ImplGlfw_InitForVulkan(m_app_window, true);
+    ImGui_ImplVulkan_InitInfo init_info{};
+    // TODO, setup
+    Log("<< Ended up to setup the Vulkan renderer...");
+    init_info.Instance = m_engine->m_graphics_instance;
+    init_info.PhysicalDevice = m_engine->m_graphics_device.getPhysicalDevice();
+    init_info.Device = m_engine->m_graphics_device.getLogicalDevice();
+    init_info.Queue = m_engine->m_graphics_device.getGraphicsQueue();
+    init_info.QueueFamily = m_engine->m_graphics_device.m_graphics_queue_family_index;
+    init_info.DescriptorPool = m_engine->getDescriptorPool();
+    // TODO: check to retrieve the information BETTER
+    init_info.MinImageCount = 2;
+    init_info.ImageCount = 2;
+    init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+    ImGui_ImplVulkan_Init(&init_info, m_engine->m_render->getGraphicsPipeline()->getRenderPass());
+    Log("<< Ended up the init of ImplVulkan with ImGui...");
+
+    Log("< Ending ImGui setup...");
+}
+
+ftstd::VResult frametech::Application::uploadImGuiFont()
+{
+    Log("> Uploading ImGui font...");
+    // Use any command queue
+    auto command_buffer_obj = m_engine->m_render->getCommandBuffer();
+    VkCommandPool* command_pool = command_buffer_obj->getPool();
+    VkCommandBuffer* command_buffer = command_buffer_obj->getBuffer();
+    VkDevice device = m_engine->m_graphics_device.getLogicalDevice();
+
+    if (const auto result_status = vkResetCommandPool(device, *command_pool, 0); result_status != VK_SUCCESS)
+    {
+        LogE("vkResetCommandPool to upload ImGui font failed");
+        return ftstd::VResult::Error((char*)"canno't upload ImGui font");
+    }
+    VkCommandBufferBeginInfo begin_info = {};
+    begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+    if (const auto result_status = vkBeginCommandBuffer(*command_buffer, &begin_info); result_status != VK_SUCCESS)
+    {
+        LogE("vkBeginCommandBuffer to upload ImGui font failed");
+        return ftstd::VResult::Error((char*)"canno't upload ImGui font");
+    }
+
+    ImGui_ImplVulkan_CreateFontsTexture(*command_buffer);
+
+    VkSubmitInfo end_info = {};
+    end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    end_info.commandBufferCount = 1;
+    end_info.pCommandBuffers = command_buffer;
+    if (const auto result_status = vkEndCommandBuffer(*command_buffer); result_status != VK_SUCCESS)
+    {
+        LogE("vkEndCommandBuffer to upload ImGui font failed");
+        return ftstd::VResult::Error((char*)"canno't upload ImGui font");
+    }
+    if (const auto result_status = vkQueueSubmit(m_engine->m_graphics_device.getGraphicsQueue(), 1, &end_info, VK_NULL_HANDLE); result_status != VK_SUCCESS)
+    {
+        LogE("vkQueueSubmit to upload ImGui font failed");
+        return ftstd::VResult::Error((char*)"canno't upload ImGui font");
+    }
+
+    if (const auto result_status = vkDeviceWaitIdle(device); result_status != VK_SUCCESS)
+    {
+        LogE("vkDeviceWaitIdle to upload ImGui font failed");
+        return ftstd::VResult::Error((char*)"canno't upload ImGui font");
+    }
+    ImGui_ImplVulkan_DestroyFontUploadObjects();
+    Log("< Ending up uploading ImGui font...");
+    return ftstd::VResult::Ok();
+}
+#endif
+
 void frametech::Application::initEngine()
 {
     m_engine = std::unique_ptr<frametech::Engine>(frametech::Engine::getInstance());
@@ -122,6 +214,10 @@ void frametech::Application::drawFrame()
 
 void frametech::Application::run()
 {
+#ifdef _IMGUI
+    setupImGui();
+    uploadImGuiFont();
+#endif
     switch (m_engine->getState())
     {
         case frametech::Engine::State::UNINITIALIZED:
@@ -156,8 +252,25 @@ void frametech::Application::run()
             while (!glfwWindowShouldClose(m_app_window) && m_state == frametech::Application::State::RUNNING)
             {
                 glfwPollEvents();
+#ifdef _IMGUI
+                Log(">> Starting the Dear ImGui frame");
+                // Start the Dear ImGui frame
+                ImGui_ImplVulkan_NewFrame();
+                ImGui_ImplGlfw_NewFrame();
+                ImGui::NewFrame();
+                // Draw demo window
+                bool show_demo_window = true;
+                if (show_demo_window)
+                    Log(">> Showing ImGui demo window");
+                else
+                    Log(">> Not showing ImGui demo window");
+                ImGui::ShowDemoWindow(&show_demo_window);
+#endif
                 // drawFrame includes the acquisition, draw, and present processes
                 drawFrame();
+#ifdef _IMGUI
+                Log("<< Rendering ImGui");
+#endif
             }
             Log("< ...Application loop");
             vkDeviceWaitIdle(m_engine->m_graphics_device.getLogicalDevice());

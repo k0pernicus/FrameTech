@@ -76,6 +76,8 @@ frametech::Engine::~Engine()
     Log("< Closing the Engine object...");
     m_swapchain = nullptr;
     m_render = nullptr;
+    if (m_descriptor_pool)
+        vkDestroyDescriptorPool(m_graphics_device.getLogicalDevice(), m_descriptor_pool, nullptr);
     m_graphics_device.Destroy();
     if (m_graphics_instance)
         vkDestroyInstance(m_graphics_instance, nullptr);
@@ -108,6 +110,11 @@ void frametech::Engine::initialize()
         return;
     }
     if (const auto result = m_graphics_device.createLogicalDevice(); result.IsError())
+    {
+        m_state = ERROR;
+        return;
+    }
+    if (const auto result = createDescriptorPool(); result.IsError())
     {
         m_state = ERROR;
         return;
@@ -242,4 +249,40 @@ ftstd::VResult frametech::Engine::createSwapChain()
         m_swapchain = std::unique_ptr<frametech::graphics::SwapChain>(frametech::graphics::SwapChain::getInstance());
     m_swapchain->queryDetails();
     return m_swapchain->create();
+}
+
+ftstd::VResult frametech::Engine::createDescriptorPool()
+{
+    Log("> Creating the descriptor pool...");
+    VkDescriptorPoolSize pool_sizes[] =
+        {
+            {VK_DESCRIPTOR_TYPE_SAMPLER, 1000},
+            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000},
+            {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000},
+            {VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000},
+            {VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000},
+            {VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000},
+            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000},
+            {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000},
+            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000},
+            {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000},
+            {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000}};
+    const auto pool_sizes_count = (int)(sizeof(pool_sizes) / sizeof(*(pool_sizes)));
+    VkDescriptorPoolCreateInfo pool_info = {};
+    pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+    pool_info.maxSets = 1000 * pool_sizes_count;
+    pool_info.poolSizeCount = (uint32_t)pool_sizes_count;
+    pool_info.pPoolSizes = pool_sizes;
+    if (const auto result_status = vkCreateDescriptorPool(m_graphics_device.getLogicalDevice(), &pool_info, nullptr, &m_descriptor_pool); result_status != VK_SUCCESS)
+    {
+        LogE("> vkCreateDescriptorPool: cannot create the descriptor pool");
+        return ftstd::VResult::Error((char*)"Cannot create the descriptor pool");
+    }
+    return ftstd::VResult::Ok();
+}
+
+VkDescriptorPool frametech::Engine::getDescriptorPool() const noexcept
+{
+    return m_descriptor_pool;
 }
