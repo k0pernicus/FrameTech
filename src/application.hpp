@@ -91,7 +91,7 @@ namespace frametech
         std::unique_ptr<frametech::Engine> m_engine;
         /// @brief Recorded frames to make
         /// FPS stats on latest records
-        uint8_t recorded_frames[FPS_RECORDS];
+        uint64_t recorded_frames[FPS_RECORDS];
         /// @brief The index to record the current FPS
         /// record
         uint8_t recorded_frames_index = 0;

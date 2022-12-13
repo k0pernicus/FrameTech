@@ -28,7 +28,7 @@ namespace Project
     /// @brief The name of the application
     constexpr const char* APPLICATION_NAME = "Example";
     /// @brief Pause / limit the Application to XXX FPS
-    const std::optional<uint8_t> APPLICATION_FPS_LIMIT = FPS_LIMIT_120;
+    const std::optional<uint8_t> APPLICATION_FPS_LIMIT = FPS_LIMIT_60;
     /// @brief Major version number of the application
     constexpr uint8_t const APPLICATION_VERSION_MAJOR_NUMBER = 0;
     /// @brief Minor version number of the application

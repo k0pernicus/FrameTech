@@ -16,10 +16,6 @@
 #include <string>
 #include <time.h>
 
-// TODO: should be defined elsewhere
-// (proper preprocessor for example)
-#define ENABLE_EXCEPTIONS
-
 // Ignore the diagnostic security as we can pass
 // variadic arguments to build_log (and to fprintf as well)
 #pragma GCC diagnostic push

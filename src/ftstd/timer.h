@@ -65,6 +65,10 @@ namespace ftstd
         {
             m_is_running = false;
         };
+        uint64_t diff()
+        {
+            return NOW_MS - m_begin.value();
+        }
         /// @brief Resets the internal settings of the timer
         void reset()
         {

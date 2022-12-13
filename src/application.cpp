@@ -236,9 +236,16 @@ void frametech::Application::drawFrame()
         uint64_t wait_until_ms = ftstd::Timer::get_time_limit(wait_ms);
         // Log("Drawing frame %d...", m_current_frame);
 
+        // Real rendering time
+        auto begin_real_rendering_timer = ftstd::Timer();
+
         m_engine->m_render->getGraphicsPipeline()->acquireImage();
         m_engine->m_render->getGraphicsPipeline()->draw();
         m_engine->m_render->getGraphicsPipeline()->present();
+
+        const auto rendering_time_diff = begin_real_rendering_timer.diff();
+        recorded_frames[recorded_frames_index] = rendering_time_diff;
+        recorded_frames_index = (recorded_frames_index + 1) % FPS_RECORDS;
 
         // Force to pause the rendering thread
         // if (and only if) the time has not come yet
@@ -294,8 +301,6 @@ void frametech::Application::run()
             m_FPS_limit.has_value() ? Log("> Application is running at %d FPS", m_FPS_limit.value()) : Log("> Application is running at unlimited frame");
 #endif
             m_state = frametech::Application::State::RUNNING;
-            // TODO: Each second, added the FPS number in recorded_frames
-            // TODO: Increase the index : recorded_frames_index = (recorded_frames_index + 1) % FPS_RECORDS;
             while (!glfwWindowShouldClose(m_app_window) && m_state == frametech::Application::State::RUNNING)
             {
                 glfwPollEvents();
