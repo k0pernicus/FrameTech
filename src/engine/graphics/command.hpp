@@ -31,6 +31,7 @@ namespace frametech
             /// @return the VkCommandBuffer object
             VkCommandBuffer* getBuffer();
             /// @brief Creates the command pool
+            /// @param family_index The queue family index to bind
             /// @return A VResult type
             ftstd::VResult createPool(const uint32_t family_index);
             /// @brief Creates the command buffer
