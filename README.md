@@ -16,7 +16,7 @@ This engine is divided in several namespaces, or parts, like `Graphics`.
 
 ## About externs
 
-This repository includes extern repositories / dependencies, like `imgui`.  
+This repository includes extern repositories / dependencies, like `imgui` or `glm` (for shaders specifications).  
 Do not forget to run a `git submodule update` after cloning the _FrameTech_ repository.  
 Thanks to Omar Cornut & the ImGui team for providing a such great tool for free, to the developers.
 
