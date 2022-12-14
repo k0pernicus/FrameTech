@@ -69,6 +69,8 @@ namespace frametech
         ftstd::VResult uploadImGuiFont();
         /// @brief The draw function for ImGui
         void drawImGui();
+        /// @brief Clean the instance(s) of ImGui
+        void cleanImGui();
 #endif
         /// @brief App window
         GLFWwindow* m_app_window = nullptr;

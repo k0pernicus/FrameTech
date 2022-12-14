@@ -209,6 +209,14 @@ void frametech::Application::drawImGui()
 
     ImGui::End();
 }
+
+void frametech::Application::cleanImGui()
+{
+
+    ImGui_ImplVulkan_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+}
 #endif
 
 void frametech::Application::initEngine()
@@ -320,6 +328,9 @@ void frametech::Application::run()
         }
         break;
     }
+#ifdef IMGUI
+    cleanImGui();
+#endif
     m_state = frametech::Application::State::CLOSING;
 }
 
