@@ -238,21 +238,20 @@ void frametech::Application::forceRendererFPSLimit(uint8_t new_limit)
 
 void frametech::Application::drawFrame()
 {
-    const double wait_ms = (m_FPS_limit == std::nullopt) ? 0.0 : (1000 / m_FPS_limit.value());
-    if (wait_ms > 0.0)
+    if (m_FPS_limit != std::nullopt)
     {
+        const double wait_ms = 1000.0f / m_FPS_limit.value();
         uint64_t wait_until_ms = ftstd::Timer::get_time_limit(wait_ms);
         // Log("Drawing frame %d...", m_current_frame);
 
         // Real rendering time
         auto begin_real_rendering_timer = ftstd::Timer();
-
         m_engine->m_render->getGraphicsPipeline()->acquireImage();
         m_engine->m_render->getGraphicsPipeline()->draw();
         m_engine->m_render->getGraphicsPipeline()->present();
-
         const auto rendering_time_diff = begin_real_rendering_timer.diff();
-        recorded_frames[recorded_frames_index] = rendering_time_diff;
+
+        recorded_frames[recorded_frames_index] = rendering_time_diff > 0 ? rendering_time_diff : 1;
         recorded_frames_index = (recorded_frames_index + 1) % FPS_RECORDS;
 
         // Force to pause the rendering thread
@@ -264,9 +263,15 @@ void frametech::Application::drawFrame()
     }
     // Log("Drawing frame %d", m_current_frame);
 
+    // Real rendering time
+    auto begin_real_rendering_timer = ftstd::Timer();
     m_engine->m_render->getGraphicsPipeline()->acquireImage();
     m_engine->m_render->getGraphicsPipeline()->draw();
     m_engine->m_render->getGraphicsPipeline()->present();
+    const uint64_t rendering_time_diff = begin_real_rendering_timer.diff();
+
+    recorded_frames[recorded_frames_index] = rendering_time_diff > 0 ? rendering_time_diff : 1;
+    recorded_frames_index = (recorded_frames_index + 1) % FPS_RECORDS;
 
     m_engine->m_render->updateFrameIndex(m_current_frame);
     ++m_current_frame;

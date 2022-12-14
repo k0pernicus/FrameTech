@@ -19,7 +19,6 @@ namespace frametech
     {
         class Allocator
         {
-
         private:
             static ftstd::Result<uint32_t> findMemoryType(const VkPhysicalDevice& physical_device, const uint32_t type_filter, const VkMemoryPropertyFlags memory_property_flags) noexcept
             {
