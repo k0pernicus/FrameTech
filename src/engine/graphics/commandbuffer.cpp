@@ -118,8 +118,17 @@ ftstd::VResult frametech::graphics::CommandBuffer::record()
     };
     vkCmdSetScissor(m_buffer, 0, 1, &scissor);
 
-    // TODO: change to dynamic draw command
-    vkCmdDraw(m_buffer, 3, 1, 0, 0);
+    // Bind the vertex buffer
+    std::vector<VkBuffer> vertex_buffers = {frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getVertexBuffer()};
+    // // TODO: check to include this information getting the vertex buffer
+    std::vector<VkDeviceSize> memory_offsets(vertex_buffers.size());
+    for (size_t i = 0; i < vertex_buffers.size(); ++i)
+        memory_offsets[i] = i;
+    vkCmdBindVertexBuffers(m_buffer, 0, vertex_buffers.size(), vertex_buffers.data(), memory_offsets.data());
+
+    uint32_t vertices_size = static_cast<uint32_t>(frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getVertices().size());
+
+    vkCmdDraw(m_buffer, vertices_size, 1, 0, 0);
 
 #ifdef IMGUI
     ImGui::Render();

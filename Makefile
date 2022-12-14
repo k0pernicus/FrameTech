@@ -7,8 +7,9 @@ LDFLAGS = -L$(VULKAN_SDK)/lib `pkg-config --static --libs glfw3` -lvulkan
 
 IMGUI_SOURCES = extern/imgui/*.cpp extern/imgui/backends/*.cpp
 IMGUI_HEADERS = extern/imgui/*.h extern/imgui/backends/*.h
+GLM_HEADERS = extern/glm/*.h extern/glm/*.hpp
 SOURCES = src/*.cpp src/engine/*.cpp src/engine/graphics/*.cpp $(IMGUI_SOURCES)
-HEADERS = src/*.hpp src/engine/*.hpp src/engine/graphics/*.hpp $(IMGUI_HEADERS)
+HEADERS = src/*.hpp src/engine/*.hpp src/engine/graphics/*.hpp $(IMGUI_HEADERS) $(GLM_HEADERS)
 
 MKDIR_P = mkdir -p
 OUTPUT_BASE = ./bin

@@ -10,6 +10,7 @@
 #define pipeline_hpp
 
 #include "../../ftstd/result.h"
+#include "../../ftstd/shaders.h"
 #include <cstdlib>
 #include <optional>
 #include <vector>
@@ -85,9 +86,18 @@ namespace frametech
             /// @brief Returns the registered render pass object
             /// @return A VkRenderPass object
             VkRenderPass& getRenderPass();
+            /// @brief Returns the bounded vertices
+            /// @return The bounded vertices (may be an empty vector)
+            const std::vector<ftstd::shaders::Vertex>& getVertices() noexcept;
+            /// @brief Returns a reference to the current vertex buffer
+            /// @return A reference to the current vertex buffer
+            const VkBuffer& getVertexBuffer() noexcept;
             /// @brief Returns the pipeline of this object
             /// @return A VkPipeline object
             VkPipeline getPipeline();
+            /// @brief Creates a Vertex Buffer object to use for our shaders
+            /// @return A VResult type to know if the function succeeded or not.
+            ftstd::VResult createVertexBuffer() noexcept;
             /// @brief Performs the acquire image call
             void acquireImage();
             /// @brief Draw the current frame
@@ -124,6 +134,13 @@ namespace frametech
             VkRenderPass m_render_pass = VK_NULL_HANDLE;
             /// @brief The pipeline object
             VkPipeline m_pipeline = VK_NULL_HANDLE;
+            /// @brief The vertex buffer
+            VkBuffer m_vertex_buffer = VK_NULL_HANDLE;
+            /// @brief Handles the vertices
+            /// TODO: to change for a most versatile option
+            std::vector<ftstd::shaders::Vertex> m_vertices;
+            /// @brief Vertex buffer memory
+            VkDeviceMemory m_vertex_buffer_memory = VK_NULL_HANDLE;
             /// @brief Sync object to signal that an image is ready to
             /// be displayed
             VkSemaphore* m_sync_image_ready = nullptr;

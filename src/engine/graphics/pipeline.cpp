@@ -8,7 +8,9 @@
 #include "pipeline.hpp"
 #include "../../ftstd/debug_tools.h"
 #include "../../ftstd/result.h"
+#include "../../ftstd/shaders.h"
 #include "../engine.hpp"
+#include "allocator.hpp"
 #include <filesystem>
 #include <fstream>
 #include <vector>
@@ -29,19 +31,31 @@ frametech::graphics::Pipeline::~Pipeline()
                 shader_module,
                 nullptr);
     }
-    if (m_render_pass != VK_NULL_HANDLE)
+    if (VK_NULL_HANDLE != m_render_pass)
     {
         Log("< Destroying the render pass...");
         vkDestroyRenderPass(graphics_device, m_render_pass, nullptr);
         m_render_pass = VK_NULL_HANDLE;
     }
-    if (m_layout != VK_NULL_HANDLE)
+    if (VK_NULL_HANDLE != m_layout)
     {
         Log("< Destroying the pipeline layout...");
         vkDestroyPipelineLayout(graphics_device, m_layout, nullptr);
         m_layout = VK_NULL_HANDLE;
     }
-    if (m_pipeline != VK_NULL_HANDLE)
+    if (VK_NULL_HANDLE != m_vertex_buffer)
+    {
+        Log("< Destroying the vertex buffer...");
+        vkDestroyBuffer(graphics_device, m_vertex_buffer, nullptr);
+        m_vertex_buffer = VK_NULL_HANDLE;
+    }
+    if (VK_NULL_HANDLE != m_vertex_buffer_memory)
+    {
+        Log("< Destroying the vertex buffer memory...");
+        vkFreeMemory(graphics_device, m_vertex_buffer_memory, nullptr);
+        m_vertex_buffer_memory = VK_NULL_HANDLE;
+    }
+    if (VK_NULL_HANDLE != m_pipeline)
     {
         Log("< Destroying the pipeline object...");
         vkDestroyPipeline(graphics_device, m_pipeline, nullptr);
@@ -284,6 +298,14 @@ ftstd::VResult frametech::graphics::Pipeline::create()
         return ftstd::VResult::Error((char*)"Cannot create the graphics pipeline without pipeline layout information");
     }
 
+    // TODO: remove for a most versatile option
+    // TODO: to remove once the pipeline rendering works
+    /// Basic triangle
+    m_vertices.resize(3);
+    m_vertices[0] = {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}};
+    m_vertices[1] = {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}};
+    m_vertices[2] = {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}};
+
     // TODO: make this array as a class parameter
     // If array belongs to the class parameter, move it to std::vector
     VkDynamicState dynamic_states[2] = {
@@ -309,17 +331,20 @@ ftstd::VResult frametech::graphics::Pipeline::create()
         .pScissors = &scissor,
     };
 
+    const auto vertex_binding_description = ftstd::shaders::VertexUtils::getVertexBindingDescription();
+    const auto vertex_attribute_descriptions = ftstd::shaders::VertexUtils::getVertexAttributeDescriptions();
+
     // Vertex data settings:
     // * bindings: spacing between data, and whether the data is per-vertex or per-instance,
     // * attribute descriptions: type of the attributes passed to the vertex shader, offset, binding(s) to load, ...
-    // No data for now as we are testing with vertex data in the shader directly
-    // TODO: to change to pass it through the renderer
     VkPipelineVertexInputStateCreateInfo vertex_input_create_info{
         .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-        .vertexBindingDescriptionCount = 0,
-        .pVertexBindingDescriptions = nullptr,
-        .vertexAttributeDescriptionCount = 0,
-        .pVertexAttributeDescriptions = nullptr,
+        // Vertex binding description
+        .vertexBindingDescriptionCount = 1,
+        .pVertexBindingDescriptions = &vertex_binding_description,
+        // Vertex attribute description
+        .vertexAttributeDescriptionCount = static_cast<uint32_t>(vertex_attribute_descriptions.size()),
+        .pVertexAttributeDescriptions = vertex_attribute_descriptions.data(),
     };
 
     // Describes the kind of geometry that will be used, and if primitive restart
@@ -405,6 +430,30 @@ ftstd::VResult frametech::graphics::Pipeline::create()
     {
         return ftstd::VResult::Error((char*)"Failed to create the main graphics pipeline");
     }
+    return ftstd::VResult::Ok();
+}
+
+ftstd::VResult frametech::graphics::Pipeline::createVertexBuffer() noexcept
+{
+    auto physical_device = frametech::Engine::getInstance()->m_graphics_device.getPhysicalDevice();
+    auto graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+    const VkDeviceSize memory_offset = 0;
+    if (m_vertex_buffer != VK_NULL_HANDLE)
+    {
+        LogW("the vertex buffer has already been intialized - resetting it...");
+        vkDestroyBuffer(graphics_device, m_vertex_buffer, nullptr);
+    }
+    m_vertex_buffer = VkBuffer();
+    const size_t vertices_size = sizeof(m_vertices[0]) * m_vertices.size();
+    if (const auto result = frametech::graphics::Allocator::initBuffer(graphics_device, vertices_size, m_vertex_buffer, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT); result.IsError())
+        return result;
+    if (const auto result = frametech::graphics::Allocator::allocateMemoryToBuffer(physical_device, graphics_device, m_vertex_buffer_memory, m_vertex_buffer, memory_offset); result.IsError())
+        return result;
+    // Now, fill the buffer
+    void* data;
+    vkMapMemory(graphics_device, m_vertex_buffer_memory, memory_offset, vertices_size, 0, &data);
+    memcpy(data, m_vertices.data(), (size_t)vertices_size);
+    vkUnmapMemory(graphics_device, m_vertex_buffer_memory);
     return ftstd::VResult::Ok();
 }
 
@@ -525,4 +574,14 @@ ftstd::Result<int> frametech::graphics::Pipeline::draw()
     }
 
     return ftstd::Result<int>::Ok(0);
+}
+
+const std::vector<ftstd::shaders::Vertex>& frametech::graphics::Pipeline::getVertices() noexcept
+{
+    return m_vertices;
+}
+
+const VkBuffer& frametech::graphics::Pipeline::getVertexBuffer() noexcept
+{
+    return m_vertex_buffer;
 }

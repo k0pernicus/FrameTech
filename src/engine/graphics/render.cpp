@@ -319,6 +319,11 @@ ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
         LogE("< Error creating the pool of the command buffer object");
         return result;
     }
+    if (const auto result = m_graphics_pipeline->createVertexBuffer(); result.IsError())
+    {
+        LogE("< Error creating the vertex buffer object");
+        return result;
+    }
     if (const auto result = m_command_buffer->createBuffer(); result.IsError())
     {
         LogE("< Error creating the buffer of the command buffer object");

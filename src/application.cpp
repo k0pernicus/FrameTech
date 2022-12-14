@@ -305,7 +305,7 @@ void frametech::Application::run()
             {
                 glfwPollEvents();
 #ifdef IMGUI
-                Log(">> Rendering ImGui");
+                // Log(">> Rendering ImGui");
                 // Start the Dear ImGui frame
                 ImGui_ImplVulkan_NewFrame();
                 ImGui_ImplGlfw_NewFrame();
