@@ -21,7 +21,7 @@ frametech::graphics::Render* frametech::graphics::Render::m_instance{nullptr};
 frametech::graphics::Render::Render()
 {
     m_graphics_pipeline = std::shared_ptr<frametech::graphics::Pipeline>(new frametech::graphics::Pipeline());
-    m_command_buffer = std::shared_ptr<frametech::graphics::CommandBuffer>(new frametech::graphics::CommandBuffer());
+    m_command = std::shared_ptr<frametech::graphics::Command>(new frametech::graphics::Command());
 }
 
 frametech::graphics::Render::~Render()
@@ -51,10 +51,10 @@ frametech::graphics::Render::~Render()
             vkDestroyFramebuffer(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), framebuffer, nullptr);
         m_framebuffers.clear();
     }
-    if (nullptr != m_command_buffer)
+    if (nullptr != m_command)
     {
-        Log("< Destroying the CommandBuffer object...");
-        m_command_buffer = nullptr;
+        Log("< Destroying the Command object...");
+        m_command = nullptr;
     }
     m_instance = nullptr;
 }
@@ -314,7 +314,7 @@ ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
         LogE("< Error creating the graphics pipeline");
         return result;
     }
-    if (const auto result = m_command_buffer->createPool(); result.IsError())
+    if (const auto result = m_command->createPool(); result.IsError())
     {
         LogE("< Error creating the pool of the command buffer object");
         return result;
@@ -324,7 +324,7 @@ ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
         LogE("< Error creating the vertex buffer object");
         return result;
     }
-    if (const auto result = m_command_buffer->createBuffer(); result.IsError())
+    if (const auto result = m_command->createBuffer(); result.IsError())
     {
         LogE("< Error creating the buffer of the command buffer object");
         return result;
@@ -337,7 +337,7 @@ std::shared_ptr<frametech::graphics::Pipeline> frametech::graphics::Render::getG
     return m_graphics_pipeline;
 }
 
-std::shared_ptr<frametech::graphics::CommandBuffer> frametech::graphics::Render::getCommandBuffer() const
+std::shared_ptr<frametech::graphics::Command> frametech::graphics::Render::getCommand() const
 {
-    return m_command_buffer;
+    return m_command;
 }

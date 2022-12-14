@@ -1,11 +1,11 @@
 //
-//  pool.cpp
+//  command.cpp
 //  FrameTech
 //
 //  Created by Antonin on 26/10/2022.
 //
 
-#include "commandbuffer.hpp"
+#include "command.hpp"
 #include "../engine.hpp"
 
 #ifdef IMGUI
@@ -13,9 +13,9 @@
 #include "imgui_impl_vulkan.h"
 #endif
 
-frametech::graphics::CommandBuffer::CommandBuffer(){};
+frametech::graphics::Command::Command(){};
 
-frametech::graphics::CommandBuffer::~CommandBuffer()
+frametech::graphics::Command::~Command()
 {
     if (m_pool != nullptr)
     {
@@ -25,7 +25,7 @@ frametech::graphics::CommandBuffer::~CommandBuffer()
     m_buffer = nullptr;
 };
 
-ftstd::VResult frametech::graphics::CommandBuffer::createPool()
+ftstd::VResult frametech::graphics::Command::createPool()
 {
     VkCommandPoolCreateInfo pool_create_info{
         .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
@@ -42,7 +42,7 @@ ftstd::VResult frametech::graphics::CommandBuffer::createPool()
     return ftstd::VResult::Error((char*)"> Error creating the command pool in the command buffer object");
 }
 
-ftstd::VResult frametech::graphics::CommandBuffer::createBuffer()
+ftstd::VResult frametech::graphics::Command::createBuffer()
 {
     if (m_pool == nullptr)
         return ftstd::VResult::Error((char*)"> Error creating the buffer: no memory pool");
@@ -61,7 +61,7 @@ ftstd::VResult frametech::graphics::CommandBuffer::createBuffer()
     return ftstd::VResult::Error((char*)"> Error creating the buffer in the command buffer object");
 }
 
-ftstd::VResult frametech::graphics::CommandBuffer::record()
+ftstd::VResult frametech::graphics::Command::record()
 {
     const auto swapchain_index = frametech::Engine::getInstance()->m_render->getFrameIndex();
     VkCommandBufferBeginInfo begin_info{
@@ -145,12 +145,12 @@ ftstd::VResult frametech::graphics::CommandBuffer::record()
     return ftstd::VResult::Ok();
 }
 
-VkCommandBuffer* frametech::graphics::CommandBuffer::getBuffer()
+VkCommandBuffer* frametech::graphics::Command::getBuffer()
 {
     return &m_buffer;
 };
 
-VkCommandPool* frametech::graphics::CommandBuffer::getPool()
+VkCommandPool* frametech::graphics::Command::getPool()
 {
     return &m_pool;
 };

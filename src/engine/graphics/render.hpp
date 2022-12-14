@@ -10,7 +10,7 @@
 #define render_h
 
 #include "../../ftstd/result.h"
-#include "commandbuffer.hpp"
+#include "command.hpp"
 #include "pipeline.hpp"
 #include "vulkan/vulkan.h"
 #include <vector>
@@ -55,8 +55,8 @@ namespace frametech
             /// @brief Updates the current frame, or swap chain, index
             /// Should not be called more than once per frame present
             void updateFrameIndex(uint64_t current_frame);
-            /// @brief Returns the associated CommandBuffer object if it exists
-            std::shared_ptr<frametech::graphics::CommandBuffer> getCommandBuffer() const;
+            /// @brief Returns the associated Command object if it exists
+            std::shared_ptr<frametech::graphics::Command> getCommand() const;
             /// @brief Returns the associated Graphics pipeline object if it exists
             std::shared_ptr<frametech::graphics::Pipeline> getGraphicsPipeline() const;
 
@@ -80,7 +80,7 @@ namespace frametech
             /// @brief The graphics pipeline, associated to a Renderer
             std::shared_ptr<frametech::graphics::Pipeline> m_graphics_pipeline = nullptr;
             /// @brief Renders command pool
-            std::shared_ptr<frametech::graphics::CommandBuffer> m_command_buffer = nullptr;
+            std::shared_ptr<frametech::graphics::Command> m_command = nullptr;
             /// @brief Creates the shader module:
             /// 1. Read the SPIR-V shaders,
             /// 2. Create the shader modules,

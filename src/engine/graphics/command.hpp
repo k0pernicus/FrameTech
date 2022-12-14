@@ -1,13 +1,13 @@
 //
-//  pool.hpp
+//  command.hpp
 //  FrameTech
 //
 //  Created by Antonin on 26/10/2022.
 //
 
 #pragma once
-#ifndef commandbuffer_h
-#define commandbuffer_h
+#ifndef command_h
+#define command_h
 
 #include "../../ftstd/result.h"
 #include <vulkan/vulkan.h>
@@ -16,14 +16,14 @@ namespace frametech
 {
     namespace graphics
     {
-        /// @brief Commands buffer
-        class CommandBuffer
+        /// @brief Command
+        class Command
         {
         public:
             /// @brief Public constructor
-            CommandBuffer();
+            Command();
             /// @brief Public destructor
-            ~CommandBuffer();
+            ~Command();
             /// @brief Returns the VkCommandPool object
             /// @return the VkCommandPool object
             VkCommandPool* getPool();
@@ -40,10 +40,10 @@ namespace frametech
             ftstd::VResult record();
 
         private:
-            /// @brief CommandBuffer should not be cloneable
-            CommandBuffer(CommandBuffer& other) = delete;
-            /// @brief CommandBuffer should not be assignable
-            void operator=(const CommandBuffer& other) = delete;
+            /// @brief Command should not be cloneable
+            Command(Command& other) = delete;
+            /// @brief Command should not be assignable
+            void operator=(const Command& other) = delete;
             /// @brief The command pool
             VkCommandPool m_pool;
             /// @brief The command buffer
@@ -52,4 +52,4 @@ namespace frametech
     } // namespace graphics
 } // namespace frametech
 
-#endif // commandbuffer_h
+#endif // command_h
