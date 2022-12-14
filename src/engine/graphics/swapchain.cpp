@@ -19,11 +19,14 @@ constexpr VkFormat PREFERED_SURFACE_FORMAT = VK_FORMAT_B8G8R8A8_SRGB;
 /// @brief SRGB non-linear is prefered for the color space - standard color space
 constexpr VkColorSpaceKHR PREFERED_COLOR_SPACE_FORMAT = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
 
-/// @brief The favorite presentation mode. In this mode, the swapchain is a queue
+/// @brief The favorite presentation mode.
+/// In VK_PRESENT_MODE_FIFO_KHR, the swapchain is a queue
 /// where the display takes an image from the front of the queue when the display
 /// is refreshed and the program inserts rendered images at the back of the queue.
 /// If the queue is full then the program has to wait.
-constexpr VkPresentModeKHR PREFERED_PRESENTATION_MODE = VK_PRESENT_MODE_FIFO_KHR;
+/// In VK_PRESENT_MODE_IMMEDIATE_KHR, there is no wait and it renders
+/// immediately the latest computed image.
+constexpr VkPresentModeKHR PREFERED_PRESENTATION_MODE = Project::APPLICATION_FPS_LIMIT.has_value() ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_IMMEDIATE_KHR;
 
 /// @brief Internal function to choose automatically a good Surface format
 /// from the SwapChainDetails structure
