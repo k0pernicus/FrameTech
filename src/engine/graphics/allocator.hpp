@@ -86,7 +86,13 @@ namespace frametech
                 const ftstd::Result<uint32_t> memory_type_index = findMemoryType(
                     physical_device,
                     memory_requirements.memoryTypeBits,
-                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+                    // The most optimal setting for a non-dedicated device is
+                    // VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+                    // TODO: check if the application is running on a dedicated GPU or not and,
+                    // according to this, switch from one to the other
+                    // M1 / M2 macs are fine for this configuration, which should not work for any other
+                    // non-ARM macs (or linux / windows machines)
+                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
                 if (memory_type_index.IsError())
                     return ftstd::VResult::Error((char*)"allocateMemoryToBuffer: cannot find the memory type index found via the memory requirements structure");
 
