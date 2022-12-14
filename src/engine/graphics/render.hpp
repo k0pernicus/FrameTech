@@ -55,8 +55,10 @@ namespace frametech
             /// @brief Updates the current frame, or swap chain, index
             /// Should not be called more than once per frame present
             void updateFrameIndex(uint64_t current_frame);
-            /// @brief Returns the associated Command object if it exists
-            std::shared_ptr<frametech::graphics::Command> getCommand() const;
+            /// @brief Returns the associated Graphics Command object if it exists
+            std::shared_ptr<frametech::graphics::Command> getGraphicsCommand() const;
+            /// @brief Returns the associated Transfert Command object if it exists
+            std::shared_ptr<frametech::graphics::Command> getTransfertCommand() const;
             /// @brief Returns the associated Graphics pipeline object if it exists
             std::shared_ptr<frametech::graphics::Pipeline> getGraphicsPipeline() const;
 
@@ -79,8 +81,10 @@ namespace frametech
             std::vector<VkFramebuffer> m_framebuffers;
             /// @brief The graphics pipeline, associated to a Renderer
             std::shared_ptr<frametech::graphics::Pipeline> m_graphics_pipeline = nullptr;
-            /// @brief Renders command pool
-            std::shared_ptr<frametech::graphics::Command> m_command = nullptr;
+            /// @brief Graphics command pool
+            std::shared_ptr<frametech::graphics::Command> m_graphics_command = nullptr;
+            /// @brief Transfert command pool
+            std::shared_ptr<frametech::graphics::Command> m_transfert_command = nullptr;
             /// @brief Creates the shader module:
             /// 1. Read the SPIR-V shaders,
             /// 2. Create the shader modules,

@@ -540,14 +540,14 @@ void frametech::graphics::Pipeline::present()
 ftstd::Result<int> frametech::graphics::Pipeline::draw()
 {
     // Reset the command buffer
-    auto command_buffer = frametech::Engine::getInstance()->m_render->getCommand();
+    auto command_buffer = frametech::Engine::getInstance()->m_render->getGraphicsCommand();
     if (command_buffer == nullptr)
         return ftstd::Result<int>::Error((char*)"Cannot get the command buffer in the draw call");
     vkResetCommandBuffer(
         *(command_buffer.get()->getBuffer()),
         0);
     // Record the current command
-    frametech::Engine::getInstance()->m_render->getCommand()->record();
+    frametech::Engine::getInstance()->m_render->getGraphicsCommand()->record();
     // Submit
     VkSemaphore wait_semaphores[] = {*m_sync_image_ready};
     VkSemaphore signal_semaphores[] = {*m_sync_present_done};

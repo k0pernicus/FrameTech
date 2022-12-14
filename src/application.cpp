@@ -127,7 +127,7 @@ ftstd::VResult frametech::Application::uploadImGuiFont()
 {
     Log("> Uploading ImGui font...");
     // Use any command queue
-    auto command_buffer_obj = m_engine->m_render->getCommand();
+    auto command_buffer_obj = m_engine->m_render->getGraphicsCommand();
     VkCommandPool* command_pool = command_buffer_obj->getPool();
     VkCommandBuffer* command_buffer = command_buffer_obj->getBuffer();
     VkDevice device = m_engine->m_graphics_device.getLogicalDevice();

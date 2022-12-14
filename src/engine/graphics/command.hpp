@@ -32,7 +32,7 @@ namespace frametech
             VkCommandBuffer* getBuffer();
             /// @brief Creates the command pool
             /// @return A VResult type
-            ftstd::VResult createPool();
+            ftstd::VResult createPool(const uint32_t family_index);
             /// @brief Creates the command buffer
             /// @return A VResult type
             ftstd::VResult createBuffer();

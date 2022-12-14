@@ -383,3 +383,8 @@ VkQueue& frametech::graphics::Device::getPresentsQueue()
 {
     return m_presents_queue;
 }
+
+VkQueue& frametech::graphics::Device::getTransfertQueue()
+{
+    return m_transfert_queue;
+}

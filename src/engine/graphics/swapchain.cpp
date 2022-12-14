@@ -187,16 +187,21 @@ ftstd::VResult frametech::graphics::SwapChain::create()
         .imageArrayLayers = 1,                             // Always one (except stereoscopic 3D app)
         .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, // color attachment, use VK_IMAGE_USAGE_TRANSFER_DST_BIT instead
     };
-    uint32_t indices[2] = {
+    uint32_t indices[3] = {
         frametech::Engine::getInstance()->m_graphics_device.m_graphics_queue_family_index,
         frametech::Engine::getInstance()->m_graphics_device.m_presents_queue_family_index,
+        frametech::Engine::getInstance()->m_graphics_device.m_transfert_queue_family_index,
     };
+    const bool is_exclusive = (indices[0] == indices[1] == indices[2]);
     // TODO: check if the indices car really be equal to each other
     // https://github.com/Overv/VulkanTutorial/issues/233
-    assert(indices[0] != indices[1]);
-    create_info.imageSharingMode = indices[0] == indices[1] ? VK_SHARING_MODE_EXCLUSIVE : VK_SHARING_MODE_CONCURRENT;
-    create_info.pQueueFamilyIndices = indices[0] == indices[1] ? nullptr : indices;
-    create_info.queueFamilyIndexCount = indices[0] == indices[1] ? 0 : 2;
+    assert(!is_exclusive);
+    create_info.imageSharingMode = is_exclusive ? VK_SHARING_MODE_EXCLUSIVE : VK_SHARING_MODE_CONCURRENT;
+    // IMPORTANT NOTE: We **should** be in CONCURRENT mode as the engine is using a Transfert queue
+    // that has to be different than the Graphics queue
+    assert(create_info.imageSharingMode == VK_SHARING_MODE_CONCURRENT);
+    create_info.pQueueFamilyIndices = is_exclusive ? nullptr : indices;
+    create_info.queueFamilyIndexCount = is_exclusive ? 0 : sizeof(indices) / sizeof(indices[0]);
     // No transformation
     // TODO: remove for any transformation in the SC
     create_info.preTransform = m_details.capabilities.currentTransform;

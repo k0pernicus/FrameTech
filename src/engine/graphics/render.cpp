@@ -21,7 +21,8 @@ frametech::graphics::Render* frametech::graphics::Render::m_instance{nullptr};
 frametech::graphics::Render::Render()
 {
     m_graphics_pipeline = std::shared_ptr<frametech::graphics::Pipeline>(new frametech::graphics::Pipeline());
-    m_command = std::shared_ptr<frametech::graphics::Command>(new frametech::graphics::Command());
+    m_graphics_command = std::shared_ptr<frametech::graphics::Command>(new frametech::graphics::Command());
+    m_transfert_command = std::shared_ptr<frametech::graphics::Command>(new frametech::graphics::Command());
 }
 
 frametech::graphics::Render::~Render()
@@ -51,10 +52,15 @@ frametech::graphics::Render::~Render()
             vkDestroyFramebuffer(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), framebuffer, nullptr);
         m_framebuffers.clear();
     }
-    if (nullptr != m_command)
+    if (nullptr != m_graphics_command)
     {
         Log("< Destroying the Command object...");
-        m_command = nullptr;
+        m_graphics_command = nullptr;
+    }
+    if (nullptr != m_transfert_command)
+    {
+        Log("< Destroying the Transfert object...");
+        m_transfert_command = nullptr;
     }
     m_instance = nullptr;
 }
@@ -314,19 +320,33 @@ ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
         LogE("< Error creating the graphics pipeline");
         return result;
     }
-    if (const auto result = m_command->createPool(); result.IsError())
+    // Graphics Command Pool / Buffer
+    const auto graphics_queue_family_index = frametech::Engine::getInstance()->m_graphics_device.m_graphics_queue_family_index;
+    if (const auto result = m_graphics_command->createPool(graphics_queue_family_index); result.IsError())
     {
-        LogE("< Error creating the pool of the command buffer object");
+        LogE("< Error creating the pool of the Graphics command object");
         return result;
     }
     if (const auto result = m_graphics_pipeline->createVertexBuffer(); result.IsError())
     {
-        LogE("< Error creating the vertex buffer object");
+        LogE("< Error creating the vertex buffer object of the Graphics command object");
         return result;
     }
-    if (const auto result = m_command->createBuffer(); result.IsError())
+    if (const auto result = m_graphics_command->createBuffer(); result.IsError())
     {
-        LogE("< Error creating the buffer of the command buffer object");
+        LogE("< Error creating the buffer of the Graphics command object");
+        return result;
+    }
+    // Transfert Command Pool / Buffer
+    const auto transfert_queue_family_index = frametech::Engine::getInstance()->m_graphics_device.m_transfert_queue_family_index;
+    if (const auto result = m_transfert_command->createPool(transfert_queue_family_index); result.IsError())
+    {
+        LogE("< Error creating the pool of the Transfert command object");
+        return result;
+    }
+    if (const auto result = m_transfert_command->createBuffer(); result.IsError())
+    {
+        LogE("< Error creating the buffer of the Transfert command object");
         return result;
     }
     return ftstd::VResult::Ok();
@@ -337,7 +357,12 @@ std::shared_ptr<frametech::graphics::Pipeline> frametech::graphics::Render::getG
     return m_graphics_pipeline;
 }
 
-std::shared_ptr<frametech::graphics::Command> frametech::graphics::Render::getCommand() const
+std::shared_ptr<frametech::graphics::Command> frametech::graphics::Render::getGraphicsCommand() const
 {
-    return m_command;
+    return m_graphics_command;
+}
+
+std::shared_ptr<frametech::graphics::Command> frametech::graphics::Render::getTransfertCommand() const
+{
+    return m_transfert_command;
 }

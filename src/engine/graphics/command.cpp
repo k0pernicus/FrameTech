@@ -25,12 +25,13 @@ frametech::graphics::Command::~Command()
     m_buffer = nullptr;
 };
 
-ftstd::VResult frametech::graphics::Command::createPool()
+ftstd::VResult frametech::graphics::Command::createPool(const uint32_t family_index)
 {
     VkCommandPoolCreateInfo pool_create_info{
         .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
         .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
-        .queueFamilyIndex = frametech::Engine::getInstance()->m_graphics_device.m_graphics_queue_family_index,
+        // .queueFamilyIndex = frametech::Engine::getInstance()->m_graphics_device.m_graphics_queue_family_index,
+        .queueFamilyIndex = family_index,
     };
     const auto create_result = vkCreateCommandPool(
         frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
