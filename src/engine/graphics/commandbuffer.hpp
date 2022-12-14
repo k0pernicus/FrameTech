@@ -22,6 +22,7 @@ namespace frametech
         public:
             /// @brief Public constructor
             CommandBuffer();
+            /// @brief Public destructor
             ~CommandBuffer();
             /// @brief Returns the VkCommandPool object
             /// @return the VkCommandPool object
@@ -43,7 +44,9 @@ namespace frametech
             CommandBuffer(CommandBuffer& other) = delete;
             /// @brief CommandBuffer should not be assignable
             void operator=(const CommandBuffer& other) = delete;
+            /// @brief The command pool
             VkCommandPool m_pool;
+            /// @brief The command buffer
             VkCommandBuffer m_buffer;
         };
     } // namespace graphics
