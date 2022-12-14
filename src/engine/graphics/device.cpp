@@ -204,23 +204,30 @@ ftstd::Result<uint32_t> frametech::graphics::Device::getQueueFamilies()
             &present_supported);
         Log("\t\t* present feature supported? %s", present_supported ? "true!" : "false...");
         m_queue_support[i] |= present_supported ? SupportFeatures::PRESENTS : SupportFeatures::NOONE;
+
+        // Supports transfert queue?
+        const bool transfert_supported = (found_queue_families[i].queueFlags & VK_QUEUE_TRANSFER_BIT);
+        Log("\t\t* transfert feature supported? %s", transfert_supported ? "true!" : "false...");
+        m_queue_support[i] |= transfert_supported ? SupportFeatures::TRANSFERT : SupportFeatures::NOONE;
+
+        // Save the state
         m_queue_states[i] = m_queue_support[i] == SupportFeatures::NOONE ? QueueState::UNSUPPORTED : QueueState::READY;
     }
 
-    // Check if there is any queue family that supports both graphics and present queue,
-    // or one queue for graphics and another one for present
     bool supports_graphics = false;
     bool supports_present = false;
+    bool supports_transfert = false;
     for (int i = 0; i < total_queue_families; i++)
     {
         supports_graphics = (m_queue_support[i] & SupportFeatures::GRAPHICS) != 0 || supports_graphics;
         supports_present = (m_queue_support[i] & SupportFeatures::PRESENTS) != 0 || supports_present;
-        if (supports_graphics && supports_present)
+        supports_transfert = (m_queue_support[i] & SupportFeatures::TRANSFERT) != 0 || supports_transfert;
+        if (supports_graphics && supports_present && supports_transfert)
             break;
     }
-    if (!supports_graphics || !supports_present)
+    if (!supports_graphics || !supports_present || !supports_transfert)
     {
-        return ftstd::Result<uint32_t>::Error((char*)"support for graphics and / or present family queues is incorrect");
+        return ftstd::Result<uint32_t>::Error((char*)"did not found any queue that support our requirements");
     }
 
     return ftstd::Result<uint32_t>::Ok(total_queue_families);
@@ -234,11 +241,11 @@ ftstd::VResult frametech::graphics::Device::createLogicalDevice()
         return ftstd::VResult::Error((char*)"The physical device has not been setup");
     }
 
-    const SupportFeatures supported_flags[2] = {SupportFeatures::GRAPHICS, SupportFeatures::PRESENTS};
-    std::vector<VkDeviceQueueCreateInfo> queues(2);
+    const SupportFeatures supported_flags[3] = {SupportFeatures::GRAPHICS, SupportFeatures::PRESENTS, SupportFeatures::TRANSFERT};
+    std::vector<VkDeviceQueueCreateInfo> queues(sizeof(supported_flags) / sizeof(supported_flags[0]));
     // TODO: make Vulkan uses the same queue for GRAPHICS and PRESENTS,
     // and avoid this trick
-    int took_indices[2] = {-1, -1};
+    int took_indices[3] = {-1, -1, -1};
     // Influences the scheduling of command buffer execution (1.0 is the max priority value)
     // Required, even for a single queue
     float queue_priority = 1.0f;
@@ -283,6 +290,10 @@ ftstd::VResult frametech::graphics::Device::createLogicalDevice()
             case SupportFeatures::PRESENTS:
                 m_presents_queue_family_index = first_index;
                 Log("> Presents family queue index is %d", first_index);
+                break;
+            case SupportFeatures::TRANSFERT:
+                m_transfert_queue_family_index = first_index;
+                Log("> Transfert family queue index is %d", first_index);
                 break;
             default:
                 LogE("unknown flag for SupportFeatures: %d", supported_flag);
@@ -345,6 +356,10 @@ ftstd::VResult frametech::graphics::Device::createLogicalDevice()
     // Create the present queue
     // Let's use 0 by default for queue index as we create one queue per logical device
     vkGetDeviceQueue(m_logical_device, m_presents_queue_family_index, 0, &m_presents_queue);
+
+    // Create the transfert queue
+    // Let's use 0 by default for queue index as we create one queue per logical device
+    vkGetDeviceQueue(m_logical_device, m_transfert_queue_family_index, 0, &m_transfert_queue);
 
     return ftstd::VResult::Ok();
 }

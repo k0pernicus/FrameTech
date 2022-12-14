@@ -34,6 +34,7 @@ namespace frametech
             NOONE = 0x00000000,
             GRAPHICS = 0x00000001,
             PRESENTS = 0x00000002,
+            TRANSFERT = 0x00000004,
         };
 
         class Device
@@ -58,8 +59,6 @@ namespace frametech
             bool isInitialized() const;
             /// @brief Find supported queues on the device
             ftstd::Result<uint32_t> getQueueFamilies();
-            /// @brief Returns if any queue is available to use
-            bool isAnyQueueAvailable() const;
             /// @brief Creates a logical device based on the setted physical device
             ftstd::VResult createLogicalDevice();
             /// @brief Returns the logical device
@@ -72,12 +71,17 @@ namespace frametech
             uint32_t m_graphics_queue_family_index = 0;
             /// @brief Store the index of the presents queue family
             uint32_t m_presents_queue_family_index = 0;
+            /// @brief Store the index of the presents queue family
+            uint32_t m_transfert_queue_family_index = 0;
             /// @brief Returns the Graphics queue of the logical device
             /// @return The Graphics queue of the logical device
             VkQueue& getGraphicsQueue();
             /// @brief Returns the Present queue of the logical device
             /// @return The Present queue of the logical device
             VkQueue& getPresentsQueue();
+            /// @brief Returns the Transfert queue of the logical device
+            /// @return The Transfert queue of the logical device
+            VkQueue& getTransfertQueue();
 
         private:
             /// @brief The physical device that has been picked
@@ -95,6 +99,10 @@ namespace frametech
             /// The presents queue **may** be the same than
             /// the graphics queue
             VkQueue m_presents_queue = VK_NULL_HANDLE;
+            /// @brief Interface to the transfert queue
+            /// The transfert queue can be the same queue than
+            /// the presents / graphics one
+            VkQueue m_transfert_queue = VK_NULL_HANDLE;
         };
     } // namespace graphics
 } // namespace frametech
