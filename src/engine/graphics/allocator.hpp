@@ -20,7 +20,10 @@ namespace frametech
         class Allocator
         {
         private:
-            static ftstd::Result<uint32_t> findMemoryType(const VkPhysicalDevice& physical_device, const uint32_t type_filter, const VkMemoryPropertyFlags memory_property_flags) noexcept
+            static ftstd::Result<uint32_t> findMemoryType(
+                const VkPhysicalDevice& physical_device,
+                const uint32_t type_filter,
+                const VkMemoryPropertyFlags memory_property_flags) noexcept
             {
                 VkPhysicalDeviceMemoryProperties memory_properties{};
                 vkGetPhysicalDeviceMemoryProperties(physical_device, &memory_properties);
@@ -42,7 +45,12 @@ namespace frametech
             /// @param buffer_usage Usage flag(s) for the buffer
             /// @param buffer_sharing_mode Sharing mode for the buffer
             /// @return A VResult type to know if the initialization succeeded or not
-            static ftstd::VResult initBuffer(const VkDevice& graphics_device, const size_t buffer_size, VkBuffer& buffer, const VkBufferUsageFlags buffer_usage, const VkSharingMode buffer_sharing_mode = VK_SHARING_MODE_EXCLUSIVE) noexcept
+            static ftstd::VResult initBuffer(
+                const VkDevice& graphics_device,
+                const size_t buffer_size,
+                VkBuffer& buffer,
+                const VkBufferUsageFlags buffer_usage,
+                const VkSharingMode buffer_sharing_mode = VK_SHARING_MODE_EXCLUSIVE) noexcept
             {
                 VkBufferCreateInfo buffer_create_info{
                     .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
