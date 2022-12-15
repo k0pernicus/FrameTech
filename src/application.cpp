@@ -207,6 +207,7 @@ void frametech::Application::drawImGui()
         const auto monitor_properties = m_monitor.getCurrentProperties();
         ImGui::Text("Name: %s", monitor_properties.m_name);
         ImGui::Text("Size: %dx%d", monitor_properties.m_width, monitor_properties.m_height);
+        ImGui::Text("Refresh rate: %d Hz", monitor_properties.m_current_video_mode->refreshRate);
     }
 
     ImGui::Separator();
