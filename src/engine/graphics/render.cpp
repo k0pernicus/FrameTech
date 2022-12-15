@@ -344,6 +344,11 @@ ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
         LogE("< Error creating the vertex buffer object of the Graphics command object");
         return result;
     }
+    if (const auto result = m_graphics_pipeline->createIndexBuffer(); result.IsError())
+    {
+        LogE("< Error creating the index buffer object of the Graphics command object");
+        return result;
+    }
     if (const auto result = m_graphics_command->createBuffer(); result.IsError())
     {
         LogE("< Error creating the buffer of the Graphics command object");

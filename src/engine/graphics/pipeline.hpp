@@ -89,15 +89,24 @@ namespace frametech
             /// @brief Returns the bounded vertices
             /// @return The bounded vertices (may be an empty vector)
             const std::vector<ftstd::shaders::Vertex>& getVertices() noexcept;
+            /// @brief Returns the vertices to draw, through their index
+            /// @return The indices of the vertices to draw (may be an empty vector)
+            const std::vector<uint32_t>& getIndices() noexcept;
             /// @brief Returns a reference to the current vertex buffer
             /// @return A reference to the current vertex buffer
             const VkBuffer& getVertexBuffer() noexcept;
+            /// @brief Returns a reference to the current index buffer
+            /// @return A reference to the current index buffer
+            const VkBuffer& getIndexBuffer() noexcept;
             /// @brief Returns the pipeline of this object
             /// @return A VkPipeline object
             VkPipeline getPipeline();
             /// @brief Creates a Vertex Buffer object to use for our shaders
             /// @return A VResult type to know if the function succeeded or not.
             ftstd::VResult createVertexBuffer() noexcept;
+            /// @brief Creates an index buffer object to store the vertices to use to display our objects
+            /// @return A VResult type to know if the function succeeded or not.
+            ftstd::VResult createIndexBuffer() noexcept;
             /// @brief Performs the acquire image call
             void acquireImage();
             /// @brief Draw the current frame
@@ -136,11 +145,18 @@ namespace frametech
             VkPipeline m_pipeline = VK_NULL_HANDLE;
             /// @brief The vertex buffer
             VkBuffer m_vertex_buffer = VK_NULL_HANDLE;
+            /// @brief The index buffer
+            VkBuffer m_index_buffer = VK_NULL_HANDLE;
             /// @brief Handles the vertices
             /// TODO: to change for a most versatile option
             std::vector<ftstd::shaders::Vertex> m_vertices;
+            /// @brief Handles the index of the vertices to use
+            /// TODO: to change for a most versatile option
+            std::vector<uint32_t> m_indices;
             /// @brief Vertex buffer memory
             VkDeviceMemory m_vertex_buffer_memory = VK_NULL_HANDLE;
+            /// @brief Index buffer memory
+            VkDeviceMemory m_index_buffer_memory = VK_NULL_HANDLE;
             /// @brief Sync object to signal that an image is ready to
             /// be displayed
             VkSemaphore* m_sync_image_ready = nullptr;

@@ -56,6 +56,18 @@ frametech::graphics::Pipeline::~Pipeline()
         vkFreeMemory(graphics_device, m_vertex_buffer_memory, nullptr);
         m_vertex_buffer_memory = VK_NULL_HANDLE;
     }
+    if (VK_NULL_HANDLE != m_index_buffer)
+    {
+        Log("< Destroying the index buffer...");
+        vkDestroyBuffer(graphics_device, m_index_buffer, nullptr);
+        m_index_buffer = VK_NULL_HANDLE;
+    }
+    if (VK_NULL_HANDLE != m_index_buffer_memory)
+    {
+        Log("< Destroying the index buffer memory...");
+        vkFreeMemory(graphics_device, m_index_buffer_memory, nullptr);
+        m_index_buffer_memory = VK_NULL_HANDLE;
+    }
     if (VK_NULL_HANDLE != m_pipeline)
     {
         Log("< Destroying the pipeline object...");
@@ -304,18 +316,22 @@ ftstd::VResult frametech::graphics::Pipeline::create()
 #if 0
     /// Basic triangle
     m_vertices.resize(3);
-    m_vertices[0] = {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}};
-    m_vertices[1] = {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}};
-    m_vertices[2] = {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}};
+    m_vertices = {
+        {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
+        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+    };
+    m_indices.resize(3);
+    m_indices = {0, 1, 2};
 #else
-    m_vertices.resize(6);
-
-    m_vertices[0] = {{-1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}};
-    m_vertices[1] = {{1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}};
-    m_vertices[2] = {{1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}};
-    m_vertices[3] = {{-1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}};
-    m_vertices[4] = {{1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}};
-    m_vertices[5] = {{-1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}};
+    m_vertices.resize(4);
+    m_vertices = {
+        {{-1.0f, -1.0f}, {1.0f, 1.0f, 1.0f}},
+        {{1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},
+        {{1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+        {{-1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}}};
+    m_indices.resize(6);
+    m_indices = {0, 1, 2, 2, 3, 0};
 #endif
 
     // TODO: make this array as a class parameter
@@ -528,6 +544,89 @@ ftstd::VResult frametech::graphics::Pipeline::createVertexBuffer() noexcept
     return ftstd::VResult::Ok();
 }
 
+ftstd::VResult frametech::graphics::Pipeline::createIndexBuffer() noexcept
+{
+    VkPhysicalDevice physical_device = frametech::Engine::getInstance()->m_graphics_device.getPhysicalDevice();
+    VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+    VkQueue transfert_queue = frametech::Engine::getInstance()->m_graphics_device.getTransfertQueue();
+    VkCommandPool* transfert_command_pool = frametech::Engine::getInstance()->m_render->getTransfertCommand()->getPool();
+    const VkDeviceSize memory_offset = 0;
+    const size_t buffer_size = sizeof(m_indices[0]) * m_indices.size();
+    assert(buffer_size > 0);
+    assert(transfert_command_pool != nullptr);
+
+    // Use staging buffer (or temporary buffer) to transfer next from CPU to GPU
+    // This buffer can be used as source in a memory transfer operation
+    VkBuffer staging_buffer{};
+    VkDeviceMemory staging_buffer_memory{};
+    if (const auto result = frametech::graphics::Allocator::initBuffer(
+            graphics_device,
+            buffer_size,
+            staging_buffer,
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+        result.IsError())
+        return result;
+    if (const auto result = frametech::graphics::Allocator::allocateMemoryToBuffer(
+            physical_device, graphics_device,
+            staging_buffer_memory,
+            staging_buffer,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            memory_offset);
+        result.IsError())
+        return result;
+
+    // Now, fill the staging buffer with the actual data
+    void* data;
+    vkMapMemory(graphics_device, staging_buffer_memory, memory_offset, buffer_size, 0, &data);
+    memcpy(data, m_indices.data(), (size_t)buffer_size);
+    vkUnmapMemory(graphics_device, staging_buffer_memory);
+
+    // Initialize the actual vertex buffer
+    // This buffer can be used as destination in a memory transfert operation
+    if (m_index_buffer != VK_NULL_HANDLE)
+    {
+        LogW("the index buffer has already been intialized - resetting it...");
+        vkDestroyBuffer(graphics_device, m_index_buffer, nullptr);
+    }
+    m_index_buffer = VkBuffer();
+    if (const auto result = frametech::graphics::Allocator::initBuffer(
+            graphics_device,
+            buffer_size,
+            m_index_buffer,
+            VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+        result.IsError())
+        return result;
+    if (const auto result = frametech::graphics::Allocator::allocateMemoryToBuffer(
+            physical_device,
+            graphics_device,
+            m_index_buffer_memory,
+            m_index_buffer,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, // Not able to use vkMapMemory
+            memory_offset);
+        result.IsError())
+        return result;
+
+    // Now, copy the data
+    if (const auto operation_result = frametech::graphics::Allocator::copyBuffer(
+            graphics_device,
+            staging_buffer,
+            m_index_buffer,
+            transfert_command_pool,
+            transfert_queue,
+            buffer_size);
+        operation_result.IsError())
+    {
+        vkDestroyBuffer(graphics_device, staging_buffer, nullptr);
+        vkFreeMemory(graphics_device, staging_buffer_memory, nullptr);
+        return operation_result;
+    }
+
+    vkDestroyBuffer(graphics_device, staging_buffer, nullptr);
+    vkFreeMemory(graphics_device, staging_buffer_memory, nullptr);
+
+    return ftstd::VResult::Ok();
+}
+
 VkPipeline frametech::graphics::Pipeline::getPipeline()
 {
     return m_pipeline;
@@ -652,7 +751,17 @@ const std::vector<ftstd::shaders::Vertex>& frametech::graphics::Pipeline::getVer
     return m_vertices;
 }
 
+const std::vector<uint32_t>& frametech::graphics::Pipeline::getIndices() noexcept
+{
+    return m_indices;
+}
+
 const VkBuffer& frametech::graphics::Pipeline::getVertexBuffer() noexcept
 {
     return m_vertex_buffer;
+}
+
+const VkBuffer& frametech::graphics::Pipeline::getIndexBuffer() noexcept
+{
+    return m_index_buffer;
 }

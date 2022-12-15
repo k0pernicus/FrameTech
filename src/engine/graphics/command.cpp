@@ -122,13 +122,15 @@ ftstd::VResult frametech::graphics::Command::record()
     std::vector<VkBuffer> vertex_buffers = {frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getVertexBuffer()};
     // // TODO: check to include this information getting the vertex buffer
     std::vector<VkDeviceSize> memory_offsets(vertex_buffers.size());
+    const VkBuffer& index_buffer = frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getIndexBuffer();
     for (size_t i = 0; i < vertex_buffers.size(); ++i)
         memory_offsets[i] = i;
     vkCmdBindVertexBuffers(m_buffer, 0, vertex_buffers.size(), vertex_buffers.data(), memory_offsets.data());
+    vkCmdBindIndexBuffer(m_buffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
 
-    uint32_t vertices_size = static_cast<uint32_t>(frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getVertices().size());
+    uint32_t indices_size = static_cast<uint32_t>(frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getIndices().size());
 
-    vkCmdDraw(m_buffer, vertices_size, 1, 0, 0);
+    vkCmdDrawIndexed(m_buffer, indices_size, 1, 0, 0, 0);
 
 #ifdef IMGUI
     ImGui::Render();
