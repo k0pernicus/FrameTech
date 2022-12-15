@@ -98,6 +98,8 @@ void frametech::Application::setupImGui()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
+    // Enable docking mode
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     (void)io;
     Log(">> ImGui context has been correctly created");
     ImGui::StyleColorsDark();
