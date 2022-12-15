@@ -55,7 +55,10 @@ static ftstd::Result<VkPresentModeKHR> choosePresentMode(const std::vector<VkPre
     for (const VkPresentModeKHR mode : present_modes)
     {
         if (mode == PREFERED_PRESENTATION_MODE)
+        {
+            Log("> Choosed presentation mode with id %d", mode);
             return ftstd::Result<VkPresentModeKHR>::Ok(mode);
+        }
     }
     return ftstd::Result<VkPresentModeKHR>::Error((char*)"Our prefered presentation mode is not found");
 }
