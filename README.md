@@ -20,6 +20,10 @@ This repository includes extern repositories / dependencies, like `imgui` or `gl
 Do not forget to run a `git submodule update` after cloning the _FrameTech_ repository.  
 Thanks to Omar Cornut & the ImGui team for providing a such great tool for free, to the developers.
 
+## Screenshots
+
+![State at December 15 of 2022](docs/images/state_12152022.png "State of 15th of December, 2022")
+
 ## TODO
 
 1. Improve the shaders bindings,
