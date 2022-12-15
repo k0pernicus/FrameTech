@@ -1,6 +1,6 @@
 CFLAGS = -std=c++17 -I. -I$(VULKAN_SDK)/include -I/usr/local/include -I/opt/homebrew/include
 CFLAGS += -I./extern/imgui -I./extern/imgui/backends # for imgui setup
-CFLAGS_DEBUG = $(CFLAGS) -Werror -Wall -g -DDEBUG -DIMGUI -DENABLE_EXCEPTIONS # ImGui is private to DEBUG (for now?)
+CFLAGS_DEBUG = $(CFLAGS) -Werror -Wall -g -DDEBUG -DIMGUI -DENABLE_EXCEPTIONS -DUNSET_FPS_LIMIT
 CFLAGS_RELEASE = $(CFLAGS) -O2 -DNO_AVG_FPS_RECORDS -DIMGUI
 
 LDFLAGS = -L$(VULKAN_SDK)/lib `pkg-config --static --libs glfw3` -lvulkan

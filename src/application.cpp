@@ -187,6 +187,10 @@ void frametech::Application::drawImGui()
         ImGui::Text("App title: '%s'", m_app_title);
         ImGui::Text("App version: %s", S_APP_VERSION);
         ImGui::Text("Engine version: %s", S_ENGINE_VERSION);
+        if (m_FPS_limit.has_value())
+            ImGui::Text("App capped to %d FPS", m_FPS_limit.value());
+        else
+            ImGui::Text("App has unlimited FPS");
         ImGui::Text("App average %.3f ms/frame (%.1f FPS) (%llu drawed frames)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate, m_current_frame);
         if (ImGui::TreeNode("Framebuffers properties"))
         {

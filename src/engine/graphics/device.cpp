@@ -357,7 +357,8 @@ ftstd::VResult frametech::graphics::Device::createLogicalDevice()
     // Let's use 0 by default for queue index as we create one queue per logical device
     vkGetDeviceQueue(m_logical_device, m_presents_queue_family_index, 0, &m_presents_queue);
 
-    // Create the transfert queue
+    // Create the transfert queue, which is used by buffer copy commands (to move the data
+    // from the staging buffer to the vertex buffer)
     // Let's use 0 by default for queue index as we create one queue per logical device
     vkGetDeviceQueue(m_logical_device, m_transfert_queue_family_index, 0, &m_transfert_queue);
 
