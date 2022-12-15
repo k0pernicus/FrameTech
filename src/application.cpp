@@ -175,7 +175,7 @@ ftstd::VResult frametech::Application::uploadImGuiFont()
     return ftstd::VResult::Ok();
 }
 
-void frametech::Application::drawImGui()
+void frametech::Application::drawDebugToolImGui()
 {
     // Optimization technique
     if (!ImGui::Begin("Debug tool", &CLOSE_IMGUI_APP))
@@ -260,6 +260,19 @@ void frametech::Application::drawImGui()
     }
 
     ImGui::Separator();
+
+    ImGui::End();
+}
+
+void frametech::Application::drawMeshSelectionImGui()
+{
+
+    // Optimization technique
+    if (!ImGui::Begin("Mesh selector", &CLOSE_IMGUI_APP))
+    {
+        ImGui::End();
+        return;
+    }
 
     if (ImGui::CollapsingHeader("Available meshes"))
     {
@@ -414,7 +427,8 @@ void frametech::Application::run()
                 ImGui_ImplVulkan_NewFrame();
                 ImGui_ImplGlfw_NewFrame();
                 ImGui::NewFrame();
-                drawImGui();
+                drawDebugToolImGui();
+                drawMeshSelectionImGui();
 #endif
                 // drawFrame includes the acquisition, draw, and present processes
                 drawFrame();

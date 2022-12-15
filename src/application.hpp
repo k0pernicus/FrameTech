@@ -67,8 +67,10 @@ namespace frametech
         void setupImGui();
         /// @brief Upload the ImGui font to avoid rendering error(s)
         ftstd::VResult uploadImGuiFont();
-        /// @brief The draw function for ImGui
-        void drawImGui();
+        /// @brief The draw function for the debug tool
+        void drawDebugToolImGui();
+        /// @brief The draw function for the mesh selector
+        void drawMeshSelectionImGui();
         /// @brief Clean the instance(s) of ImGui
         void cleanImGui();
 #endif
