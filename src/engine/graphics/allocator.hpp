@@ -105,6 +105,7 @@ namespace frametech
                 alloc_info.allocationSize = memory_requirements.size;
                 alloc_info.memoryTypeIndex = memory_type_index.GetValue();
 
+                // TODO: Update vkAllocateMemory with a proper custom allocator + offset in the future
                 if (const auto result = vkAllocateMemory(graphics_device, &alloc_info, nullptr, &buffer_memory); result != VK_SUCCESS)
                 {
                     return ftstd::VResult::Error((char*)"vkAllocateMemory: cannot allocate memory for the buffer passed as parameter");
