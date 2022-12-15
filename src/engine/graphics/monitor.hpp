@@ -20,7 +20,7 @@ namespace frametech
     namespace graphics
     {
         constexpr size_t MONITOR_NAME_LEN = 32;
-        /// @brief Stores the properties of the current / used
+        /// @brief Stores the properties of the current / used monitor
         /// GLFWmonitor object
         struct MonitorProperties
         {
@@ -30,7 +30,7 @@ namespace frametech
             const GLFWvidmode* m_available_video_modes = nullptr;
             const GLFWvidmode* m_current_video_mode = nullptr;
         };
-        /// @brief Wraps a GLFWmonitor object
+        /// @brief Wraps some GLFWwindow objects
         class Monitor
         {
         private:
