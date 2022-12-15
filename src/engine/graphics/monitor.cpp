@@ -123,57 +123,52 @@ ftstd::VResult frametech::graphics::Monitor::scanForCurrentMonitor(GLFWwindow* a
         return ftstd::VResult::Error((char*)"Error getting the primary monitor of the physical device");
     if (monitors.second == 1)
     {
-        m_primary_monitor = monitors.first[0];
+        m_current_monitor = monitors.first[0];
     }
     else
     {
         const std::optional<int> monitor_index = checkForCurrentMonitor(app_window, monitors.first, monitors.second);
         if (monitor_index.has_value())
-            m_primary_monitor = monitors.first[monitor_index.value()];
+            m_current_monitor = monitors.first[monitor_index.value()];
     }
-    if (nullptr == m_primary_monitor)
-        return ftstd::VResult::Error((char*)"Error getting the primary monitor of the physical device");
-    if (const auto query_result_code = queryProperties(); query_result_code.IsError())
+    if (nullptr == m_current_monitor)
+        return ftstd::VResult::Error((char*)"checkForCurrentMonitor: error getting the primary monitor of the physical device");
+    const auto query_monitor_properties = queryProperties(m_current_monitor);
+    if (query_monitor_properties.IsError())
     {
-        LogE("> Error querying information about the primary monitor");
+        return ftstd::VResult::Error((char*)"queryProperties: error querying properties for the current monitor");
     }
+    m_current_monitor_properties = query_monitor_properties.GetValue();
     Log("> Principal monitor properties:");
-    Log("\t> tag: '%s'", m_primary_monitor_properties.m_name);
-    Log("\t> height: %d pixels, width: %d pixels", m_primary_monitor_properties.m_height, m_primary_monitor_properties.m_width);
-    if (nullptr != m_primary_monitor_properties.m_current_video_mode)
-        Log("\t> refresh rate: %d Hz", m_primary_monitor_properties.m_current_video_mode->refreshRate);
-    return ftstd::VResult::Ok();
-}
-
-ftstd::VResult frametech::graphics::Monitor::choosePrimaryMonitor(uint32_t index)
-{
-    // TODO with callbacks
-    WARN_RT_UNIMPLEMENTED;
+    Log("\t> tag: '%s'", m_current_monitor_properties.m_name);
+    Log("\t> height: %d pixels, width: %d pixels", m_current_monitor_properties.m_height, m_current_monitor_properties.m_width);
+    if (nullptr != m_current_monitor_properties.m_current_video_mode)
+        Log("\t> refresh rate: %d Hz", m_current_monitor_properties.m_current_video_mode->refreshRate);
     return ftstd::VResult::Ok();
 }
 
 frametech::graphics::MonitorProperties& frametech::graphics::Monitor::getCurrentProperties()
 {
-    return m_primary_monitor_properties;
+    return m_current_monitor_properties;
 }
 
-bool frametech::graphics::Monitor::foundPrimaryMonitor() const
+bool frametech::graphics::Monitor::foundCurrentMonitor() const
 {
-    return m_primary_monitor != nullptr;
+    return m_current_monitor != nullptr;
 }
 
-ftstd::VResult frametech::graphics::Monitor::queryProperties()
+ftstd::Result<frametech::graphics::MonitorProperties> frametech::graphics::Monitor::queryProperties(GLFWmonitor* monitor)
 {
-    if (m_primary_monitor == nullptr)
-        return ftstd::VResult::Error((char*)"No primary monitor to query");
+    if (nullptr == monitor)
+        return ftstd::Result<frametech::graphics::MonitorProperties>::Error((char*)"No monitor to query");
     int nb_video_modes{};
-    m_primary_monitor_properties = frametech::graphics::MonitorProperties{};
-    m_primary_monitor_properties.m_available_video_modes = glfwGetVideoModes(m_primary_monitor, &nb_video_modes);
-    m_primary_monitor_properties.m_current_video_mode = glfwGetVideoMode(m_primary_monitor);
-    m_primary_monitor_properties.m_width = m_primary_monitor_properties.m_current_video_mode->width;
-    m_primary_monitor_properties.m_height = m_primary_monitor_properties.m_current_video_mode->height;
-    const auto monitor_name = glfwGetMonitorName(m_primary_monitor);
+    auto monitor_properties = frametech::graphics::MonitorProperties{};
+    monitor_properties.m_available_video_modes = glfwGetVideoModes(monitor, &nb_video_modes);
+    monitor_properties.m_current_video_mode = glfwGetVideoMode(monitor);
+    monitor_properties.m_width = monitor_properties.m_current_video_mode->width;
+    monitor_properties.m_height = monitor_properties.m_current_video_mode->height;
+    const auto monitor_name = glfwGetMonitorName(monitor);
     if (nullptr != monitor_name)
-        strncpy(m_primary_monitor_properties.m_name, monitor_name, frametech::graphics::MONITOR_NAME_LEN);
-    return ftstd::VResult::Ok();
+        strncpy(monitor_properties.m_name, monitor_name, frametech::graphics::MONITOR_NAME_LEN);
+    return ftstd::Result<frametech::graphics::MonitorProperties>::Ok(monitor_properties);
 }

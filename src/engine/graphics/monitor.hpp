@@ -36,13 +36,13 @@ namespace frametech
         private:
             /// @brief The number of available monitors
             // uint32_t m_available_monitors_list_count = 0;
-            /// @brief The primary monitor object
-            GLFWmonitor* m_primary_monitor = nullptr;
-            /// @brief Stores all properties of the primary monitor
-            MonitorProperties m_primary_monitor_properties{};
-            /// @brief Internal call to query all properties about the primary monitor
-            /// @return A VResult type
-            ftstd::VResult queryProperties();
+            /// @brief The current monitor object
+            GLFWmonitor* m_current_monitor = nullptr;
+            /// @brief Stores all properties of the current monitor
+            MonitorProperties m_current_monitor_properties{};
+            /// @brief Internal call to query all properties about the current monitor
+            /// @return A Result type
+            static ftstd::Result<frametech::graphics::MonitorProperties> queryProperties(GLFWmonitor* monitor);
 
         public:
             Monitor();
@@ -60,16 +60,12 @@ namespace frametech
             /// @brief Scans for the monitor that displays the app
             /// @return A VResult type
             ftstd::VResult scanForCurrentMonitor(GLFWwindow* app_window) noexcept;
-            /// @brief Allows the user to select the primary monitor he wants
-            /// @param index An index to use in the list of available monitors
-            /// @return A VResult type
-            ftstd::VResult choosePrimaryMonitor(uint32_t index);
-            /// @brief Returns the properties of the primary monitor
-            /// @return The properties of the primary monitor
+            /// @brief Returns the properties of the current monitor
+            /// @return The properties of the current monitor
             MonitorProperties& getCurrentProperties();
-            /// @brief Returns if the primary monitor has been found (or not)
+            /// @brief Returns if the current monitor has been found (or not)
             /// @return A boolean value
-            bool foundPrimaryMonitor() const;
+            bool foundCurrentMonitor() const;
         };
     } // namespace graphics
 } // namespace frametech

@@ -82,7 +82,7 @@ ftstd::VResult frametech::Application::initWindow()
                                     nullptr,
                                     nullptr);
     // Initialize the monitor object
-    if (!m_monitor.foundPrimaryMonitor())
+    if (!m_monitor.foundCurrentMonitor())
         if (const auto scan_result_code = m_monitor.scanForCurrentMonitor(m_app_window); scan_result_code.IsError())
             return ftstd::VResult::Error((char*)"Error getting the primary monitor");
     return ftstd::VResult::Ok();

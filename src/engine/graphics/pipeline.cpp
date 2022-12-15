@@ -299,13 +299,24 @@ ftstd::VResult frametech::graphics::Pipeline::create()
         return ftstd::VResult::Error((char*)"Cannot create the graphics pipeline without pipeline layout information");
     }
 
-    // TODO: remove for a most versatile option
-    // TODO: to remove once the pipeline rendering works
+// TODO: remove for a most versatile option
+// TODO: to remove once the pipeline rendering works
+#if 0
     /// Basic triangle
     m_vertices.resize(3);
     m_vertices[0] = {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}};
     m_vertices[1] = {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}};
     m_vertices[2] = {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}};
+#else
+    m_vertices.resize(6);
+
+    m_vertices[0] = {{-1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}};
+    m_vertices[1] = {{1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}};
+    m_vertices[2] = {{1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}};
+    m_vertices[3] = {{-1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}};
+    m_vertices[4] = {{1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}};
+    m_vertices[5] = {{-1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}};
+#endif
 
     // TODO: make this array as a class parameter
     // If array belongs to the class parameter, move it to std::vector
