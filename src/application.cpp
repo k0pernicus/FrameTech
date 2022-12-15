@@ -176,28 +176,37 @@ ftstd::VResult frametech::Application::uploadImGuiFont()
 void frametech::Application::drawImGui()
 {
     // Optimization technique
-    if (!ImGui::Begin("FrameTech", &CLOSE_IMGUI_APP))
+    if (!ImGui::Begin("Debug tool", &CLOSE_IMGUI_APP))
     {
         ImGui::End();
         return;
     }
 
-    if (ImGui::CollapsingHeader("App debug info"))
+    if (ImGui::CollapsingHeader("App"))
     {
-        ImGui::Text("App title: '%s'", m_app_title);
-        ImGui::Text("App version: %s", S_APP_VERSION);
-        ImGui::Text("Engine version: %s", S_ENGINE_VERSION);
-        if (m_FPS_limit.has_value())
-            ImGui::Text("App capped to %d FPS", m_FPS_limit.value());
-        else
-            ImGui::Text("App has unlimited FPS");
-        ImGui::Text("App average %.3f ms/frame (%.1f FPS) (%llu drawed frames)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate, m_current_frame);
-        if (ImGui::TreeNode("Framebuffers properties"))
+        ImGui::Text("Name: '%s'", m_app_title);
+        ImGui::SameLine(220);
+        ImGui::Text("Version: %s", S_APP_VERSION);
+        ImGui::Text("Running average %.3f ms/frame (%.1f FPS) (%llu drawed frames)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate, m_current_frame);
+        if (ImGui::TreeNode("Properties"))
         {
             ImGui::Text("Size: %dx%d", m_app_width, m_app_height);
+            if (m_FPS_limit.has_value())
+                ImGui::Text("App is limited to %d FPS", m_FPS_limit.value());
+            else
+                ImGui::Text("App has no rendering limitation");
             ImGui::TreePop();
             ImGui::Separator();
         }
+    }
+
+    ImGui::Separator();
+
+    if (ImGui::CollapsingHeader("Engine"))
+    {
+        ImGui::Text("Name: '%s'", m_engine->getEngineName());
+        ImGui::SameLine(220);
+        ImGui::Text("Version: %s", S_ENGINE_VERSION);
     }
 
     ImGui::Separator();
@@ -208,6 +217,46 @@ void frametech::Application::drawImGui()
         ImGui::Text("Name: %s", monitor_properties.m_name);
         ImGui::Text("Size: %dx%d", monitor_properties.m_width, monitor_properties.m_height);
         ImGui::Text("Refresh rate: %d Hz", monitor_properties.m_current_video_mode->refreshRate);
+    }
+
+    ImGui::Separator();
+
+    if (ImGui::CollapsingHeader("On screen"))
+    {
+        if (ImGui::TreeNode("Vertices"))
+        {
+            const auto vertices = m_engine->m_render->getGraphicsPipeline()->getVertices();
+            size_t i = 0;
+            for (const auto vertex : vertices)
+            {
+                char vertex_str[80];
+                ftstd::shaders::VertexUtils::toString(vertex_str, vertex);
+                ImGui::Text("%zu:", i);
+                ImGui::SameLine(50);
+                ImGui::Text("%s", vertex_str);
+                ++i;
+            }
+            ImGui::TreePop();
+            ImGui::Separator();
+        }
+        if (ImGui::TreeNode("Indices"))
+        {
+            const auto indices = m_engine->m_render->getGraphicsPipeline()->getIndices();
+            size_t i = 0;
+            for (const auto index : indices)
+            {
+                ImGui::Text("%zu: vertex %d", i, index);
+                ++i;
+            }
+            ImGui::TreePop();
+            ImGui::Separator();
+        }
+        if (ImGui::TreeNode("Shaders"))
+        {
+            ImGui::Text("TODO");
+            ImGui::TreePop();
+            ImGui::Separator();
+        }
     }
 
     ImGui::Separator();

@@ -28,6 +28,10 @@ namespace ftstd
         class VertexUtils
         {
         public:
+            [[maybe_unused]] static void toString(char* str, const Vertex& vertex) noexcept
+            {
+                snprintf(str, 80, "Position: (%.2f,%.2f)\nColor: (%d,%d,%d)", vertex.position.x, vertex.position.y, static_cast<int>(255.0 * vertex.color.r), static_cast<int>(255.0 * vertex.color.g), static_cast<int>(255.0 * vertex.color.b));
+            }
             /// @brief Returns the binding description of the Vertex structure
             /// @param index_binding The binding index to set in the description data structure
             /// @return a VkVertexInputBindingDescription object

@@ -14,6 +14,7 @@
 #include "graphics/pipeline.hpp"
 #include "graphics/render.hpp"
 #include "graphics/swapchain.hpp"
+#include "project.hpp"
 #include "vulkan/vulkan.h"
 #include <cstdlib>
 
@@ -86,6 +87,12 @@ namespace frametech
         std::unique_ptr<frametech::graphics::SwapChain> m_swapchain;
         /// @brief Returns a VkDescriptorPool object, associated to the current object
         VkDescriptorPool getDescriptorPool() const noexcept;
+        /// @brief Returns the current name / tag of the rendering engine
+        /// @return A character string
+        static const char* getEngineName() noexcept
+        {
+            return Project::ENGINE_NAME;
+        }
     };
 
 } // namespace frametech
