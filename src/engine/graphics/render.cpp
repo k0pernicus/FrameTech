@@ -320,6 +320,18 @@ ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
         LogE("< Error creating the graphics pipeline");
         return result;
     }
+    // Transfert Command Pool / Buffer
+    const auto transfert_queue_family_index = frametech::Engine::getInstance()->m_graphics_device.m_transfert_queue_family_index;
+    if (const auto result = m_transfert_command->createPool(transfert_queue_family_index); result.IsError())
+    {
+        LogE("< Error creating the pool of the Transfert command object");
+        return result;
+    }
+    if (const auto result = m_transfert_command->createBuffer(); result.IsError())
+    {
+        LogE("< Error creating the buffer of the Transfert command object");
+        return result;
+    }
     // Graphics Command Pool / Buffer
     const auto graphics_queue_family_index = frametech::Engine::getInstance()->m_graphics_device.m_graphics_queue_family_index;
     if (const auto result = m_graphics_command->createPool(graphics_queue_family_index); result.IsError())
@@ -335,18 +347,6 @@ ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
     if (const auto result = m_graphics_command->createBuffer(); result.IsError())
     {
         LogE("< Error creating the buffer of the Graphics command object");
-        return result;
-    }
-    // Transfert Command Pool / Buffer
-    const auto transfert_queue_family_index = frametech::Engine::getInstance()->m_graphics_device.m_transfert_queue_family_index;
-    if (const auto result = m_transfert_command->createPool(transfert_queue_family_index); result.IsError())
-    {
-        LogE("< Error creating the pool of the Transfert command object");
-        return result;
-    }
-    if (const auto result = m_transfert_command->createBuffer(); result.IsError())
-    {
-        LogE("< Error creating the buffer of the Transfert command object");
         return result;
     }
     return ftstd::VResult::Ok();

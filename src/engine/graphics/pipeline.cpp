@@ -11,6 +11,7 @@
 #include "../../ftstd/shaders.h"
 #include "../engine.hpp"
 #include "allocator.hpp"
+#include <assert.h>
 #include <filesystem>
 #include <fstream>
 #include <vector>
@@ -435,25 +436,84 @@ ftstd::VResult frametech::graphics::Pipeline::create()
 
 ftstd::VResult frametech::graphics::Pipeline::createVertexBuffer() noexcept
 {
-    auto physical_device = frametech::Engine::getInstance()->m_graphics_device.getPhysicalDevice();
-    auto graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+    VkPhysicalDevice physical_device = frametech::Engine::getInstance()->m_graphics_device.getPhysicalDevice();
+    VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+    VkQueue transfert_queue = frametech::Engine::getInstance()->m_graphics_device.getTransfertQueue();
+    VkCommandPool* transfert_command_pool = frametech::Engine::getInstance()->m_render->getTransfertCommand()->getPool();
     const VkDeviceSize memory_offset = 0;
+    const size_t buffer_size = sizeof(m_vertices[0]) * m_vertices.size();
+    assert(buffer_size > 0);
+    assert(transfert_command_pool != nullptr);
+
+    // Use staging buffer (or temporary buffer) to transfer next from CPU to GPU
+    // This buffer can be used as source in a memory transfer operation
+    VkBuffer staging_buffer{};
+    VkDeviceMemory staging_buffer_memory{};
+    if (const auto result = frametech::graphics::Allocator::initBuffer(
+            graphics_device,
+            buffer_size,
+            staging_buffer,
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+        result.IsError())
+        return result;
+    if (const auto result = frametech::graphics::Allocator::allocateMemoryToBuffer(
+            physical_device, graphics_device,
+            staging_buffer_memory,
+            staging_buffer,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            memory_offset);
+        result.IsError())
+        return result;
+
+    // Now, fill the staging buffer with the actual data
+    void* data;
+    vkMapMemory(graphics_device, staging_buffer_memory, memory_offset, buffer_size, 0, &data);
+    memcpy(data, m_vertices.data(), (size_t)buffer_size);
+    vkUnmapMemory(graphics_device, staging_buffer_memory);
+
+    // Initialize the actual vertex buffer
+    // This buffer can be used as destination in a memory transfert operation
     if (m_vertex_buffer != VK_NULL_HANDLE)
     {
         LogW("the vertex buffer has already been intialized - resetting it...");
         vkDestroyBuffer(graphics_device, m_vertex_buffer, nullptr);
     }
     m_vertex_buffer = VkBuffer();
-    const size_t vertices_size = sizeof(m_vertices[0]) * m_vertices.size();
-    if (const auto result = frametech::graphics::Allocator::initBuffer(graphics_device, vertices_size, m_vertex_buffer, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT); result.IsError())
+    if (const auto result = frametech::graphics::Allocator::initBuffer(
+            graphics_device,
+            buffer_size,
+            m_vertex_buffer,
+            VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+        result.IsError())
         return result;
-    if (const auto result = frametech::graphics::Allocator::allocateMemoryToBuffer(physical_device, graphics_device, m_vertex_buffer_memory, m_vertex_buffer, memory_offset); result.IsError())
+    if (const auto result = frametech::graphics::Allocator::allocateMemoryToBuffer(
+            physical_device,
+            graphics_device,
+            m_vertex_buffer_memory,
+            m_vertex_buffer,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, // Not able to use vkMapMemory
+            memory_offset);
+        result.IsError())
         return result;
-    // Now, fill the buffer
-    void* data;
-    vkMapMemory(graphics_device, m_vertex_buffer_memory, memory_offset, vertices_size, 0, &data);
-    memcpy(data, m_vertices.data(), (size_t)vertices_size);
-    vkUnmapMemory(graphics_device, m_vertex_buffer_memory);
+
+    // Now, copy the data
+    if (const auto operation_result = frametech::graphics::Allocator::copyBuffer(
+            graphics_device,
+            staging_buffer,
+            m_vertex_buffer,
+            transfert_command_pool,
+            transfert_queue,
+            buffer_size);
+        operation_result.IsError())
+    {
+        vkDestroyBuffer(graphics_device, staging_buffer, nullptr);
+        vkFreeMemory(graphics_device, staging_buffer_memory, nullptr);
+        return operation_result;
+    }
+
+    vkDestroyBuffer(graphics_device, staging_buffer, nullptr);
+    vkFreeMemory(graphics_device, staging_buffer_memory, nullptr);
+
     return ftstd::VResult::Ok();
 }
 
