@@ -311,29 +311,6 @@ ftstd::VResult frametech::graphics::Pipeline::create()
         return ftstd::VResult::Error((char*)"Cannot create the graphics pipeline without pipeline layout information");
     }
 
-// TODO: remove for a most versatile option
-// TODO: to remove once the pipeline rendering works
-#if 0
-    /// Basic triangle
-    m_vertices.resize(3);
-    m_vertices = {
-        {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
-        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
-    };
-    m_indices.resize(3);
-    m_indices = {0, 1, 2};
-#else
-    m_vertices.resize(4);
-    m_vertices = {
-        {{-1.0f, -1.0f}, {1.0f, 1.0f, 1.0f}},
-        {{1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},
-        {{1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
-        {{-1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}}};
-    m_indices.resize(6);
-    m_indices = {0, 1, 2, 2, 3, 0};
-#endif
-
     // TODO: make this array as a class parameter
     // If array belongs to the class parameter, move it to std::vector
     VkDynamicState dynamic_states[2] = {
@@ -463,12 +440,24 @@ ftstd::VResult frametech::graphics::Pipeline::create()
 
 ftstd::VResult frametech::graphics::Pipeline::createVertexBuffer() noexcept
 {
-    VkPhysicalDevice physical_device = frametech::Engine::getInstance()->m_graphics_device.getPhysicalDevice();
     VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+    if (VK_NULL_HANDLE != m_vertex_buffer)
+    {
+        Log("< Destroying the vertex buffer...");
+        vkDestroyBuffer(graphics_device, m_vertex_buffer, nullptr);
+        m_vertex_buffer = VK_NULL_HANDLE;
+    }
+    if (VK_NULL_HANDLE != m_vertex_buffer_memory)
+    {
+        Log("< Destroying the vertex buffer memory...");
+        vkFreeMemory(graphics_device, m_vertex_buffer_memory, nullptr);
+        m_vertex_buffer_memory = VK_NULL_HANDLE;
+    }
+    VkPhysicalDevice physical_device = frametech::Engine::getInstance()->m_graphics_device.getPhysicalDevice();
     VkQueue transfert_queue = frametech::Engine::getInstance()->m_graphics_device.getTransfertQueue();
     VkCommandPool* transfert_command_pool = frametech::Engine::getInstance()->m_render->getTransfertCommand()->getPool();
     const VkDeviceSize memory_offset = 0;
-    const size_t buffer_size = sizeof(m_vertices[0]) * m_vertices.size();
+    const size_t buffer_size = sizeof(m_mesh.m_vertices[0]) * m_mesh.m_vertices.size();
     assert(buffer_size > 0);
     assert(transfert_command_pool != nullptr);
 
@@ -495,7 +484,7 @@ ftstd::VResult frametech::graphics::Pipeline::createVertexBuffer() noexcept
     // Now, fill the staging buffer with the actual data
     void* data;
     vkMapMemory(graphics_device, staging_buffer_memory, memory_offset, buffer_size, 0, &data);
-    memcpy(data, m_vertices.data(), (size_t)buffer_size);
+    memcpy(data, m_mesh.m_vertices.data(), (size_t)buffer_size);
     vkUnmapMemory(graphics_device, staging_buffer_memory);
 
     // Initialize the actual vertex buffer
@@ -546,12 +535,24 @@ ftstd::VResult frametech::graphics::Pipeline::createVertexBuffer() noexcept
 
 ftstd::VResult frametech::graphics::Pipeline::createIndexBuffer() noexcept
 {
-    VkPhysicalDevice physical_device = frametech::Engine::getInstance()->m_graphics_device.getPhysicalDevice();
     VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+    if (VK_NULL_HANDLE != m_index_buffer)
+    {
+        Log("< Destroying the index buffer...");
+        vkDestroyBuffer(graphics_device, m_index_buffer, nullptr);
+        m_index_buffer = VK_NULL_HANDLE;
+    }
+    if (VK_NULL_HANDLE != m_index_buffer_memory)
+    {
+        Log("< Destroying the index buffer memory...");
+        vkFreeMemory(graphics_device, m_index_buffer_memory, nullptr);
+        m_index_buffer_memory = VK_NULL_HANDLE;
+    }
+    VkPhysicalDevice physical_device = frametech::Engine::getInstance()->m_graphics_device.getPhysicalDevice();
     VkQueue transfert_queue = frametech::Engine::getInstance()->m_graphics_device.getTransfertQueue();
     VkCommandPool* transfert_command_pool = frametech::Engine::getInstance()->m_render->getTransfertCommand()->getPool();
     const VkDeviceSize memory_offset = 0;
-    const size_t buffer_size = sizeof(m_indices[0]) * m_indices.size();
+    const size_t buffer_size = sizeof(m_mesh.m_indices[0]) * m_mesh.m_indices.size();
     assert(buffer_size > 0);
     assert(transfert_command_pool != nullptr);
 
@@ -578,7 +579,7 @@ ftstd::VResult frametech::graphics::Pipeline::createIndexBuffer() noexcept
     // Now, fill the staging buffer with the actual data
     void* data;
     vkMapMemory(graphics_device, staging_buffer_memory, memory_offset, buffer_size, 0, &data);
-    memcpy(data, m_indices.data(), (size_t)buffer_size);
+    memcpy(data, m_mesh.m_indices.data(), (size_t)buffer_size);
     vkUnmapMemory(graphics_device, staging_buffer_memory);
 
     // Initialize the actual vertex buffer
@@ -748,12 +749,12 @@ ftstd::Result<int> frametech::graphics::Pipeline::draw()
 
 const std::vector<ftstd::shaders::Vertex>& frametech::graphics::Pipeline::getVertices() noexcept
 {
-    return m_vertices;
+    return m_mesh.m_vertices;
 }
 
 const std::vector<uint32_t>& frametech::graphics::Pipeline::getIndices() noexcept
 {
-    return m_indices;
+    return m_mesh.m_indices;
 }
 
 const VkBuffer& frametech::graphics::Pipeline::getVertexBuffer() noexcept
@@ -764,4 +765,19 @@ const VkBuffer& frametech::graphics::Pipeline::getVertexBuffer() noexcept
 const VkBuffer& frametech::graphics::Pipeline::getIndexBuffer() noexcept
 {
     return m_index_buffer;
+}
+
+const frametech::graphics::Mesh& frametech::graphics::Pipeline::getMesh() noexcept
+{
+    return m_mesh;
+}
+
+void frametech::graphics::Pipeline::setMesh2D(frametech::graphics::Mesh2D new_mesh) noexcept
+{
+    m_mesh = frametech::graphics::MeshUtils::getMesh2D(new_mesh);
+    // Force recreate the buffers
+    // TODO: uses fences to do this as it can be VERY dangerous if
+    // any buffer is used during the execution of those commands...
+    createVertexBuffer();
+    createIndexBuffer();
 }

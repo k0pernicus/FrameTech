@@ -11,6 +11,7 @@
 
 #include "../../ftstd/result.h"
 #include "../../ftstd/shaders.h"
+#include "mesh.hpp"
 #include <cstdlib>
 #include <optional>
 #include <vector>
@@ -107,6 +108,14 @@ namespace frametech
             /// @brief Creates an index buffer object to store the vertices to use to display our objects
             /// @return A VResult type to know if the function succeeded or not.
             ftstd::VResult createIndexBuffer() noexcept;
+            /// @brief Returns the Mesh object stored in the object
+            /// @return A reference to the stored Mesh object
+            const frametech::graphics::Mesh& getMesh() noexcept;
+            /// @brief Updates the Mesh object to render on screen
+            /// WARNING: this function is absolutely not safe as it destroys
+            /// the entire buffers before creating new ones...
+            /// @param new_mesh a Mesh2D enum
+            void setMesh2D(frametech::graphics::Mesh2D new_mesh) noexcept;
             /// @brief Performs the acquire image call
             void acquireImage();
             /// @brief Draw the current frame
@@ -147,12 +156,8 @@ namespace frametech
             VkBuffer m_vertex_buffer = VK_NULL_HANDLE;
             /// @brief The index buffer
             VkBuffer m_index_buffer = VK_NULL_HANDLE;
-            /// @brief Handles the vertices
-            /// TODO: to change for a most versatile option
-            std::vector<ftstd::shaders::Vertex> m_vertices;
-            /// @brief Handles the index of the vertices to use
-            /// TODO: to change for a most versatile option
-            std::vector<uint32_t> m_indices;
+            /// @brief The default mesh to display
+            frametech::graphics::Mesh m_mesh = frametech::graphics::MeshUtils::getMesh2D(frametech::graphics::Mesh2D::NONE);
             /// @brief Vertex buffer memory
             VkDeviceMemory m_vertex_buffer_memory = VK_NULL_HANDLE;
             /// @brief Index buffer memory

@@ -223,6 +223,10 @@ void frametech::Application::drawImGui()
 
     if (ImGui::CollapsingHeader("On screen"))
     {
+        const frametech::graphics::Mesh c_mesh = m_engine->m_render->getGraphicsPipeline()->getMesh();
+        ImGui::Text("Name: '%s'", c_mesh.m_name);
+        ImGui::Text("%lu vertices", c_mesh.m_vertices.size());
+        ImGui::Text("%lu indices", c_mesh.m_indices.size());
         if (ImGui::TreeNode("Vertices"))
         {
             const auto vertices = m_engine->m_render->getGraphicsPipeline()->getVertices();
@@ -251,11 +255,42 @@ void frametech::Application::drawImGui()
             ImGui::TreePop();
             ImGui::Separator();
         }
-        if (ImGui::TreeNode("Shaders"))
+    }
+
+    ImGui::Separator();
+
+    if (ImGui::CollapsingHeader("Available meshes"))
+    {
+        if (ImGui::BeginListBox("2D meshes"))
         {
-            ImGui::Text("TODO");
-            ImGui::TreePop();
-            ImGui::Separator();
+            const char* items[] = {"Basic triangle", "Basic quad", "None"};
+            static int item_current_idx = m_engine->m_render->getGraphicsPipeline()->getMesh().m_type;
+            int previously_selected_idx = m_engine->m_render->getGraphicsPipeline()->getMesh().m_type;
+            for (int n = 0; n < sizeof(items) / sizeof(items[0]); ++n)
+            {
+                const bool is_selected = (item_current_idx == n);
+                if (ImGui::Selectable(items[n], is_selected))
+                    item_current_idx = n;
+                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                if (is_selected && (item_current_idx != previously_selected_idx))
+                {
+                    previously_selected_idx = item_current_idx;
+                    ImGui::SetItemDefaultFocus();
+                    switch (item_current_idx)
+                    {
+                        case 0:
+                            m_engine->m_render->getGraphicsPipeline()->setMesh2D(frametech::graphics::Mesh2D::BASIC_TRIANGLE);
+                            break;
+                        case 1:
+                            m_engine->m_render->getGraphicsPipeline()->setMesh2D(frametech::graphics::Mesh2D::BASIC_QUAD);
+                            break;
+                        case 2:
+                            m_engine->m_render->getGraphicsPipeline()->setMesh2D(frametech::graphics::Mesh2D::NONE);
+                            break;
+                    }
+                }
+            }
+            ImGui::EndListBox();
         }
     }
 

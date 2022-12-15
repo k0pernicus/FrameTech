@@ -20,9 +20,9 @@ namespace ftstd
         struct Vertex
         {
             /// @brief Vertex position
-            glm::vec2 position;
+            glm::vec2 m_position;
             /// @brief Vertex color
-            glm::vec3 color;
+            glm::vec3 m_color;
         };
 
         class VertexUtils
@@ -30,7 +30,7 @@ namespace ftstd
         public:
             [[maybe_unused]] static void toString(char* str, const Vertex& vertex) noexcept
             {
-                snprintf(str, 80, "Position: (%.2f,%.2f)\nColor: (%d,%d,%d)", vertex.position.x, vertex.position.y, static_cast<int>(255.0 * vertex.color.r), static_cast<int>(255.0 * vertex.color.g), static_cast<int>(255.0 * vertex.color.b));
+                snprintf(str, 80, "Position: (%.2f,%.2f)\nColor: (%d,%d,%d)", vertex.m_position.x, vertex.m_position.y, static_cast<int>(255.0 * vertex.m_color.r), static_cast<int>(255.0 * vertex.m_color.g), static_cast<int>(255.0 * vertex.m_color.b));
             }
             /// @brief Returns the binding description of the Vertex structure
             /// @param index_binding The binding index to set in the description data structure
@@ -60,13 +60,13 @@ namespace ftstd
                     .binding = 0,
                     .location = 0,
                     .format = VK_FORMAT_R32G32_SFLOAT, // Position -> 2 floats
-                    .offset = offsetof(Vertex, position),
+                    .offset = offsetof(Vertex, m_position),
                 };
                 attribute_descriptions[1] = VkVertexInputAttributeDescription{
                     .binding = 0,
                     .location = 1,
                     .format = VK_FORMAT_R32G32B32_SFLOAT, // Color -> 3 floats
-                    .offset = offsetof(Vertex, color),
+                    .offset = offsetof(Vertex, m_color),
                 };
                 return attribute_descriptions;
             }
