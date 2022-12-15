@@ -14,19 +14,125 @@ frametech::graphics::Monitor::Monitor() {}
 
 frametech::graphics::Monitor::~Monitor() {}
 
-std::pair<GLFWmonitor**, int> frametech::graphics::Monitor::scanForMonitors()
+std::optional<int> frametech::graphics::Monitor::checkForCurrentMonitor(GLFWwindow* window, GLFWmonitor** monitors, const int monitors_size) noexcept
+{
+    int window_rectangle[4] = {0};
+    glfwGetWindowPos(window, &window_rectangle[0], &window_rectangle[1]);
+    glfwGetWindowSize(window, &window_rectangle[2], &window_rectangle[3]);
+
+    std::optional<int> closest_monitor = std::nullopt;
+    int max_overlap_area = 0;
+
+    for (int i = 0; i < monitors_size; ++i)
+    {
+        int monitor_rectangle[4] = {0};
+        glfwGetMonitorPos(monitors[i], &monitor_rectangle[0], &monitor_rectangle[1]);
+        const GLFWvidmode* monitor_video_mode = glfwGetVideoMode(monitors[i]);
+
+        monitor_rectangle[2] = monitor_video_mode->width;
+        monitor_rectangle[3] = monitor_video_mode->height;
+
+        if (
+            !(
+                ((window_rectangle[0] + window_rectangle[2]) < monitor_rectangle[0]) ||
+                (window_rectangle[0] > (monitor_rectangle[0] + monitor_rectangle[2])) ||
+                ((window_rectangle[1] + window_rectangle[3]) < monitor_rectangle[1]) ||
+                (window_rectangle[1] > (monitor_rectangle[1] + monitor_rectangle[3]))))
+        {
+            int intersection_rectangle[4] = {0};
+
+            // x, width
+            if (window_rectangle[0] < monitor_rectangle[0])
+            {
+                intersection_rectangle[0] = monitor_rectangle[0];
+
+                if ((window_rectangle[0] + window_rectangle[2]) < (monitor_rectangle[0] + monitor_rectangle[2]))
+                {
+                    intersection_rectangle[2] = (window_rectangle[0] + window_rectangle[2]) - intersection_rectangle[0];
+                }
+                else
+                {
+                    intersection_rectangle[2] = monitor_rectangle[2];
+                }
+            }
+            else
+            {
+                intersection_rectangle[0] = window_rectangle[0];
+
+                if ((monitor_rectangle[0] + monitor_rectangle[2]) < (window_rectangle[0] + window_rectangle[2]))
+                {
+                    intersection_rectangle[2] = (monitor_rectangle[0] + monitor_rectangle[2]) - intersection_rectangle[0];
+                }
+                else
+                {
+                    intersection_rectangle[2] = window_rectangle[2];
+                }
+            }
+
+            // y, height
+            if (window_rectangle[1] < monitor_rectangle[1])
+            {
+                intersection_rectangle[1] = monitor_rectangle[1];
+
+                if ((window_rectangle[1] + window_rectangle[3]) < (monitor_rectangle[1] + monitor_rectangle[3]))
+                {
+                    intersection_rectangle[3] = (window_rectangle[1] + window_rectangle[3]) - intersection_rectangle[1];
+                }
+                else
+                {
+                    intersection_rectangle[3] = monitor_rectangle[3];
+                }
+            }
+            else
+            {
+                intersection_rectangle[1] = window_rectangle[1];
+
+                if ((monitor_rectangle[1] + monitor_rectangle[3]) < (window_rectangle[1] + window_rectangle[3]))
+                {
+                    intersection_rectangle[3] = (monitor_rectangle[1] + monitor_rectangle[3]) - intersection_rectangle[1];
+                }
+                else
+                {
+                    intersection_rectangle[3] = window_rectangle[3];
+                }
+            }
+
+            int overlap_area = intersection_rectangle[2] * intersection_rectangle[3];
+            if (overlap_area > max_overlap_area)
+            {
+                closest_monitor = i;
+                max_overlap_area = overlap_area;
+            }
+        }
+    }
+
+    return closest_monitor;
+}
+
+std::pair<GLFWmonitor**, int> frametech::graphics::Monitor::scanForMonitors() noexcept
 {
     int nb_monitors{};
     GLFWmonitor** monitors = glfwGetMonitors(&nb_monitors);
     return std::pair<GLFWmonitor**, int>({monitors, nb_monitors});
 }
 
-ftstd::VResult frametech::graphics::Monitor::scanForPrimaryMonitor()
+ftstd::VResult frametech::graphics::Monitor::scanForCurrentMonitor(GLFWwindow* app_window) noexcept
 {
-    GLFWmonitor* primary = glfwGetPrimaryMonitor();
-    if (primary == nullptr)
+    const std::pair<GLFWmonitor**, int> monitors = scanForMonitors();
+    if (monitors.second == 0)
         return ftstd::VResult::Error((char*)"Error getting the primary monitor of the physical device");
-    m_primary_monitor = primary;
+    if (monitors.second == 1)
+    {
+        m_primary_monitor = monitors.first[0];
+    }
+    else
+    {
+        const std::optional<int> monitor_index = checkForCurrentMonitor(app_window, monitors.first, monitors.second);
+        if (monitor_index.has_value())
+            m_primary_monitor = monitors.first[monitor_index.value()];
+    }
+    if (nullptr == m_primary_monitor)
+        return ftstd::VResult::Error((char*)"Error getting the primary monitor of the physical device");
     if (const auto query_result_code = queryProperties(); query_result_code.IsError())
     {
         LogE("> Error querying information about the primary monitor");

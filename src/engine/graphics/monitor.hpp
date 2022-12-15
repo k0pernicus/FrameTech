@@ -12,6 +12,7 @@
 #include "../../ftstd/result.h"
 #include <GLFW/glfw3.h>
 #include <cstdint>
+#include <optional>
 #include <utility>
 
 namespace frametech
@@ -46,14 +47,19 @@ namespace frametech
         public:
             Monitor();
             ~Monitor();
+            /// @brief Returns the index of the monitor that displays the application
+            /// @param monitors List of current monitors
+            /// @param nb_monitors The numbver of monitors in the previous list
+            /// @return An optional type that contains the index of the current monitor
+            static std::optional<int> checkForCurrentMonitor(GLFWwindow* window, GLFWmonitor** monitors, const int monitors_size) noexcept;
             /// @brief Retrieves the list of monitors
             /// @return A pair of information:
             /// 1. The list of GLFWmonitor objects,
             /// 2. The number of retrieved GLFWmonitor objects
-            std::pair<GLFWmonitor**, int> scanForMonitors();
-            /// @brief Scans for a primary monitor
+            static std::pair<GLFWmonitor**, int> scanForMonitors() noexcept;
+            /// @brief Scans for the monitor that displays the app
             /// @return A VResult type
-            ftstd::VResult scanForPrimaryMonitor();
+            ftstd::VResult scanForCurrentMonitor(GLFWwindow* app_window) noexcept;
             /// @brief Allows the user to select the primary monitor he wants
             /// @param index An index to use in the list of available monitors
             /// @return A VResult type

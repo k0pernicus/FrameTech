@@ -73,10 +73,6 @@ ftstd::VResult frametech::Application::initWindow()
     {
         return ftstd::VResult::Error((char*)"Vulkan is not supported");
     }
-    // Initialize the monitor object
-    if (!m_monitor.foundPrimaryMonitor())
-        if (const auto scan_result_code = m_monitor.scanForPrimaryMonitor(); scan_result_code.IsError())
-            return ftstd::VResult::Error((char*)"Error getting the primary monitor");
     m_app_height = frametech::DEFAULT_WINDOW_HEIGHT;
     m_app_width = frametech::DEFAULT_WINDOW_WIDTH;
     // The last parameter in glfwCreateWindow is only for OpenGL - no need to setup it here
@@ -85,6 +81,10 @@ ftstd::VResult frametech::Application::initWindow()
                                     m_app_title,
                                     nullptr,
                                     nullptr);
+    // Initialize the monitor object
+    if (!m_monitor.foundPrimaryMonitor())
+        if (const auto scan_result_code = m_monitor.scanForCurrentMonitor(m_app_window); scan_result_code.IsError())
+            return ftstd::VResult::Error((char*)"Error getting the primary monitor");
     return ftstd::VResult::Ok();
 }
 
