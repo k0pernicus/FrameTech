@@ -16,7 +16,7 @@ namespace frametech
 {
     namespace graphics
     {
-
+        /// @brief Mesh 2D IDs
         enum Mesh2D
         {
             BASIC_TRIANGLE = 0,
@@ -24,17 +24,27 @@ namespace frametech
             NONE = 2,
         };
 
+        /// @brief Stores all information about
+        /// a Mesh object
         struct Mesh
         {
+            /// @brief The name / tag of the Mesh object
             char m_name[20];
+            /// @brief The vertices of the Mesh object
             std::vector<ftstd::shaders::Vertex> m_vertices;
+            /// @brief The indices of the Mesh object
             std::vector<uint32_t> m_indices;
+            /// @brief The type of the Mesh object
             Mesh2D m_type;
         };
 
+        /// @brief Utility class to interact with Mesh objects
         class MeshUtils
         {
         public:
+            /// @brief Returns a 2D Mesh object, based on the id passed as parameter
+            /// @param queried_mesh The 2D Mesh ID to get
+            /// @return A Mesh object
             static Mesh getMesh2D(const Mesh2D queried_mesh) noexcept
             {
                 switch (queried_mesh)
