@@ -62,8 +62,8 @@ namespace frametech
                             {{1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
                             {{-1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}}};
                         auto mesh = Mesh{
-                            .m_indices = indices,
                             .m_vertices = vertices,
+                            .m_indices = indices,
                             .m_type = Mesh2D::BASIC_QUAD};
                         snprintf(mesh.m_name, 20, "basic_quad");
                         return mesh;
@@ -80,8 +80,8 @@ namespace frametech
                             {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
                             {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
                         auto mesh = Mesh{
-                            .m_indices = indices,
                             .m_vertices = vertices,
+                            .m_indices = indices,
                             .m_type = Mesh2D::BASIC_TRIANGLE};
                         snprintf(mesh.m_name, 20, "basic_triangle");
                         return mesh;
@@ -95,8 +95,8 @@ namespace frametech
                         std::vector<ftstd::shaders::Vertex> vertices(0);
                         vertices = {{{0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}}};
                         auto mesh = Mesh{
-                            .m_indices = indices,
                             .m_vertices = vertices,
+                            .m_indices = indices,
                             .m_type = Mesh2D::NONE};
                         snprintf(mesh.m_name, 20, "None");
                         return mesh;

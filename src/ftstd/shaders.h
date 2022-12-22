@@ -57,14 +57,14 @@ namespace ftstd
                  * */
                 std::array<VkVertexInputAttributeDescription, 2> attribute_descriptions{};
                 attribute_descriptions[0] = VkVertexInputAttributeDescription{
-                    .binding = 0,
                     .location = 0,
+                    .binding = 0,
                     .format = VK_FORMAT_R32G32_SFLOAT, // Position -> 2 floats
                     .offset = offsetof(Vertex, m_position),
                 };
                 attribute_descriptions[1] = VkVertexInputAttributeDescription{
-                    .binding = 0,
                     .location = 1,
+                    .binding = 0,
                     .format = VK_FORMAT_R32G32B32_SFLOAT, // Color -> 3 floats
                     .offset = offsetof(Vertex, m_color),
                 };

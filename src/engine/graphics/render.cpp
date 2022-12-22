@@ -151,16 +151,19 @@ ftstd::VResult frametech::graphics::Render::createImageViews()
             .viewType = VK_IMAGE_VIEW_TYPE_2D, // could be 1D / 2D / 3D texture, or cube maps
             .format = frametech::Engine::getInstance()->m_swapchain->getImageFormat().format,
             // Default mapping
-            .components.r = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .components.g = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .components.b = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .components.a = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-            .subresourceRange.baseMipLevel = 0,
-            .subresourceRange.levelCount = 1,
-            .subresourceRange.baseArrayLayer = 0,
-            .subresourceRange.layerCount = 1,
-        };
+            .components = {
+                .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+            },
+            .subresourceRange = {
+                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                .baseMipLevel = 0,
+                .levelCount = 1,
+                .baseArrayLayer = 0,
+                .layerCount = 1,
+            }};
         const auto image_view_result = vkCreateImageView(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
                                                          &image_view_create_info,
                                                          nullptr,
@@ -248,8 +251,8 @@ ftstd::VResult frametech::graphics::Render::createShaderModule()
         // TODO: create the shader stages
         VkPipelineShaderStageCreateInfo shader_stage_create_info{
             .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-            .pName = c_shader.m_entrypoint,
             .module = shader_module,
+            .pName = c_shader.m_entrypoint,
         };
         switch (c_shader.m_type)
         {

@@ -308,11 +308,11 @@ ftstd::VResult frametech::graphics::Device::createLogicalDevice()
     // Initializes the logical device
     VkDeviceCreateInfo logical_device_create_info{
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-        .pQueueCreateInfos = queues.data(),
         .queueCreateInfoCount = static_cast<uint32_t>(queues.size()),
-        .pEnabledFeatures = &device_features,
+        .pQueueCreateInfos = queues.data(),
         .enabledExtensionCount = static_cast<uint32_t>(REQUIRED_EXTENSIONS.size()),
         .ppEnabledExtensionNames = REQUIRED_EXTENSIONS.data(),
+        .pEnabledFeatures = &device_features,
     };
     if (const auto result_status = vkCreateDevice(m_physical_device, &logical_device_create_info, nullptr, &m_logical_device); result_status != VK_SUCCESS)
     {

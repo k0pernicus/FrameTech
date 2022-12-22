@@ -162,15 +162,15 @@ ftstd::Result<std::vector<frametech::graphics::Shader::Module>> frametech::graph
     Log("> For FS file '%s', read file ok (%d bytes)", fragment_shader_filepath, fs_file_size);
     std::vector<frametech::graphics::Shader::Module> shader_modules(
         {frametech::graphics::Shader::Module{
-             .m_tag = (char*)fragment_shader_filepath,
              .m_code = fs_buffer,
              .m_size = fs_file_size,
+             .m_tag = (char*)fragment_shader_filepath,
              .m_type = frametech::graphics::Shader::FRAGMENT_SHADER,
          },
          frametech::graphics::Shader::Module{
-             .m_tag = (char*)vertex_shader_filepath,
              .m_code = vs_buffer,
              .m_size = vs_file_size,
+             .m_tag = (char*)vertex_shader_filepath,
              .m_type = frametech::graphics::Shader::VERTEX_SHADER,
          }});
     return ftstd::Result<std::vector<frametech::graphics::Shader::Module>>::Ok(shader_modules);
@@ -249,8 +249,8 @@ ftstd::VResult frametech::graphics::Pipeline::setupRenderPass()
         .srcSubpass = VK_SUBPASS_EXTERNAL, // Implicit subpass before or after the render pass
         .dstSubpass = 0,                   // our subpass
         .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        .srcAccessMask = 0,
         .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        .srcAccessMask = 0,
         .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
     };
 
@@ -367,24 +367,24 @@ ftstd::VResult frametech::graphics::Pipeline::create()
         .depthClampEnable = VK_FALSE,
         .rasterizerDiscardEnable = VK_FALSE,
         .polygonMode = VK_POLYGON_MODE_FILL,
-        .lineWidth = 1,
         .cullMode = VK_CULL_MODE_BACK_BIT,
         .frontFace = VK_FRONT_FACE_CLOCKWISE,
         .depthBiasEnable = VK_FALSE,
+        .lineWidth = 1,
     };
 
     // TODO: Check if needs another GPU feature
     VkPipelineMultisampleStateCreateInfo multisample_state_create_info{
         .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-        .sampleShadingEnable = VK_FALSE,
         .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+        .sampleShadingEnable = VK_FALSE,
     };
 
     // TODO: Check if needed
     VkPipelineDepthStencilStateCreateInfo depth_stencil_state_create_info{
         .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
-        .depthBoundsTestEnable = VK_FALSE,
         .depthTestEnable = VK_FALSE,
+        .depthBoundsTestEnable = VK_FALSE,
         .stencilTestEnable = VK_FALSE,
     };
 

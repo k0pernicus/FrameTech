@@ -132,8 +132,8 @@ namespace frametech
             {
                 VkCommandBufferAllocateInfo alloc_info{
                     .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-                    .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
                     .commandPool = *(transfert_command_pool),
+                    .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
                     .commandBufferCount = 1};
                 VkCommandBuffer command_buffer;
                 const auto operation_result = vkAllocateCommandBuffers(graphics_device, &alloc_info, &command_buffer);

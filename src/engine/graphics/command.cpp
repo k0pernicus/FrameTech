@@ -87,8 +87,10 @@ ftstd::VResult frametech::graphics::Command::record()
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getRenderPass(),
         .framebuffer = framebuffers[swapchain_index],
-        .renderArea.offset = {0, 0},
-        .renderArea.extent = frametech::Engine::getInstance()->m_swapchain->getExtent(),
+        .renderArea = {
+            .offset = {0, 0},
+            .extent = frametech::Engine::getInstance()->m_swapchain->getExtent(),
+        },
         .clearValueCount = 1,
         .pClearValues = &clear_color,
     };
