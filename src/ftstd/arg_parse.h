@@ -21,13 +21,13 @@ static constexpr char* SMALL_FLAG_PREFIX = (char*)"-";
 static constexpr char* LONG_FLAG_PREFIX = (char*)"--";
 
 /// @brief Stores the length of the smaller prefix for a flag to parse
-static const int SMALL_FLAG_PREFIX_LEN = strlen(SMALL_FLAG_PREFIX);
+static constexpr int SMALL_FLAG_PREFIX_LEN = std::char_traits<char>::length(SMALL_FLAG_PREFIX);
 
 /// @brief Stores the length of the longest prefix for a flag to parse
-static const int LONG_FLAG_PREFIX_LEN = strlen(LONG_FLAG_PREFIX);
+static constexpr int LONG_FLAG_PREFIX_LEN = std::char_traits<char>::length(LONG_FLAG_PREFIX);
 
 /// @brief The maximum number of characters for a flag
-static const int MAX_FLAG_LEN = 32;
+static constexpr int MAX_FLAG_LEN = 32;
 
 /// @brief Shortcut to set copy the string source to the string destination
 #define COPY_FLAG_STRING(dst, src) strncpy(dst, src, MAX_FLAG_LEN)
