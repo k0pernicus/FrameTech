@@ -24,7 +24,7 @@ namespace frametech
         namespace Shader
         {
             /// @brief The stage of shader
-            enum Type
+            enum struct Type
             {
                 COMPUTE_SHADER,
                 FRAGMENT_SHADER,

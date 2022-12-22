@@ -18,7 +18,7 @@ namespace frametech
     namespace graphics
     {
         /// @brief Stores the state of a Graphics queue
-        enum QueueState
+        enum struct QueueState
         {
             /// @brief The queue will not be used for the engine
             UNSUPPORTED,

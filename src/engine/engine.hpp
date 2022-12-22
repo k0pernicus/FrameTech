@@ -27,7 +27,7 @@ namespace frametech
         /// @brief Internal state of the Engine object,
         /// to know if the unique object needs
         /// to be initialized or not
-        enum State
+        enum struct State
         {
             /// @brief The starting state
             UNINITIALIZED,

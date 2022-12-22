@@ -68,7 +68,7 @@ frametech::Engine* frametech::Engine::m_instance{nullptr};
 
 frametech::Engine::Engine()
 {
-    m_state = UNINITIALIZED;
+    m_state = State::UNINITIALIZED;
 }
 
 frametech::Engine::~Engine()
@@ -86,61 +86,61 @@ frametech::Engine::~Engine()
 
 void frametech::Engine::initialize()
 {
-    if (m_state == INITIALIZED)
+    if (m_state == State::INITIALIZED)
         return;
     if (const auto result = createGraphicsInstance(); result.IsError())
     {
-        m_state = ERROR;
+        m_state = State::ERROR;
         return;
     }
     assert(m_graphics_instance != nullptr);
     if (const auto result = createRenderDevice(); result.IsError())
     {
-        m_state = ERROR;
+        m_state = State::ERROR;
         return;
     }
     if (const auto result = pickPhysicalDevice(); result.IsError())
     {
-        m_state = ERROR;
+        m_state = State::ERROR;
         return;
     }
     if (const auto result = m_graphics_device.getQueueFamilies(); result.IsError())
     {
-        m_state = ERROR;
+        m_state = State::ERROR;
         return;
     }
     if (const auto result = m_graphics_device.createLogicalDevice(); result.IsError())
     {
-        m_state = ERROR;
+        m_state = State::ERROR;
         return;
     }
     if (const auto result = createDescriptorPool(); result.IsError())
     {
-        m_state = ERROR;
+        m_state = State::ERROR;
         return;
     }
     if (const auto result = createSwapChain(); result.IsError())
     {
-        m_state = ERROR;
+        m_state = State::ERROR;
         return;
     }
     if (const auto result = m_render->createImageViews(); result.IsError())
     {
-        m_state = ERROR;
+        m_state = State::ERROR;
         return;
     }
     if (const auto result = m_render->createGraphicsPipeline(); result.IsError())
     {
-        m_state = ERROR;
+        m_state = State::ERROR;
         return;
     }
     if (const auto result = m_render->createFramebuffers(); result.IsError())
     {
-        m_state = ERROR;
+        m_state = State::ERROR;
         return;
     }
     assert(m_graphics_device.isInitialized());
-    m_state = INITIALIZED;
+    m_state = State::INITIALIZED;
 }
 
 frametech::Engine* frametech::Engine::getInstance()

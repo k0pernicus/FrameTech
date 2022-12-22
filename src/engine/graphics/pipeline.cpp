@@ -165,13 +165,13 @@ ftstd::Result<std::vector<frametech::graphics::Shader::Module>> frametech::graph
              .m_code = fs_buffer,
              .m_size = fs_file_size,
              .m_tag = (char*)fragment_shader_filepath,
-             .m_type = frametech::graphics::Shader::FRAGMENT_SHADER,
+             .m_type = frametech::graphics::Shader::Type::FRAGMENT_SHADER,
          },
          frametech::graphics::Shader::Module{
              .m_code = vs_buffer,
              .m_size = vs_file_size,
              .m_tag = (char*)vertex_shader_filepath,
-             .m_type = frametech::graphics::Shader::VERTEX_SHADER,
+             .m_type = frametech::graphics::Shader::Type::VERTEX_SHADER,
          }});
     return ftstd::Result<std::vector<frametech::graphics::Shader::Module>>::Ok(shader_modules);
 }

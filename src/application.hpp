@@ -45,7 +45,7 @@ namespace frametech
     {
     private:
         /// @brief Defines the current state of the application
-        enum State
+        enum struct State
         {
             /// @brief The default and starting state of the app
             UNINITIALIZED,
@@ -85,7 +85,7 @@ namespace frametech
         /// @brief Constructor of the Application - should be private as Application is a Singleton
         Application(const char* app_title);
         /// @brief The internal state of the current Application object
-        State m_state = UNINITIALIZED;
+        State m_state = State::UNINITIALIZED;
         /// @brief The frame that is being draw
         uint64_t m_current_frame = 1;
         /// @brief The current FPS limit per second to draw

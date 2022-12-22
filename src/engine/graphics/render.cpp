@@ -256,16 +256,16 @@ ftstd::VResult frametech::graphics::Render::createShaderModule()
         };
         switch (c_shader.m_type)
         {
-            case Shader::COMPUTE_SHADER:
+            case Shader::Type::COMPUTE_SHADER:
                 shader_stage_create_info.stage = VK_SHADER_STAGE_COMPUTE_BIT;
                 break;
-            case Shader::FRAGMENT_SHADER:
+            case Shader::Type::FRAGMENT_SHADER:
                 shader_stage_create_info.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
                 break;
-            case Shader::GEOMETRY_SHADER:
+            case Shader::Type::GEOMETRY_SHADER:
                 shader_stage_create_info.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
                 break;
-            case Shader::VERTEX_SHADER:
+            case Shader::Type::VERTEX_SHADER:
                 shader_stage_create_info.stage = VK_SHADER_STAGE_VERTEX_BIT;
                 break;
             default:
