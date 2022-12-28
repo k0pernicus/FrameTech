@@ -1,24 +1,26 @@
 # FrameTech
 
-An example of a game and the custom `FrameTech` engine.
+An example of a game and a custom rendering engine, using Vulkan.
 
-**This project is not compatible with a Vulkan SDK > 1.3.211.**
+**This project is not compatible with Vulkan SDK > 1.3.211.**
 
 This repository includes:
 
-1. a simple application (game),
-2. a custom standard library for FrameTech, called `ftstd`,
-3. a custom engine called `FrameTech`.
+1. a simple application,
+2. the rendering engine (`FrameTech`),
+3. a custom standard library (`ftstd`),
 
-The custom standard library, `ftstd` (for "FrameTech STanDard library"), is enough to run and debug the engine only, and has no purpose to run in PRODUCTION mode for the moment.
+The custom standard library, `ftstd` (for "FrameTech STanDard library"), is enough to run and debug the engine only, and has no ambition to be
+pushed in production.
 
-This engine is divided in several namespaces, or parts, like `Graphics`.
+`FrameTech` has no ambition to be pushed in production either.
 
 ## About externs
 
-This repository includes extern repositories / dependencies, like `imgui` or `glm` (for shaders specifications).  
-Do not forget to run a `git submodule update` after cloning the _FrameTech_ repository.  
-Thanks to Omar Cornut & the ImGui team for providing a such great tool for free, to the developers.
+This repository includes extern repositories / dependencies, like `imgui` or `glm`.
+Do not forget to run a `git submodule update` after cloning the _FrameTech_ repository.
+
+Thanks to the ImGui and GLM teams for providing such great tools for free.
 
 ## Screenshots
 
@@ -26,7 +28,9 @@ Thanks to Omar Cornut & the ImGui team for providing a such great tool for free,
 
 ## TODO
 
-1. Improve the shaders bindings,
-2. Make a todo statement about what to move from pipeline / render / swapchain / ... to ...,
-3. Make the configuration external to the build (like FPS limit),
-4. Multi-platforms.
+1. Custom resources allocator,
+2. Multiple buffers allocation using **one** _VkBuffer_ only,
+3. Improve the shaders bindings,
+4. Make a todo statement about what to move from pipeline / render / swapchain / ... to ...,
+5. Make the configuration external to the build (like FPS limit),
+6. [OPTIONAL] Multi-platforms.
