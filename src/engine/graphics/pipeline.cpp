@@ -10,7 +10,7 @@
 #include "../../ftstd/result.h"
 #include "../../ftstd/shaders.h"
 #include "../engine.hpp"
-#include "allocator.hpp"
+#include "memory.hpp"
 #include <assert.h>
 #include <filesystem>
 #include <fstream>
@@ -465,14 +465,14 @@ ftstd::VResult frametech::graphics::Pipeline::createVertexBuffer() noexcept
     // This buffer can be used as source in a memory transfer operation
     VkBuffer staging_buffer{};
     VkDeviceMemory staging_buffer_memory{};
-    if (const auto result = frametech::graphics::Allocator::initBuffer(
+    if (const auto result = frametech::graphics::Memory::initBuffer(
             graphics_device,
             buffer_size,
             staging_buffer,
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
         result.IsError())
         return result;
-    if (const auto result = frametech::graphics::Allocator::allocateMemoryToBuffer(
+    if (const auto result = frametech::graphics::Memory::allocateMemoryToBuffer(
             physical_device, graphics_device,
             staging_buffer_memory,
             staging_buffer,
@@ -495,14 +495,14 @@ ftstd::VResult frametech::graphics::Pipeline::createVertexBuffer() noexcept
         vkDestroyBuffer(graphics_device, m_vertex_buffer, nullptr);
     }
     m_vertex_buffer = VkBuffer();
-    if (const auto result = frametech::graphics::Allocator::initBuffer(
+    if (const auto result = frametech::graphics::Memory::initBuffer(
             graphics_device,
             buffer_size,
             m_vertex_buffer,
             VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
         result.IsError())
         return result;
-    if (const auto result = frametech::graphics::Allocator::allocateMemoryToBuffer(
+    if (const auto result = frametech::graphics::Memory::allocateMemoryToBuffer(
             physical_device,
             graphics_device,
             m_vertex_buffer_memory,
@@ -513,7 +513,7 @@ ftstd::VResult frametech::graphics::Pipeline::createVertexBuffer() noexcept
         return result;
 
     // Now, copy the data
-    if (const auto operation_result = frametech::graphics::Allocator::copyBuffer(
+    if (const auto operation_result = frametech::graphics::Memory::copyBuffer(
             graphics_device,
             staging_buffer,
             m_vertex_buffer,
@@ -560,14 +560,14 @@ ftstd::VResult frametech::graphics::Pipeline::createIndexBuffer() noexcept
     // This buffer can be used as source in a memory transfer operation
     VkBuffer staging_buffer{};
     VkDeviceMemory staging_buffer_memory{};
-    if (const auto result = frametech::graphics::Allocator::initBuffer(
+    if (const auto result = frametech::graphics::Memory::initBuffer(
             graphics_device,
             buffer_size,
             staging_buffer,
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
         result.IsError())
         return result;
-    if (const auto result = frametech::graphics::Allocator::allocateMemoryToBuffer(
+    if (const auto result = frametech::graphics::Memory::allocateMemoryToBuffer(
             physical_device, graphics_device,
             staging_buffer_memory,
             staging_buffer,
@@ -590,14 +590,14 @@ ftstd::VResult frametech::graphics::Pipeline::createIndexBuffer() noexcept
         vkDestroyBuffer(graphics_device, m_index_buffer, nullptr);
     }
     m_index_buffer = VkBuffer();
-    if (const auto result = frametech::graphics::Allocator::initBuffer(
+    if (const auto result = frametech::graphics::Memory::initBuffer(
             graphics_device,
             buffer_size,
             m_index_buffer,
             VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
         result.IsError())
         return result;
-    if (const auto result = frametech::graphics::Allocator::allocateMemoryToBuffer(
+    if (const auto result = frametech::graphics::Memory::allocateMemoryToBuffer(
             physical_device,
             graphics_device,
             m_index_buffer_memory,
@@ -608,7 +608,7 @@ ftstd::VResult frametech::graphics::Pipeline::createIndexBuffer() noexcept
         return result;
 
     // Now, copy the data
-    if (const auto operation_result = frametech::graphics::Allocator::copyBuffer(
+    if (const auto operation_result = frametech::graphics::Memory::copyBuffer(
             graphics_device,
             staging_buffer,
             m_index_buffer,

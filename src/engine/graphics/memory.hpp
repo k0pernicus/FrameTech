@@ -1,13 +1,13 @@
 //
-//  allocator.hpp
+//  memory.hpp
 //  FrameTech
 //
 //  Created by Antonin on 14/12/2022.
 //
 
 #pragma once
-#ifndef allocator_h
-#define allocator_h
+#ifndef memory_h
+#define memory_h
 
 #include "../../ftstd/result.h"
 #include <assert.h>
@@ -17,7 +17,7 @@ namespace frametech
 {
     namespace graphics
     {
-        class Allocator
+        class Memory
         {
         private:
             static ftstd::Result<uint32_t> findMemoryType(
@@ -177,4 +177,4 @@ namespace frametech
     } // namespace graphics
 } // namespace frametech
 
-#endif // allocator_h
+#endif // memory_h
