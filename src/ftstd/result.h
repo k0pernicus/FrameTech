@@ -13,7 +13,10 @@
 #include <assert.h>
 #include <cstdint>
 
+/// @brief Default value for an OK status code
 constexpr int8_t RESULT_OK = 0;
+
+/// @brief Default value for an ERROR status code
 constexpr int8_t RESULT_ERROR = -1;
 
 namespace ftstd
