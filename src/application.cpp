@@ -209,6 +209,22 @@ void frametech::Application::drawDebugToolImGui()
         ImGui::Text("Name: '%s'", m_engine->getEngineName());
         ImGui::SameLine(220);
         ImGui::Text("Version: %s", S_ENGINE_VERSION);
+        if (ImGui::TreeNode("Memory stats"))
+        {
+
+            VmaTotalStatistics total_stats;
+            VmaAllocator allocator = m_engine->m_allocator;
+            vmaCalculateStatistics(allocator, &total_stats);
+            const auto stats = total_stats.total.statistics;
+
+            ImGui::Text("Vulkan memory blocks allocated: %d", stats.blockCount);
+            ImGui::Text("VmaAllocation objects allocated: %d", stats.allocationCount);
+            ImGui::Text("Number of bytes allocated in VkDeviceMemory blocks: %lluB", stats.blockBytes);
+            ImGui::Text("Total number of bytes occupied by all VmaAllocation objects: %lluB", stats.allocationBytes);
+
+            ImGui::TreePop();
+            ImGui::Separator();
+        }
     }
 
     ImGui::Separator();

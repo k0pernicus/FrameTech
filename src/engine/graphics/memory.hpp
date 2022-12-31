@@ -11,6 +11,7 @@
 
 #include "../../ftstd/result.h"
 #include <assert.h>
+#include <vk_mem_alloc.h>
 #include <vulkan/vulkan.h>
 
 namespace frametech
@@ -46,6 +47,8 @@ namespace frametech
             /// @param buffer_sharing_mode Sharing mode for the buffer
             /// @return A VResult type to know if the initialization succeeded or not
             static ftstd::VResult initBuffer(
+                VmaAllocator& resources_allocator,
+                VmaAllocation* allocation,
                 const VkDevice& graphics_device,
                 const size_t buffer_size,
                 VkBuffer& buffer,
@@ -58,61 +61,17 @@ namespace frametech
                     .usage = buffer_usage,
                     .sharingMode = buffer_sharing_mode,
                 };
-                if (vkCreateBuffer(graphics_device, &buffer_create_info, nullptr, &buffer) != VK_SUCCESS)
+
+                VmaAllocationCreateInfo alloc_info = {
+                    .flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
+                    .usage = VMA_MEMORY_USAGE_AUTO,
+                };
+
+                if (vmaCreateBuffer(resources_allocator, &buffer_create_info, &alloc_info, &buffer, allocation, nullptr) != VK_SUCCESS)
                 {
                     LogE("vkCreateBuffer: cannot initiate the buffer with size of %d bytes", buffer_size);
                     return ftstd::VResult::Error((char*)"vkCreateBuffer: cannot initiate the buffer");
                 }
-                return ftstd::VResult::Ok();
-            }
-            /// @brief Allocate memory to buffer
-            /// @param physical_device The physical device instance
-            /// @param graphics_device The graphics (or logical) device instance
-            /// @param buffer_memory The buffer memory device instance
-            /// @param buffer The buffer to bind
-            /// @param memory_offset Memory offset (default to 0)
-            /// @return A VResult type to know if the allocation succeeded or not
-            static ftstd::VResult allocateMemoryToBuffer(
-                const VkPhysicalDevice& physical_device,
-                const VkDevice& graphics_device,
-                VkDeviceMemory& buffer_memory,
-                VkBuffer& buffer,
-                const VkMemoryPropertyFlags memory_properties,
-                const VkDeviceSize memory_offset = 0) noexcept
-            {
-                VkMemoryRequirements memory_requirements{};
-                vkGetBufferMemoryRequirements(graphics_device, buffer, &memory_requirements);
-#ifdef DEBUG
-                assert(memory_requirements.size > 0 && memory_requirements.alignment > 0);
-#endif
-                if (memory_requirements.size <= 0 || memory_requirements.alignment <= 0)
-                {
-                    return ftstd::VResult::Error((char*)"vkGetBufferMemoryRequirements: memory requirements structure is invalid: size or alignment <= 0");
-                }
-
-                // Check for the memory type index
-                const ftstd::Result<uint32_t> memory_type_index = findMemoryType(
-                    physical_device,
-                    memory_requirements.memoryTypeBits,
-                    memory_properties);
-
-                if (memory_type_index.IsError())
-                    return ftstd::VResult::Error((char*)"allocateMemoryToBuffer: cannot find the memory type index found via the memory requirements structure");
-
-                // Alloc infos
-                VkMemoryAllocateInfo alloc_info{};
-                alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-                alloc_info.allocationSize = memory_requirements.size;
-                alloc_info.memoryTypeIndex = memory_type_index.GetValue();
-
-                // TODO: Update vkAllocateMemory with a proper custom allocator + offset in the future
-                if (const auto result = vkAllocateMemory(graphics_device, &alloc_info, nullptr, &buffer_memory); result != VK_SUCCESS)
-                {
-                    return ftstd::VResult::Error((char*)"vkAllocateMemory: cannot allocate memory for the buffer passed as parameter");
-                }
-
-                vkBindBufferMemory(graphics_device, buffer, buffer_memory, memory_offset);
-
                 return ftstd::VResult::Ok();
             }
             /// @brief Copy the data from the source buffer to the destination buffer

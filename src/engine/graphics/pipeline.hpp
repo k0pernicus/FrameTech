@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <optional>
 #include <vector>
+#include <vk_mem_alloc.h>
 #include <vulkan/vulkan.h>
 
 namespace frametech
@@ -154,14 +155,14 @@ namespace frametech
             VkPipeline m_pipeline = VK_NULL_HANDLE;
             /// @brief The vertex buffer
             VkBuffer m_vertex_buffer = VK_NULL_HANDLE;
+            /// @brief The vertex buffer allocation object
+            VmaAllocation m_vertex_buffer_allocation = {};
             /// @brief The index buffer
             VkBuffer m_index_buffer = VK_NULL_HANDLE;
+            /// @brief The index buffer allocation object
+            VmaAllocation m_index_buffer_allocation = {};
             /// @brief The default mesh to display
             frametech::graphics::Mesh m_mesh = frametech::graphics::MeshUtils::getMesh2D(frametech::graphics::Mesh2D::NONE);
-            /// @brief Vertex buffer memory
-            VkDeviceMemory m_vertex_buffer_memory = VK_NULL_HANDLE;
-            /// @brief Index buffer memory
-            VkDeviceMemory m_index_buffer_memory = VK_NULL_HANDLE;
             /// @brief Sync object to signal that an image is ready to
             /// be displayed
             VkSemaphore* m_sync_image_ready = nullptr;

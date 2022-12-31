@@ -78,10 +78,10 @@ frametech::Engine::~Engine()
     m_render = nullptr;
     if (m_descriptor_pool)
         vkDestroyDescriptorPool(m_graphics_device.getLogicalDevice(), m_descriptor_pool, nullptr);
+    vmaDestroyAllocator(m_allocator);
     m_graphics_device.Destroy();
     if (m_graphics_instance)
         vkDestroyInstance(m_graphics_instance, nullptr);
-    vmaDestroyAllocator(m_allocator);
     m_instance = nullptr;
 }
 
