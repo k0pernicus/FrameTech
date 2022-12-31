@@ -17,8 +17,10 @@ pushed in production.
 
 ## About externs
 
-This repository includes extern repositories / dependencies, like `imgui` or `glm`.
+This repository includes extern repositories / dependencies, like `imgui`, `vma`, or `glm`.
 Do not forget to run a `git submodule update` after cloning the _FrameTech_ repository.
+
+The Vulkan engine uses `VMA` as memory allocator dependency. 
 
 Thanks to the ImGui and GLM teams for providing such great tools for free.
 
@@ -28,9 +30,8 @@ Thanks to the ImGui and GLM teams for providing such great tools for free.
 
 ## TODO
 
-1. Custom resources allocator,
-2. Multiple buffers allocation using **one** _VkBuffer_ only,
-3. Improve the shaders bindings,
-4. Make a todo statement about what to move from pipeline / render / swapchain / ... to ...,
-5. Make the configuration external to the build (like FPS limit),
-6. [OPTIONAL] Multi-platforms.
+1. Multiple buffers allocation using **one** _VkBuffer_ only,
+2. Improve the shaders bindings,
+3. Make a todo statement about what to move from pipeline / render / swapchain / ... to ...,
+4. Make the configuration external to the build (like FPS limit),
+5. [OPTIONAL] Multi-platforms.
