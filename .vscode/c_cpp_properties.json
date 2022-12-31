@@ -3,10 +3,10 @@
         {
             "name": "Mac",
             "includePath": [
-                "/opt/homebrew/include/**",
                 "/usr/local/include/**",
-                "/Users/antonin/Develop/opt/VulkanSDK/1.3.211.0/macOS/include/**",
-                "/opt/homebrew/Cellar/glfw/3.3.8/include/**"
+                "${VULKAN_SDK}/include/**",
+                "${HOMEBREW_PREFIX}/include/**",
+                "${HOMEBREW_PREFIX}/Cellar/glfw/3.3.8/include/**"
             ],
             "defines": [],
             "macFrameworkPath": [
