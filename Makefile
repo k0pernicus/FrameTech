@@ -1,6 +1,6 @@
 CFLAGS = -std=c++17 -I. -I$(VULKAN_SDK)/include -I/usr/local/include -I/opt/homebrew/include
 CFLAGS += -I./extern/imgui -I./extern/imgui/backends # for imgui setup
-CFLAGS += -I./extern/vma
+CFLAGS += -I./extern/vma # for custom Vulkan allocator
 CFLAGS_DEBUG = $(CFLAGS) -Werror -Wall -Wno-nullability-completeness -Wno-unused-variable -g -DDEBUG -DIMGUI -DENABLE_EXCEPTIONS -DUNSET_FPS_LIMIT
 CFLAGS_RELEASE = $(CFLAGS) -O2 -DNO_AVG_FPS_RECORDS -DIMGUI
 
