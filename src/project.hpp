@@ -41,17 +41,17 @@ namespace Project
     /// @brief Bug fix version number of the application
     constexpr uint8_t const APPLICATION_VERSION_BUGFIX_NUMBER = 0;
 
-    /// @brief Minimum major version number of the Vulkan API
-    constexpr uint8_t const VULKAN_MIN_VERSION_MAJOR = 1;
-    /// @brief Minimum minor version number of the Vulkan API
-    constexpr uint8_t const VULKAN_MIN_VERSION_MINOR = 2;
-    /// @brief Minimum bug fix version number of the Vulkan API
-    constexpr uint8_t const VULKAN_MIN_VERSION_BUGFIX = 0;
-
     /// @brief The Version object to represent / formalize the version of the application
     const ftstd::Version APPLICATION_VERSION = ftstd::Version(APPLICATION_VERSION_MAJOR_NUMBER,
                                                               APPLICATION_VERSION_MINOR_NUMBER,
                                                               APPLICATION_VERSION_BUGFIX_NUMBER);
+
+    /// @brief Minimum major version number of the Vulkan API
+    constexpr uint8_t const VULKAN_MIN_VERSION_MAJOR = 1;
+    /// @brief Minimum minor version number of the Vulkan API
+    constexpr uint8_t const VULKAN_MIN_VERSION_MINOR = 3;
+    /// @brief Minimum bug fix version number of the Vulkan API
+    constexpr uint8_t const VULKAN_MIN_VERSION_BUGFIX = 211;
 
 } // namespace Project
 
