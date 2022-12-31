@@ -1,6 +1,7 @@
 CFLAGS = -std=c++17 -I. -I$(VULKAN_SDK)/include -I/usr/local/include -I/opt/homebrew/include
 CFLAGS += -I./extern/imgui -I./extern/imgui/backends # for imgui setup
-CFLAGS_DEBUG = $(CFLAGS) -Werror -Wall -g -DDEBUG -DIMGUI -DENABLE_EXCEPTIONS -DUNSET_FPS_LIMIT
+CFLAGS += -I./extern/vma
+CFLAGS_DEBUG = $(CFLAGS) -Werror -Wall -Wno-nullability-completeness -Wno-unused-variable -g -DDEBUG -DIMGUI -DENABLE_EXCEPTIONS -DUNSET_FPS_LIMIT
 CFLAGS_RELEASE = $(CFLAGS) -O2 -DNO_AVG_FPS_RECORDS -DIMGUI
 
 LDFLAGS = -L$(VULKAN_SDK)/lib `pkg-config --static --libs glfw3` -lvulkan
@@ -8,8 +9,9 @@ LDFLAGS = -L$(VULKAN_SDK)/lib `pkg-config --static --libs glfw3` -lvulkan
 IMGUI_SOURCES = extern/imgui/*.cpp extern/imgui/backends/*.cpp
 IMGUI_HEADERS = extern/imgui/*.h extern/imgui/backends/*.h
 GLM_HEADERS = extern/glm/*.h extern/glm/*.hpp
+VMA_HEADERS = extern/vma/*.h
 SOURCES = src/*.cpp src/engine/*.cpp src/engine/graphics/*.cpp $(IMGUI_SOURCES)
-HEADERS = src/*.hpp src/engine/*.hpp src/engine/graphics/*.hpp $(IMGUI_HEADERS) $(GLM_HEADERS)
+HEADERS = src/*.hpp src/engine/*.hpp src/engine/graphics/*.hpp $(IMGUI_HEADERS) $(GLM_HEADERS) $(VMA_HEADERS)
 
 MKDIR_P = mkdir -p
 OUTPUT_BASE = ./bin

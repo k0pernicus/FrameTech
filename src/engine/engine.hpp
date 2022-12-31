@@ -17,10 +17,10 @@
 #include "project.hpp"
 #include "vulkan/vulkan.h"
 #include <cstdlib>
+#include <vk_mem_alloc.h>
 
 namespace frametech
 {
-
     class Engine
     {
     public:
@@ -52,6 +52,8 @@ namespace frametech
         ftstd::VResult createGraphicsInstance();
         /// @brief Choose and picks a physical device
         ftstd::VResult pickPhysicalDevice();
+        /// @brief Creates the custom allocator
+        ftstd::VResult createAllocator();
         /// @brief Creates the render device
         ftstd::VResult createRenderDevice();
         /// @brief Creates the swapchain
@@ -77,6 +79,8 @@ namespace frametech
         frametech::Engine::State getState();
         ~Engine();
 
+        /// @brief Custom allocator (VMA)
+        VmaAllocator m_allocator;
         /// @brief The engine instance
         VkInstance m_graphics_instance = NULL;
         /// @brief The physical device

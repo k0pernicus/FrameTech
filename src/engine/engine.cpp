@@ -81,6 +81,7 @@ frametech::Engine::~Engine()
     m_graphics_device.Destroy();
     if (m_graphics_instance)
         vkDestroyInstance(m_graphics_instance, nullptr);
+    vmaDestroyAllocator(m_allocator);
     m_instance = nullptr;
 }
 
@@ -110,6 +111,11 @@ void frametech::Engine::initialize()
         return;
     }
     if (const auto result = m_graphics_device.createLogicalDevice(); result.IsError())
+    {
+        m_state = State::ERROR;
+        return;
+    }
+    if (const auto result = createAllocator(); result.IsError())
     {
         m_state = State::ERROR;
         return;
@@ -161,6 +167,21 @@ frametech::Engine::State frametech::Engine::getState()
 ftstd::VResult frametech::Engine::pickPhysicalDevice()
 {
     return m_graphics_device.listDevices();
+}
+
+ftstd::VResult frametech::Engine::createAllocator()
+{
+    VmaAllocatorCreateInfo allocator_create_info = {};
+    allocator_create_info.vulkanApiVersion = VK_MAKE_VERSION(
+        Project::VULKAN_MIN_VERSION_MAJOR,
+        Project::VULKAN_MIN_VERSION_MINOR,
+        Project::VULKAN_MIN_VERSION_BUGFIX);
+    allocator_create_info.physicalDevice = m_graphics_device.getPhysicalDevice();
+    allocator_create_info.device = m_graphics_device.getLogicalDevice();
+    allocator_create_info.instance = m_graphics_instance;
+    if (const auto result = vmaCreateAllocator(&allocator_create_info, &m_allocator); result == VK_SUCCESS)
+        return ftstd::VResult::Ok();
+    return ftstd::VResult::Error((char*)"Failed to initialize the internal allocator");
 }
 
 ftstd::VResult frametech::Engine::createGraphicsInstance()
