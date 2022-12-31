@@ -83,5 +83,5 @@
         "__tree": "cpp",
         "any": "cpp"
     },
-    "C_Cpp.errorSquiggles": "Disabled",
+    "C_Cpp.errorSquiggles": "disabled",
 }
