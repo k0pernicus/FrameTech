@@ -27,13 +27,13 @@ namespace ftstd
     class Version
     {
     private:
-        u_int8_t m_major;
-        u_int8_t m_minor;
-        u_int8_t m_bug_fix;
+        uint8_t m_major;
+        uint8_t m_minor;
+        uint8_t m_bug_fix;
 
     public:
         /// @brief The default constructor for a Version object.
-        Version(u_int8_t bug_fix, u_int8_t minor, u_int8_t major)
+        Version(uint8_t bug_fix, uint8_t minor, uint8_t major)
         {
             this->m_major = major;
             this->m_minor = minor;
@@ -41,13 +41,13 @@ namespace ftstd
         }
 
         /// @brief A default Version class: bug fix number is set to 0.
-        Version(u_int8_t minor, u_int8_t major)
+        Version(uint8_t minor, uint8_t major)
         {
             Version(0, minor, major);
         }
 
         /// @brief A default Version class: bug fix, and minor numbers are set to 0.
-        Version(u_int8_t major)
+        Version(uint8_t major)
         {
             Version(0, 0, major);
         }
@@ -80,7 +80,7 @@ namespace ftstd
             {
                 if (i > 3)
                     break;
-                const u_int8_t c = stoi(matches[i]);
+                const uint8_t c = (uint8_t)stoi(matches[i]);
                 if (i == 1)
                     this->m_major = c;
                 else if (i == 2)

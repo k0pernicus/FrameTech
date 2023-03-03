@@ -361,7 +361,7 @@ void frametech::Application::drawFrame()
     if (m_FPS_limit != std::nullopt)
     {
         const double wait_ms = 1000.0f / m_FPS_limit.value();
-        uint64_t wait_until_ms = ftstd::Timer::get_time_limit(wait_ms);
+        double wait_until_ms = ftstd::Timer::get_time_limit(wait_ms);
         // Log("Drawing frame %d...", m_current_frame);
 
         // Real rendering time
@@ -376,7 +376,7 @@ void frametech::Application::drawFrame()
 
         // Force to pause the rendering thread
         // if (and only if) the time has not come yet
-        m_app_timer->block_until(wait_until_ms);
+        m_app_timer->block_until(static_cast<uint64_t>(wait_until_ms));
         m_engine->m_render->updateFrameIndex(m_current_frame);
         ++m_current_frame;
         return;
