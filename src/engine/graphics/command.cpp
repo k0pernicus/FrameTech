@@ -19,7 +19,7 @@ frametech::graphics::Command::~Command()
 {
     if (m_pool != nullptr)
     {
-        vkDestroyCommandPool(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), m_pool, nullptr);
+        if (nullptr != frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice()) vkDestroyCommandPool(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), m_pool, nullptr);
         m_pool = nullptr;
     }
     m_buffer = nullptr;
