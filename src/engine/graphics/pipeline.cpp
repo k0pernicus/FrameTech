@@ -8,7 +8,7 @@
 #include "pipeline.hpp"
 #include "../../ftstd/debug_tools.h"
 #include "../../ftstd/result.h"
-#include "../../ftstd/shaders.h"
+#include "../../engine/shaders.h"
 #include "../engine.hpp"
 #include "memory.hpp"
 #include <assert.h>
@@ -327,8 +327,8 @@ ftstd::VResult frametech::graphics::Pipeline::create()
         .pScissors = &scissor,
     };
 
-    const auto vertex_binding_description = ftstd::shaders::VertexUtils::getVertexBindingDescription();
-    const auto vertex_attribute_descriptions = ftstd::shaders::VertexUtils::getVertexAttributeDescriptions();
+    const auto vertex_binding_description = frametech::shaders::VertexUtils::getVertexBindingDescription();
+    const auto vertex_attribute_descriptions = frametech::shaders::VertexUtils::getVertexAttributeDescriptions();
 
     // Vertex data settings:
     // * bindings: spacing between data, and whether the data is per-vertex or per-instance,
@@ -707,7 +707,7 @@ ftstd::Result<int> frametech::graphics::Pipeline::draw()
     return ftstd::Result<int>::Ok(0);
 }
 
-const std::vector<ftstd::shaders::Vertex>& frametech::graphics::Pipeline::getVertices() noexcept
+const std::vector<frametech::shaders::Vertex>& frametech::graphics::Pipeline::getVertices() noexcept
 {
     return m_mesh.m_vertices;
 }

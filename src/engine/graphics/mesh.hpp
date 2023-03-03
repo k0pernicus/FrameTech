@@ -9,7 +9,7 @@
 #ifndef mesh_h
 #define mesh_h
 
-#include "../../ftstd/shaders.h"
+#include "../../engine/shaders.h"
 #include <vector>
 
 namespace frametech
@@ -31,7 +31,7 @@ namespace frametech
             /// @brief The name / tag of the Mesh object
             char m_name[20];
             /// @brief The vertices of the Mesh object
-            std::vector<ftstd::shaders::Vertex> m_vertices;
+            std::vector<frametech::shaders::Vertex> m_vertices;
             /// @brief The indices of the Mesh object
             std::vector<uint32_t> m_indices;
             /// @brief The type of the Mesh object
@@ -55,7 +55,7 @@ namespace frametech
                         std::vector<uint32_t> indices(6);
                         indices = {0, 1, 2, 2, 3, 0};
                         // Vertices
-                        std::vector<ftstd::shaders::Vertex> vertices(4);
+                        std::vector<frametech::shaders::Vertex> vertices(4);
                         vertices = {
                             {{-1.0f, -1.0f}, {1.0f, 1.0f, 1.0f}},
                             {{1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},
@@ -74,7 +74,7 @@ namespace frametech
                         std::vector<uint32_t> indices(3);
                         indices = {0, 1, 2};
                         // Vertices
-                        std::vector<ftstd::shaders::Vertex> vertices(3);
+                        std::vector<frametech::shaders::Vertex> vertices(3);
                         vertices = {
                             {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
                             {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
@@ -92,7 +92,7 @@ namespace frametech
                         std::vector<uint32_t> indices(1);
                         indices = {0};
                         // Vertices
-                        std::vector<ftstd::shaders::Vertex> vertices(0);
+                        std::vector<frametech::shaders::Vertex> vertices(0);
                         vertices = {{{0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}}};
                         auto mesh = Mesh{
                             .m_vertices = vertices,

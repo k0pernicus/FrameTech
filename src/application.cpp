@@ -252,7 +252,7 @@ void frametech::Application::drawDebugToolImGui()
             for (const auto vertex : vertices)
             {
                 char vertex_str[80];
-                ftstd::shaders::VertexUtils::toString(vertex_str, vertex);
+                frametech::shaders::VertexUtils::toString(vertex_str, vertex);
                 ImGui::Text("%zu:", i);
                 ImGui::SameLine(50);
                 ImGui::Text("%s", vertex_str);

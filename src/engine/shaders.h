@@ -13,7 +13,7 @@
 #include <glm/glm.hpp>
 #include <vulkan/vulkan.h>
 
-namespace ftstd
+namespace frametech
 {
     namespace shaders
     {
@@ -72,6 +72,6 @@ namespace ftstd
             }
         };
     } // namespace shaders
-} // namespace ftstd
+} // namespace frametech
 
 #endif // shaders_h

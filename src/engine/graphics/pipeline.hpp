@@ -10,7 +10,7 @@
 #define pipeline_hpp
 
 #include "../../ftstd/result.h"
-#include "../../ftstd/shaders.h"
+#include "../../engine/shaders.h"
 #include "mesh.hpp"
 #include <cstdlib>
 #include <optional>
@@ -90,7 +90,7 @@ namespace frametech
             VkRenderPass& getRenderPass();
             /// @brief Returns the bounded vertices
             /// @return The bounded vertices (may be an empty vector)
-            const std::vector<ftstd::shaders::Vertex>& getVertices() noexcept;
+            const std::vector<frametech::shaders::Vertex>& getVertices() noexcept;
             /// @brief Returns the vertices to draw, through their index
             /// @return The indices of the vertices to draw (may be an empty vector)
             const std::vector<uint32_t>& getIndices() noexcept;
