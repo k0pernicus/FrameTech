@@ -12,8 +12,8 @@
 
 #ifdef IMGUI
 #include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_vulkan.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_vulkan.h"
 
 /// @brief Stores if the ImGui demo window should be rendered or not
 bool CLOSE_IMGUI_APP = false;

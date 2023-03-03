@@ -18,8 +18,8 @@
 
 #ifdef IMGUI
 #include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_vulkan.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_vulkan.h"
 #endif
 
 #ifdef NO_AVG_FPS_RECORDS
