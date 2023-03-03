@@ -19,12 +19,16 @@ const std::vector<const char*> VALIDATION_LAYERS = {
 };
 const std::vector<const char*> REQUIRED_EXTENSIONS = {
     "VK_EXT_debug_utils",
+#ifdef __APPLE__
     "VK_KHR_portability_subset",
+#endif
 };
 #else
 const std::vector<const char*> VALIDATION_LAYERS = {};
 const std::vector<const char*> REQUIRED_EXTENSIONS = {
+#ifdef __APPLE__
     "VK_KHR_portability_subset",
+#endif
 };
 #endif
 

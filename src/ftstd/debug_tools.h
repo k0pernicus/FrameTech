@@ -43,7 +43,7 @@ void build_log(FILE* stream, const char* prefix, Args... message)
 
 #pragma GCC diagnostic pop
 
-#if defined(DEBUG) && DEBUG == 1
+#ifdef DEBUG
 // DEBUG
 
 namespace ftstd
