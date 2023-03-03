@@ -7,12 +7,15 @@ add_subdirectory("extern/imgui")
 add_subdirectory("src/engine")
 add_subdirectory("src/ftstd")
 
-set(CMAKE_CXX_FLAGS_DEBUG "/std:c++17 -Wconversion -Werror -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-deprecated-declarations -gcodeview -DDEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE "/std:c++17 -O2 -Wno-c++98-compat-pedantic -Wno-c++98-compat  -Wno-deprecated-declarations -DNDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "/std:c++17 -Wconversion -Werror -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-deprecated-declarations -gcodeview -DDEBUG -DIMGUI -DENABLE_EXCEPTIONS -DUNSET_FPS_LIMIT")
+set(CMAKE_CXX_FLAGS_RELEASE "/std:c++17 -O2 -Wno-c++98-compat-pedantic -Wno-c++98-compat  -Wno-deprecated-declarations -DNDEBUG -O2 -DNO_AVG_FPS_RECORDS -DIMGUI")
+
+# Copy the shaders
+FILE(COPY shaders/ DESTINATION "${CMAKE_BINARY_DIR}")
 
 if(NOT CMAKE_BUILD_TYPE)
-    message("Setting build type as 'Release' - please force 'Debug' to build with debug symbols and extra symbols")
-    set(CMAKE_BUILD_TYPE "Release")
+    message("Setting build type as 'Debug' - please force 'Debug' to build with debug symbols and extra symbols")
+    set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
 # From https://github.com/PacktPublishing/Learning-Vulkan/ CMakeLists.txt
