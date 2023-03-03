@@ -1,19 +1,25 @@
 # FrameTech
 
-An example of a game and a custom rendering engine, using Vulkan.
+An example of a game and a custom rendering engine, using **Vulkan**.
+
+This engine **does not** support any other graphics API than Vulkan.
 
 **This project is not compatible with Vulkan SDK > 1.3.211.**
 
 This repository includes:
 
 1. a simple application,
-2. the rendering engine (`FrameTech`),
+2. the rendering engine (`frametech`),
 3. a custom standard library (`ftstd`),
 
-The custom standard library, `ftstd` (for "FrameTech STanDard library"), is enough to run and debug the engine only, and has no ambition to be
-pushed in production.
+The custom standard library, `ftstd` (for "FrameTech STanDard library"), is enough to run and debug the engine only, and has no ambition to be pushed in production.
 
 `FrameTech` has no ambition to be pushed in production either.
+
+## Compatibily
+
+* macOS on Apple Silicon / Intel chips,
+* Windows 10/11 with a dedicated graphics card and Vulkan enabled.
 
 ## About externs
 
@@ -44,5 +50,4 @@ Once the Makefiles have been built, go in your `out/build` folder and launch mak
 1. Multiple buffers allocation using **one** _VkBuffer_ only,
 2. Improve the shaders bindings,
 3. Make a todo statement about what to move from pipeline / render / swapchain / ... to ...,
-4. Make the configuration external to the build (like FPS limit),
-5. [OPTIONAL] Multi-platforms.
+4. Make the configuration external to the build (like FPS limit).
