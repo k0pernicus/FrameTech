@@ -9,8 +9,8 @@
 #include "../engine.hpp"
 
 #ifdef IMGUI
-#include "imgui.h"
 #include "backends/imgui_impl_vulkan.h"
+#include "imgui.h"
 #endif
 
 frametech::graphics::Command::Command(){};
@@ -19,7 +19,8 @@ frametech::graphics::Command::~Command()
 {
     if (m_pool != nullptr)
     {
-        if (nullptr != frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice()) vkDestroyCommandPool(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), m_pool, nullptr);
+        if (nullptr != frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice())
+            vkDestroyCommandPool(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), m_pool, nullptr);
         m_pool = nullptr;
     }
     m_buffer = nullptr;
@@ -127,7 +128,7 @@ ftstd::VResult frametech::graphics::Command::record()
     const VkBuffer& index_buffer = frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getIndexBuffer();
     for (size_t i = 0; i < vertex_buffers.size(); ++i)
         memory_offsets[i] = i;
-    vkCmdBindVertexBuffers(m_buffer, 0, vertex_buffers.size(), vertex_buffers.data(), memory_offsets.data());
+    vkCmdBindVertexBuffers(m_buffer, 0, (uint32_t)vertex_buffers.size(), vertex_buffers.data(), memory_offsets.data());
     vkCmdBindIndexBuffer(m_buffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
 
     uint32_t indices_size = static_cast<uint32_t>(frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getIndices().size());

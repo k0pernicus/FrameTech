@@ -11,9 +11,9 @@
 #include "project.hpp"
 
 #ifdef IMGUI
-#include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_vulkan.h"
+#include "imgui.h"
 
 /// @brief Stores if the ImGui demo window should be rendered or not
 bool CLOSE_IMGUI_APP = false;
@@ -243,8 +243,8 @@ void frametech::Application::drawDebugToolImGui()
     {
         const frametech::graphics::Mesh c_mesh = m_engine->m_render->getGraphicsPipeline()->getMesh();
         ImGui::Text("Name: '%s'", c_mesh.m_name);
-        ImGui::Text("%llu vertices", c_mesh.m_vertices.size());
-        ImGui::Text("%llu indices", c_mesh.m_indices.size());
+        ImGui::Text("%lu vertices", c_mesh.m_vertices.size());
+        ImGui::Text("%lu indices", c_mesh.m_indices.size());
         if (ImGui::TreeNode("Vertices"))
         {
             const auto vertices = m_engine->m_render->getGraphicsPipeline()->getVertices();

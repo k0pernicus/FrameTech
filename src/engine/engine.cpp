@@ -82,7 +82,8 @@ frametech::Engine::~Engine()
     m_render = nullptr;
     if (m_descriptor_pool)
         vkDestroyDescriptorPool(m_graphics_device.getLogicalDevice(), m_descriptor_pool, nullptr);
-    if (VK_NULL_HANDLE != m_allocator) vmaDestroyAllocator(m_allocator);
+    if (VK_NULL_HANDLE != m_allocator)
+        vmaDestroyAllocator(m_allocator);
     m_graphics_device.Destroy();
     if (m_graphics_instance)
         vkDestroyInstance(m_graphics_instance, nullptr);
@@ -217,7 +218,7 @@ ftstd::VResult frametech::Engine::createGraphicsInstance()
         Log("> Enabling %d validation layer(s) for the overall engine:", VALIDATION_LAYERS.size());
         for (int i = 0; i < VALIDATION_LAYERS.size(); i++)
             Log("\t* %s", VALIDATION_LAYERS[i]);
-        create_info.enabledLayerCount = VALIDATION_LAYERS.size();
+        create_info.enabledLayerCount = (uint32_t)VALIDATION_LAYERS.size();
         create_info.ppEnabledLayerNames = VALIDATION_LAYERS.data();
     }
 
