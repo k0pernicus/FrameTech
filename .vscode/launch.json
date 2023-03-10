@@ -8,15 +8,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug",
-            "program": "${workspaceFolder}/bin/debug/FrameTech",
-            "args": [],
-            "cwd": "${workspaceFolder}"
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Release",
-            "program": "${workspaceFolder}/bin/release/FrameTech",
+            "program": "${workspaceFolder}/out/build/FrameTech_Debug",
             "args": [],
             "cwd": "${workspaceFolder}"
         }
