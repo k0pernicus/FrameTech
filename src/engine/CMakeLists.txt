@@ -68,7 +68,7 @@ endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	# Include Vulkan header files from Vulkan SDK
-	message("Linking Vulkan libraries for Darwin")
+	message("Include Vulkan headers for Darwin")
 	include_directories(AFTER ${VULKAN_PATH}/macOS/include)
 
 	# Link directory for vulkan-1
