@@ -1,6 +1,21 @@
 cmake_minimum_required(VERSION 3.18.1)
 project(frametech)
 
+if(NOT CMAKE_BUILD_TYPE)
+    message("Setting build type as 'Debug' - please force 'Debug' to build with debug symbols and extra symbols")
+    set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
+# Copy the shaders folder
+message("Copying the shaders/ folder to ${CMAKE_BINARY_DIR}")
+FILE(COPY shaders/ DESTINATION "${CMAKE_BINARY_DIR}")
+
+if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+	set(BUILD_NAME "${PROJECT_NAME}_Debug")
+else()
+	set(BUILD_NAME ${PROJECT_NAME})
+endif()
+
 message("FrameTech build for ${CMAKE_SYSTEM_NAME}")
 
 add_subdirectory("extern/glm")
@@ -17,14 +32,6 @@ endif()
 
 add_subdirectory("src/engine")
 add_subdirectory("src/ftstd")
-
-# Copy the shaders
-FILE(COPY shaders/ DESTINATION "${CMAKE_BINARY_DIR}")
-
-if(NOT CMAKE_BUILD_TYPE)
-    message("Setting build type as 'Debug' - please force 'Debug' to build with debug symbols and extra symbols")
-    set(CMAKE_BUILD_TYPE "Debug")
-endif()
 
 # From https://github.com/PacktPublishing/Learning-Vulkan/ CMakeLists.txt
 if(AUTO_LOCATE_VULKAN AND WIN32)
@@ -90,7 +97,7 @@ endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	# Include Vulkan header files from Vulkan SDK
-	message("Linking Vulkan libraries for Darwin")
+	message("Include Vulkan headers for Darwin")
 	include_directories(AFTER ${VULKAN_PATH}/macOS/include)
 
 	# Link directory for vulkan-1
@@ -108,6 +115,6 @@ include_directories("${CMAKE_SOURCE_DIR}/src/engine")
 include_directories("${CMAKE_SOURCE_DIR}/src/ftstd")
 
 #frametech
-add_executable(${PROJECT_NAME} "src/main.cpp" "src/application.cpp" "src/application.hpp" "src/project.hpp")
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
-target_link_libraries(${PROJECT_NAME} engine glm imgui glfw ${VULKAN_1_LIB})
+add_executable(${BUILD_NAME} "src/main.cpp" "src/application.cpp" "src/application.hpp" "src/project.hpp")
+target_compile_features(${BUILD_NAME} PRIVATE cxx_std_17)
+target_link_libraries(${BUILD_NAME} engine glm imgui glfw ${VULKAN_1_LIB})
