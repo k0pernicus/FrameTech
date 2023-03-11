@@ -440,7 +440,6 @@ ftstd::VResult frametech::graphics::Pipeline::createVertexBuffer() noexcept
         m_vertex_buffer = VK_NULL_HANDLE;
         m_vertex_buffer_allocation = VK_NULL_HANDLE;
     }
-    VkPhysicalDevice physical_device = frametech::Engine::getInstance()->m_graphics_device.getPhysicalDevice();
     VkQueue transfert_queue = frametech::Engine::getInstance()->m_graphics_device.getTransfertQueue();
     VkCommandPool* transfert_command_pool = frametech::Engine::getInstance()->m_render->getTransfertCommand()->getPool();
     const size_t buffer_size = sizeof(m_mesh.m_vertices[0]) * m_mesh.m_vertices.size();
@@ -520,7 +519,6 @@ ftstd::VResult frametech::graphics::Pipeline::createIndexBuffer() noexcept
     }
     VkQueue transfert_queue = frametech::Engine::getInstance()->m_graphics_device.getTransfertQueue();
     VkCommandPool* transfert_command_pool = frametech::Engine::getInstance()->m_render->getTransfertCommand()->getPool();
-    const VkDeviceSize memory_offset = 0;
     const size_t buffer_size = sizeof(m_mesh.m_indices[0]) * m_mesh.m_indices.size();
     assert(buffer_size > 0);
     assert(transfert_command_pool != nullptr);
