@@ -67,7 +67,7 @@ frametech::graphics::Render::~Render()
 
 frametech::graphics::Render* frametech::graphics::Render::getInstance()
 {
-    if (m_instance == nullptr)
+    if (nullptr == m_instance)
     {
         m_instance = new Render();
     }
@@ -86,7 +86,7 @@ ftstd::VResult frametech::graphics::Render::createSurface()
         frametech::Application::getInstance(Project::APPLICATION_NAME)->getWindow(),
         nullptr,
         &m_surface);
-    if (window_surface_result == VK_SUCCESS)
+    if (VK_SUCCESS == window_surface_result)
     {
         return ftstd::VResult::Ok();
     }

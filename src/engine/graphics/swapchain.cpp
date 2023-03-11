@@ -86,10 +86,7 @@ frametech::graphics::SwapChain* frametech::graphics::SwapChain::m_instance{nullp
 
 frametech::graphics::SwapChain* frametech::graphics::SwapChain::getInstance()
 {
-    if (m_instance == nullptr)
-    {
-        m_instance = new frametech::graphics::SwapChain();
-    }
+    if (nullptr == m_instance) m_instance = new frametech::graphics::SwapChain();
     return m_instance;
 }
 
@@ -100,14 +97,14 @@ frametech::graphics::SwapChain::SwapChain()
 frametech::graphics::SwapChain::~SwapChain()
 {
     Log("< Destroying the swapchain...");
-    if (m_swapchain != VK_NULL_HANDLE)
+    if (VK_NULL_HANDLE != m_swapchain)
     {
         vkDestroySwapchainKHR(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
                               m_swapchain,
                               nullptr);
         m_swapchain = VK_NULL_HANDLE;
     }
-    if (m_instance != nullptr)
+    if (nullptr != m_instance)
         m_instance = nullptr;
 }
 
@@ -118,7 +115,7 @@ void frametech::graphics::SwapChain::queryDetails()
     const auto surface = frametech::Engine::getInstance()->m_render->getSurface();
 
     assert(surface);
-    if (surface == nullptr)
+    if (nullptr == surface)
         return;
 
     // Get the capabilities

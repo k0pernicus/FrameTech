@@ -154,7 +154,7 @@ frametech::graphics::MonitorProperties& frametech::graphics::Monitor::getCurrent
 
 bool frametech::graphics::Monitor::foundCurrentMonitor() const
 {
-    return m_current_monitor != nullptr;
+    return nullptr != m_current_monitor;
 }
 
 ftstd::Result<frametech::graphics::MonitorProperties> frametech::graphics::Monitor::queryProperties(GLFWmonitor* monitor)

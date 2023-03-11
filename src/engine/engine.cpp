@@ -156,7 +156,7 @@ void frametech::Engine::initialize()
 
 frametech::Engine* frametech::Engine::getInstance()
 {
-    if (m_instance == nullptr)
+    if (nullptr == m_instance)
     {
         Log("> Instanciating a new Engine singleton");
         m_instance = new frametech::Engine();
@@ -262,7 +262,7 @@ ftstd::VResult frametech::Engine::createGraphicsInstance()
 ftstd::VResult frametech::Engine::createRenderDevice()
 {
     Log("> Creating the render device...");
-    if (m_render == nullptr)
+    if (nullptr == m_render)
         m_render = std::unique_ptr<frametech::graphics::Render>(frametech::graphics::Render::getInstance());
     ftstd::VResult result = m_render->createSurface();
     return result;
@@ -271,7 +271,7 @@ ftstd::VResult frametech::Engine::createRenderDevice()
 ftstd::VResult frametech::Engine::createSwapChain()
 {
     Log("> Creating the swapchain...");
-    if (m_swapchain == nullptr)
+    if (nullptr == m_swapchain)
         m_swapchain = std::unique_ptr<frametech::graphics::SwapChain>(frametech::graphics::SwapChain::getInstance());
     m_swapchain->queryDetails();
     return m_swapchain->create();
