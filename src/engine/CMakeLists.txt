@@ -80,6 +80,8 @@ endif()
 
 add_library(engine ${SRC})
 
+set_source_files_properties("allocator.cpp" PROPERTIES COMPILE_OPTIONS "-w") # for VMA
+
 include_directories("${CMAKE_SOURCE_DIR}/extern")
 include_directories("${CMAKE_SOURCE_DIR}/extern/glfw/include")
 include_directories("${CMAKE_SOURCE_DIR}/extern/imgui")
