@@ -51,4 +51,3 @@ Once the Makefiles have been built, go in your `out/build` folder and launch mak
 2. Improve the shaders bindings,
 3. Make a todo statement about what to move from pipeline / render / swapchain / ... to ...,
 4. Make the configuration external to the build (like FPS limit),
-5. Redo the build (CMakeFiles, etc...) as it is a mess at first.
