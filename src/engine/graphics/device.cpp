@@ -245,7 +245,7 @@ ftstd::Result<uint32_t> frametech::graphics::Device::getQueueFamilies()
 ftstd::VResult frametech::graphics::Device::createLogicalDevice()
 {
     assert(m_physical_device);
-    if (VK_NULL_HANDLE != m_physical_device)
+    if (VK_NULL_HANDLE == m_physical_device)
     {
         return ftstd::VResult::Error((char*)"The physical device has not been setup");
     }
