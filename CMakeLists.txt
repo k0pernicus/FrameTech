@@ -6,10 +6,6 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
-# Copy the shaders folder
-message("Copying the shaders/ folder to ${CMAKE_BINARY_DIR}")
-FILE(COPY shaders/ DESTINATION "${CMAKE_BINARY_DIR}")
-
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
 	set(BUILD_NAME "${PROJECT_NAME}_Debug")
 else()
@@ -118,3 +114,11 @@ include_directories("${CMAKE_SOURCE_DIR}/src/ftstd")
 add_executable(${BUILD_NAME} "src/main.cpp" "src/application.cpp" "src/application.hpp" "src/project.hpp")
 target_compile_features(${BUILD_NAME} PRIVATE cxx_std_17)
 target_link_libraries(${BUILD_NAME} engine glm imgui glfw ${VULKAN_1_LIB})
+
+# Copy the shaders folder, as a custom POST command
+message("Copying the shaders/ folder, from ${CMAKE_SOURCE_DIR} to ${CMAKE_BINARY_DIR}")
+add_custom_command(TARGET ${BUILD_NAME} POST_BUILD 
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_SOURCE_DIR}/shaders/
+			${CMAKE_CURRENT_BINARY_DIR}/shaders/
+)
