@@ -11,9 +11,9 @@
 #include "project.hpp"
 
 #ifdef IMGUI
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_vulkan.h"
 #include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_vulkan.h"
 
 /// @brief Stores if the ImGui demo window should be rendered or not
 bool CLOSE_IMGUI_APP = false;
@@ -243,8 +243,7 @@ void frametech::Application::drawDebugToolImGui()
     {
         const frametech::graphics::Mesh c_mesh = m_engine->m_render->getGraphicsPipeline()->getMesh();
         ImGui::Text("Name: '%s'", c_mesh.m_name);
-        ImGui::Text("%lu vertices", c_mesh.m_vertices.size());
-        ImGui::Text("%lu indices", c_mesh.m_indices.size());
+        ImGui::Text("%llu vertices", c_mesh.m_vertices.size());
         if (ImGui::TreeNode("Vertices"))
         {
             const auto vertices = m_engine->m_render->getGraphicsPipeline()->getVertices();
@@ -252,7 +251,7 @@ void frametech::Application::drawDebugToolImGui()
             for (const auto vertex : vertices)
             {
                 char vertex_str[80];
-                ftstd::shaders::VertexUtils::toString(vertex_str, vertex);
+                frametech::shaders::VertexUtils::toString(vertex_str, vertex);
                 ImGui::Text("%zu:", i);
                 ImGui::SameLine(50);
                 ImGui::Text("%s", vertex_str);
@@ -261,6 +260,7 @@ void frametech::Application::drawDebugToolImGui()
             ImGui::TreePop();
             ImGui::Separator();
         }
+        ImGui::Text("%llu indices", c_mesh.m_indices.size());
         if (ImGui::TreeNode("Indices"))
         {
             const auto indices = m_engine->m_render->getGraphicsPipeline()->getIndices();
@@ -361,7 +361,7 @@ void frametech::Application::drawFrame()
     if (m_FPS_limit != std::nullopt)
     {
         const double wait_ms = 1000.0f / m_FPS_limit.value();
-        uint64_t wait_until_ms = ftstd::Timer::get_time_limit(wait_ms);
+        double wait_until_ms = ftstd::Timer::get_time_limit(wait_ms);
         // Log("Drawing frame %d...", m_current_frame);
 
         // Real rendering time
@@ -376,7 +376,7 @@ void frametech::Application::drawFrame()
 
         // Force to pause the rendering thread
         // if (and only if) the time has not come yet
-        m_app_timer->block_until(wait_until_ms);
+        m_app_timer->block_until(static_cast<uint64_t>(wait_until_ms));
         m_engine->m_render->updateFrameIndex(m_current_frame);
         ++m_current_frame;
         return;

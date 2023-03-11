@@ -154,7 +154,7 @@ frametech::graphics::MonitorProperties& frametech::graphics::Monitor::getCurrent
 
 bool frametech::graphics::Monitor::foundCurrentMonitor() const
 {
-    return m_current_monitor != nullptr;
+    return nullptr != m_current_monitor;
 }
 
 ftstd::Result<frametech::graphics::MonitorProperties> frametech::graphics::Monitor::queryProperties(GLFWmonitor* monitor)
@@ -168,7 +168,6 @@ ftstd::Result<frametech::graphics::MonitorProperties> frametech::graphics::Monit
     monitor_properties.m_width = monitor_properties.m_current_video_mode->width;
     monitor_properties.m_height = monitor_properties.m_current_video_mode->height;
     const auto monitor_name = glfwGetMonitorName(monitor);
-    if (nullptr != monitor_name)
-        strncpy(monitor_properties.m_name, monitor_name, frametech::graphics::MONITOR_NAME_LEN);
+    if (nullptr != monitor_name) strncpy(monitor_properties.m_name, monitor_name, frametech::graphics::MONITOR_NAME_LEN);
     return ftstd::Result<frametech::graphics::MonitorProperties>::Ok(monitor_properties);
 }

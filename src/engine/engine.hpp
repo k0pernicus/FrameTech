@@ -15,9 +15,9 @@
 #include "graphics/render.hpp"
 #include "graphics/swapchain.hpp"
 #include "project.hpp"
-#include "vulkan/vulkan.h"
 #include <cstdlib>
 #include <vk_mem_alloc.h>
+#include <vulkan/vulkan.h>
 
 namespace frametech
 {
@@ -80,9 +80,9 @@ namespace frametech
         ~Engine();
 
         /// @brief Custom allocator (VMA)
-        VmaAllocator m_allocator;
+        VmaAllocator m_allocator = VK_NULL_HANDLE;
         /// @brief The engine instance
-        VkInstance m_graphics_instance = NULL;
+        VkInstance m_graphics_instance = VK_NULL_HANDLE;
         /// @brief The physical device
         frametech::graphics::Device m_graphics_device = frametech::graphics::Device();
         /// @brief The renderer of the engine

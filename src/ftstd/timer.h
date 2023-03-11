@@ -13,7 +13,11 @@
 #include <chrono>
 #include <ctime>
 #include <optional>
+#ifdef WIN32
+#include <ctime>
+#else // APPLE
 #include <sys/time.h>
+#endif
 
 /// The current time, in ms
 #define NOW_MS std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()
@@ -36,7 +40,7 @@ namespace ftstd
         /// @brief Instanciate a Timer object sets to NOW.
         Timer()
         {
-            m_begin = NOW_MS;
+            m_begin = (uint64_t)NOW_MS;
             m_is_running = false;
         }
         /// @brief Pause the CPU until the time limit (in ms) is reached
@@ -56,9 +60,9 @@ namespace ftstd
         /// @brief Gets the time limit (in ms) based on the current time added
         /// to a limit (in ms)
         /// @param ms_to_add The ms to add to reach a limit, based on now
-        static uint64_t get_time_limit(uint64_t ms_to_add)
+        static double get_time_limit(double ms_to_add)
         {
-            return NOW_MS + ms_to_add;
+            return (double)NOW_MS + ms_to_add;
         }
         /// @brief Stops the timer
         void stop()
@@ -67,7 +71,7 @@ namespace ftstd
         };
         uint64_t diff()
         {
-            return NOW_MS - m_begin.value();
+            return (uint64_t)NOW_MS - m_begin.value();
         }
         /// @brief Resets the internal settings of the timer
         void reset()

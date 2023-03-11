@@ -14,6 +14,9 @@
 #include "pipeline.hpp"
 #include "vulkan/vulkan.h"
 #include <vector>
+#ifdef WIN32
+#include <memory>
+#endif
 
 namespace frametech
 {

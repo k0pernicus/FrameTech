@@ -17,26 +17,31 @@ const std::vector<const char*> VALIDATION_LAYERS = {
     "VK_LAYER_KHRONOS_validation",
 };
 const std::vector<const char*> REQUIRED_EXTENSIONS = {
+#ifdef __APPLE__
     "VK_KHR_portability_subset",
+#endif
     "VK_KHR_swapchain",
 };
 #else
 const std::vector<const char*> VALIDATION_LAYERS = {};
 const std::vector<const char*> REQUIRED_EXTENSIONS = {
+#ifdef __APPLE__
     "VK_KHR_portability_subset",
+#endif
     "VK_KHR_swapchain",
 };
 #endif
 
+#ifdef __APPLE__
 /// @brief The name of the Apple M1 chip, which is part of the
 /// exceptions choosing a physical device
 /// TODO: regex instead
 const char* APPLE_M1_NAME = (char*)"Apple M1";
-
 /// @brief The name of the Apple M1 chip, which is part of the
 /// exceptions choosing a physical device
 /// TODO: regex instead
 const char* APPLE_M2_NAME = (char*)"Apple M2";
+#endif
 
 /// @brief Boolean flag to know if the physical graphical device
 /// needs to support geometry shaders
@@ -44,7 +49,7 @@ const char* APPLE_M2_NAME = (char*)"Apple M2";
 
 static bool isDeviceSuitable(const VkPhysicalDevice& device)
 {
-    if (device == nullptr)
+    if (nullptr == device)
     {
         LogE("> cannot get properties if device is NULL");
         return false;
@@ -53,11 +58,11 @@ static bool isDeviceSuitable(const VkPhysicalDevice& device)
     vkGetPhysicalDeviceProperties(device, &properties);
 
     Log("> Checking device '%s' (with ID '%d')", properties.deviceName, properties.deviceID);
-
+#ifdef __APPLE__
     const bool is_apple_silicon = (strcmp(properties.deviceName, APPLE_M1_NAME) == 0 ||
                                    strcmp(properties.deviceName, APPLE_M2_NAME) == 0);
     Log("\t* is Apple Silicon? %s", is_apple_silicon ? "true!" : "false...");
-
+#endif
     const bool is_discrete_gpu = properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
     Log("\t* is discrete gpu? %s", is_discrete_gpu ? "true!" : "false...");
 
@@ -71,7 +76,11 @@ static bool isDeviceSuitable(const VkPhysicalDevice& device)
     return is_apple_silicon || (is_discrete_gpu && supports_geometry_shader);
 #endif
 
+#ifdef __APPLE__
     return is_apple_silicon || is_discrete_gpu;
+#else
+    return is_discrete_gpu;
+#endif
 }
 
 static void listAvailableExtensions(const VkPhysicalDevice& physical_device)
@@ -111,7 +120,7 @@ static void listAvailableExtensions(const VkPhysicalDevice& physical_device)
 
 void frametech::graphics::Device::Destroy()
 {
-    if (m_logical_device)
+    if (VK_NULL_HANDLE != m_logical_device)
     {
         vkDestroyDevice(m_logical_device, nullptr);
         m_logical_device = VK_NULL_HANDLE;
@@ -162,7 +171,7 @@ ftstd::VResult frametech::graphics::Device::listDevices()
 
 bool frametech::graphics::Device::isInitialized() const
 {
-    return m_physical_device != VK_NULL_HANDLE;
+    return VK_NULL_HANDLE != m_physical_device;
 }
 
 ftstd::Result<uint32_t> frametech::graphics::Device::getQueueFamilies()
@@ -236,7 +245,7 @@ ftstd::Result<uint32_t> frametech::graphics::Device::getQueueFamilies()
 ftstd::VResult frametech::graphics::Device::createLogicalDevice()
 {
     assert(m_physical_device);
-    if (m_physical_device == VK_NULL_HANDLE)
+    if (VK_NULL_HANDLE != m_physical_device)
     {
         return ftstd::VResult::Error((char*)"The physical device has not been setup");
     }

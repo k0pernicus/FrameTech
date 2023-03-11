@@ -1,28 +1,45 @@
 # FrameTech
 
-An example of a game and a custom rendering engine, using Vulkan.
+An example of a game and a custom rendering engine, using **Vulkan**.
+
+This engine **does not** support any other graphics API than Vulkan.
 
 **This project is not compatible with Vulkan SDK > 1.3.211.**
 
 This repository includes:
 
 1. a simple application,
-2. the rendering engine (`FrameTech`),
+2. the rendering engine (`frametech`),
 3. a custom standard library (`ftstd`),
 
-The custom standard library, `ftstd` (for "FrameTech STanDard library"), is enough to run and debug the engine only, and has no ambition to be
-pushed in production.
+The custom standard library, `ftstd` (for "FrameTech STanDard library"), is enough to run and debug the engine only, and has no ambition to be pushed in production.
 
 `FrameTech` has no ambition to be pushed in production either.
+
+## Compatibily
+
+* macOS on Apple Silicon / Intel chips,
+* Windows 10/11 with a dedicated graphics card and Vulkan enabled.
 
 ## About externs
 
 This repository includes extern repositories / dependencies, like `imgui`, `vma`, or `glm`.
-Do not forget to run a `git submodule update` after cloning the _FrameTech_ repository.
+I tend to avoid git submodules as much as possible, so this repository contains everything to build and run the application.
 
 The Vulkan engine uses `VMA` as memory allocator dependency. 
 
 Thanks to the ImGui and GLM teams for providing such great tools for free.
+
+## Build
+
+Create an empty directory like `out/build` in the root of the project.
+
+Now, build the Makefiles using cmake like this: `cmake -S ../../ -B . -DCMAKE_BUILD_TYPE=Debug -T ClangCL`.
+
+I did not tried to use MSVC to compile the project but it should run (you may have to tweak the compiler's options...).
+
+Once the Makefiles have been built, go in your `out/build` folder and launch make,
+ or open your project in Visual Studio for Microsoft Windows.
 
 ## Screenshots
 
@@ -34,4 +51,4 @@ Thanks to the ImGui and GLM teams for providing such great tools for free.
 2. Improve the shaders bindings,
 3. Make a todo statement about what to move from pipeline / render / swapchain / ... to ...,
 4. Make the configuration external to the build (like FPS limit),
-5. [OPTIONAL] Multi-platforms.
+5. Redo the build (CMakeFiles, etc...) as it is a mess at first.

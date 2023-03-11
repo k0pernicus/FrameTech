@@ -67,7 +67,7 @@ frametech::graphics::Render::~Render()
 
 frametech::graphics::Render* frametech::graphics::Render::getInstance()
 {
-    if (m_instance == nullptr)
+    if (nullptr == m_instance)
     {
         m_instance = new Render();
     }
@@ -86,7 +86,7 @@ ftstd::VResult frametech::graphics::Render::createSurface()
         frametech::Application::getInstance(Project::APPLICATION_NAME)->getWindow(),
         nullptr,
         &m_surface);
-    if (window_surface_result == VK_SUCCESS)
+    if (VK_SUCCESS == window_surface_result)
     {
         return ftstd::VResult::Ok();
     }
@@ -298,7 +298,7 @@ uint32_t& frametech::graphics::Render::getFrameIndex()
 void frametech::graphics::Render::updateFrameIndex(uint64_t current_frame)
 {
     // Log("> Current frame index: %d...", m_frame_index);
-    m_frame_index = current_frame % (m_framebuffers.size());
+    m_frame_index = (uint32_t)current_frame % (m_framebuffers.size());
 }
 
 ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()

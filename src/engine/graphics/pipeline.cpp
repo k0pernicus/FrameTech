@@ -8,7 +8,7 @@
 #include "pipeline.hpp"
 #include "../../ftstd/debug_tools.h"
 #include "../../ftstd/result.h"
-#include "../../ftstd/shaders.h"
+#include "../../engine/shaders.h"
 #include "../engine.hpp"
 #include "memory.hpp"
 #include <assert.h>
@@ -327,8 +327,8 @@ ftstd::VResult frametech::graphics::Pipeline::create()
         .pScissors = &scissor,
     };
 
-    const auto vertex_binding_description = ftstd::shaders::VertexUtils::getVertexBindingDescription();
-    const auto vertex_attribute_descriptions = ftstd::shaders::VertexUtils::getVertexAttributeDescriptions();
+    const auto vertex_binding_description = frametech::shaders::VertexUtils::getVertexBindingDescription();
+    const auto vertex_attribute_descriptions = frametech::shaders::VertexUtils::getVertexAttributeDescriptions();
 
     // Vertex data settings:
     // * bindings: spacing between data, and whether the data is per-vertex or per-instance,
@@ -440,10 +440,8 @@ ftstd::VResult frametech::graphics::Pipeline::createVertexBuffer() noexcept
         m_vertex_buffer = VK_NULL_HANDLE;
         m_vertex_buffer_allocation = VK_NULL_HANDLE;
     }
-    VkPhysicalDevice physical_device = frametech::Engine::getInstance()->m_graphics_device.getPhysicalDevice();
     VkQueue transfert_queue = frametech::Engine::getInstance()->m_graphics_device.getTransfertQueue();
     VkCommandPool* transfert_command_pool = frametech::Engine::getInstance()->m_render->getTransfertCommand()->getPool();
-    const VkDeviceSize memory_offset = 0;
     const size_t buffer_size = sizeof(m_mesh.m_vertices[0]) * m_mesh.m_vertices.size();
     assert(buffer_size > 0);
     assert(transfert_command_pool != nullptr);
@@ -519,10 +517,8 @@ ftstd::VResult frametech::graphics::Pipeline::createIndexBuffer() noexcept
         m_index_buffer = VK_NULL_HANDLE;
         m_index_buffer_allocation = VK_NULL_HANDLE;
     }
-    VkPhysicalDevice physical_device = frametech::Engine::getInstance()->m_graphics_device.getPhysicalDevice();
     VkQueue transfert_queue = frametech::Engine::getInstance()->m_graphics_device.getTransfertQueue();
     VkCommandPool* transfert_command_pool = frametech::Engine::getInstance()->m_render->getTransfertCommand()->getPool();
-    const VkDeviceSize memory_offset = 0;
     const size_t buffer_size = sizeof(m_mesh.m_indices[0]) * m_mesh.m_indices.size();
     assert(buffer_size > 0);
     assert(transfert_command_pool != nullptr);
@@ -707,7 +703,7 @@ ftstd::Result<int> frametech::graphics::Pipeline::draw()
     return ftstd::Result<int>::Ok(0);
 }
 
-const std::vector<ftstd::shaders::Vertex>& frametech::graphics::Pipeline::getVertices() noexcept
+const std::vector<frametech::shaders::Vertex>& frametech::graphics::Pipeline::getVertices() noexcept
 {
     return m_mesh.m_vertices;
 }

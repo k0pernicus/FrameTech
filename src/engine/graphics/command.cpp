@@ -9,17 +9,18 @@
 #include "../engine.hpp"
 
 #ifdef IMGUI
+#include "backends/imgui_impl_vulkan.h"
 #include "imgui.h"
-#include "imgui_impl_vulkan.h"
 #endif
 
 frametech::graphics::Command::Command(){};
 
 frametech::graphics::Command::~Command()
 {
-    if (m_pool != nullptr)
+    if (nullptr != m_pool)
     {
-        vkDestroyCommandPool(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), m_pool, nullptr);
+        if (nullptr != frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice())
+            vkDestroyCommandPool(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), m_pool, nullptr);
         m_pool = nullptr;
     }
     m_buffer = nullptr;
@@ -37,14 +38,14 @@ ftstd::VResult frametech::graphics::Command::createPool(const uint32_t family_in
         &pool_create_info,
         nullptr,
         &m_pool);
-    if (create_result == VK_SUCCESS)
+    if (VK_SUCCESS == create_result)
         return ftstd::VResult::Ok();
     return ftstd::VResult::Error((char*)"> Error creating the command pool in the command buffer object");
 }
 
 ftstd::VResult frametech::graphics::Command::createBuffer()
 {
-    if (m_pool == nullptr)
+    if (nullptr == m_pool)
         return ftstd::VResult::Error((char*)"> Error creating the buffer: no memory pool");
     VkCommandBufferAllocateInfo alloc_info{};
     alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -127,7 +128,7 @@ ftstd::VResult frametech::graphics::Command::record()
     const VkBuffer& index_buffer = frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getIndexBuffer();
     for (size_t i = 0; i < vertex_buffers.size(); ++i)
         memory_offsets[i] = i;
-    vkCmdBindVertexBuffers(m_buffer, 0, vertex_buffers.size(), vertex_buffers.data(), memory_offsets.data());
+    vkCmdBindVertexBuffers(m_buffer, 0, (uint32_t)vertex_buffers.size(), vertex_buffers.data(), memory_offsets.data());
     vkCmdBindIndexBuffer(m_buffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
 
     uint32_t indices_size = static_cast<uint32_t>(frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getIndices().size());

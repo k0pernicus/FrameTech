@@ -8,18 +8,15 @@
 #ifndef debug_tools_h
 #define debug_tools_h
 
-#if defined(DEBUG) && DEBUG == 1
-// DEBUG
+// Ignore the diagnostic security as we can pass
+// variadic arguments to build_log (and to fprintf as well)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-security"
 
 #include <cassert>
 #include <stdio.h>
 #include <string>
 #include <time.h>
-
-// Ignore the diagnostic security as we can pass
-// variadic arguments to build_log (and to fprintf as well)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-security"
 
 /// @brief Build and prints a log statement.
 /// The prefix argument is optional.
@@ -46,12 +43,13 @@ void build_log(FILE* stream, const char* prefix, Args... message)
 
 #pragma GCC diagnostic pop
 
+#ifdef DEBUG
+// DEBUG
+
 namespace ftstd
 {
 /// @brief Debug log statement
 #define Log(...) build_log(stdout, nullptr, __VA_ARGS__)
-/// @brief Error log statement
-#define LogE(...) build_log(stderr, (char*)"Error", __VA_ARGS__)
 /// @brief Warning log statement
 #define LogW(...) build_log(stderr, (char*)"Warning", __VA_ARGS__)
 /// @brief Warn the developer, at runtime, that the function has not been implemented
@@ -71,8 +69,6 @@ namespace ftstd
 {
 /// @brief Debug log statement
 #define Log(...)
-/// @brief Error log statement
-#define LogE(...)
 /// @brief Warning log statement
 #define LogW(...)
 /// @brief Warn the developer, at runtime, that the function has not been implemented yet
@@ -84,5 +80,8 @@ namespace ftstd
 } // namespace ftstd
 
 #endif
+
+/// @brief Error log statement
+#define LogE(...) build_log(stderr, (char*)"Error", __VA_ARGS__)
 
 #endif /* debug_tools_h */

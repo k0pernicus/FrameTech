@@ -19,12 +19,16 @@ const std::vector<const char*> VALIDATION_LAYERS = {
 };
 const std::vector<const char*> REQUIRED_EXTENSIONS = {
     "VK_EXT_debug_utils",
+#ifdef __APPLE__
     "VK_KHR_portability_subset",
+#endif
 };
 #else
 const std::vector<const char*> VALIDATION_LAYERS = {};
 const std::vector<const char*> REQUIRED_EXTENSIONS = {
+#ifdef __APPLE__
     "VK_KHR_portability_subset",
+#endif
 };
 #endif
 
@@ -78,7 +82,8 @@ frametech::Engine::~Engine()
     m_render = nullptr;
     if (m_descriptor_pool)
         vkDestroyDescriptorPool(m_graphics_device.getLogicalDevice(), m_descriptor_pool, nullptr);
-    vmaDestroyAllocator(m_allocator);
+    if (VK_NULL_HANDLE != m_allocator)
+        vmaDestroyAllocator(m_allocator);
     m_graphics_device.Destroy();
     if (m_graphics_instance)
         vkDestroyInstance(m_graphics_instance, nullptr);
@@ -151,7 +156,7 @@ void frametech::Engine::initialize()
 
 frametech::Engine* frametech::Engine::getInstance()
 {
-    if (m_instance == nullptr)
+    if (nullptr == m_instance)
     {
         Log("> Instanciating a new Engine singleton");
         m_instance = new frametech::Engine();
@@ -213,7 +218,7 @@ ftstd::VResult frametech::Engine::createGraphicsInstance()
         Log("> Enabling %d validation layer(s) for the overall engine:", VALIDATION_LAYERS.size());
         for (int i = 0; i < VALIDATION_LAYERS.size(); i++)
             Log("\t* %s", VALIDATION_LAYERS[i]);
-        create_info.enabledLayerCount = VALIDATION_LAYERS.size();
+        create_info.enabledLayerCount = (uint32_t)VALIDATION_LAYERS.size();
         create_info.ppEnabledLayerNames = VALIDATION_LAYERS.data();
     }
 
@@ -257,7 +262,7 @@ ftstd::VResult frametech::Engine::createGraphicsInstance()
 ftstd::VResult frametech::Engine::createRenderDevice()
 {
     Log("> Creating the render device...");
-    if (m_render == nullptr)
+    if (nullptr == m_render)
         m_render = std::unique_ptr<frametech::graphics::Render>(frametech::graphics::Render::getInstance());
     ftstd::VResult result = m_render->createSurface();
     return result;
@@ -266,7 +271,7 @@ ftstd::VResult frametech::Engine::createRenderDevice()
 ftstd::VResult frametech::Engine::createSwapChain()
 {
     Log("> Creating the swapchain...");
-    if (m_swapchain == nullptr)
+    if (nullptr == m_swapchain)
         m_swapchain = std::unique_ptr<frametech::graphics::SwapChain>(frametech::graphics::SwapChain::getInstance());
     m_swapchain->queryDetails();
     return m_swapchain->create();
