@@ -250,7 +250,11 @@ ftstd::VResult frametech::graphics::Device::createLogicalDevice()
         return ftstd::VResult::Error((char*)"The physical device has not been setup");
     }
 
-    const SupportFeatures supported_flags[3] = {SupportFeatures::GRAPHICS, SupportFeatures::PRESENTS, SupportFeatures::TRANSFERT};
+    const SupportFeatures supported_flags[3] = {
+        SupportFeatures::GRAPHICS, 
+        SupportFeatures::PRESENTS, 
+        SupportFeatures::TRANSFERT
+    };
     std::vector<VkDeviceQueueCreateInfo> queues(sizeof(supported_flags) / sizeof(supported_flags[0]));
     // TODO: make Vulkan uses the same queue for GRAPHICS and PRESENTS,
     // and avoid this trick
