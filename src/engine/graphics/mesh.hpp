@@ -33,6 +33,9 @@ namespace frametech
             /// @brief The vertices of the Mesh object
             std::vector<frametech::shaders::Vertex> m_vertices;
             /// @brief The indices of the Mesh object
+            /// 32 bits (unsigned) integers should be more than enough here
+            /// Possible optimization: reduce to 16 bits (unsigned) integers if
+            /// we are using less than 65536 unique vertices
             std::vector<uint32_t> m_indices;
             /// @brief The type of the Mesh object
             Mesh2D m_type;
