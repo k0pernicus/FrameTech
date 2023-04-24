@@ -16,7 +16,7 @@
 #include "imgui.h"
 
 /// @brief Stores if the ImGui demo window should be rendered or not
-bool CLOSE_IMGUI_APP = false;
+bool DRAW_IMGUI_APP = false;
 
 extern char S_APP_VERSION[18];
 extern char S_ENGINE_VERSION[18];
@@ -178,7 +178,7 @@ ftstd::VResult frametech::Application::uploadImGuiFont()
 void frametech::Application::drawDebugToolImGui()
 {
     // Optimization technique
-    if (!ImGui::Begin("Debug tool", &CLOSE_IMGUI_APP))
+    if (!ImGui::Begin("Debug tool", &DRAW_IMGUI_APP))
     {
         ImGui::End();
         return;
@@ -284,7 +284,7 @@ void frametech::Application::drawMeshSelectionImGui()
 {
 
     // Optimization technique
-    if (!ImGui::Begin("Mesh selector", &CLOSE_IMGUI_APP))
+    if (!ImGui::Begin("Mesh selector", &DRAW_IMGUI_APP))
     {
         ImGui::End();
         return;
