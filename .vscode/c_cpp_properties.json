@@ -1,14 +1,41 @@
 {
     "configurations": [
         {
-            "name": "Mac",
+            "name": "Mac (DEBUG)",
             "includePath": [
                 "/usr/local/include/**",
                 "${VULKAN_SDK}/include/**",
                 "${HOMEBREW_PREFIX}/include/**",
                 "${HOMEBREW_PREFIX}/Cellar/glfw/3.3.8/include/**"
             ],
-            "defines": [],
+            "defines": [
+                "DEBUG",
+                "IMGUI",
+                "ENABLE_EXCEPTIONS",
+                "UNSET_FPS_LIMIT"
+            ],
+            "macFrameworkPath": [
+                "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
+            ],
+            "compilerPath": "/usr/bin/clang++",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "macos-clang-arm64",
+            "configurationProvider": "ms-vscode.makefile-tools"
+        },
+        {
+            "name": "Mac (RELEASE)",
+            "includePath": [
+                "/usr/local/include/**",
+                "${VULKAN_SDK}/include/**",
+                "${HOMEBREW_PREFIX}/include/**",
+                "${HOMEBREW_PREFIX}/Cellar/glfw/3.3.8/include/**"
+            ],
+            "defines": [
+                "IMGUI",
+                "NDEBUG",
+                "NO_AVG_FPS_RECORDS"
+            ],
             "macFrameworkPath": [
                 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
             ],
