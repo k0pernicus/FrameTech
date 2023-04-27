@@ -1,5 +1,5 @@
 //
-//  result.h
+//  result.hpp
 //  FrameTech
 //
 //  Created by Antonin on 25/09/2022.
