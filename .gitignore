@@ -34,7 +34,7 @@ bin/
 *.app
 FrameTech-Debug
 FrameTech-Debug.dSYM/
-out/build/
+**/build
 
 # ImGui
 imgui.ini
