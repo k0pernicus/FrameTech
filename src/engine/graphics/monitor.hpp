@@ -9,7 +9,7 @@
 #ifndef monitor_h
 #define monitor_h
 
-#include "../../ftstd/result.h"
+#include "../../ftstd/result.hpp"
 #include <GLFW/glfw3.h>
 #include <cstdint>
 #include <optional>

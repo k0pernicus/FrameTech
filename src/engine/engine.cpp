@@ -8,10 +8,7 @@
 #include "engine.hpp"
 #include "../application.hpp"
 #include "../ftstd/debug_tools.h"
-#include "../ftstd/result.h"
 #include "../project.hpp"
-#include "project.hpp"
-#include <vulkan/vulkan.h>
 
 #ifdef DEBUG
 const std::vector<const char*> VALIDATION_LAYERS = {

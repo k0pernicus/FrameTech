@@ -9,7 +9,7 @@
 #ifndef memory_h
 #define memory_h
 
-#include "../../ftstd/result.h"
+#include "../../ftstd/result.hpp"
 #include <assert.h>
 #include <vk_mem_alloc.h>
 #include <vulkan/vulkan.h>

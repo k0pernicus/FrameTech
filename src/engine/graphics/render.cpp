@@ -8,10 +8,8 @@
 #include "render.hpp"
 #include "../../application.hpp"
 #include "../../ftstd/debug_tools.h"
-#include "../../ftstd/result.h"
 #include "../../project.hpp"
 #include "../engine.hpp"
-#include <vector>
 
 // #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>

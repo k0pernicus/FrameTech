@@ -7,10 +7,8 @@
 
 #include "device.hpp"
 #include "../../ftstd/debug_tools.h"
-#include "../../ftstd/result.h"
 #include "../engine.hpp"
 #include "render.hpp"
-#include <vector>
 
 #ifdef DEBUG
 const std::vector<const char*> VALIDATION_LAYERS = {

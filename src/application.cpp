@@ -7,7 +7,6 @@
 
 #include "application.hpp"
 #include "ftstd/debug_tools.h"
-#include "ftstd/timer.h"
 #include "project.hpp"
 
 #ifdef IMGUI

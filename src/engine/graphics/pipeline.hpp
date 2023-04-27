@@ -9,8 +9,8 @@
 #ifndef pipeline_hpp
 #define pipeline_hpp
 
-#include "../../ftstd/result.h"
 #include "../../engine/shaders.h"
+#include "../../ftstd/result.hpp"
 #include "mesh.hpp"
 #include <cstdlib>
 #include <optional>

@@ -9,7 +9,7 @@
 #ifndef engine_hpp
 #define engine_hpp
 
-#include "../ftstd/result.h"
+#include "../ftstd/result.hpp"
 #include "graphics/device.hpp"
 #include "graphics/pipeline.hpp"
 #include "graphics/render.hpp"

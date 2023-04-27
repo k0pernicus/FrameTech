@@ -7,7 +7,6 @@
 
 #include "monitor.hpp"
 #include "../../ftstd/debug_tools.h"
-#include <GLFW/glfw3.h>
 #include <string.h>
 
 frametech::graphics::Monitor::Monitor() {}

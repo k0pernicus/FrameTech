@@ -9,7 +9,7 @@
 #ifndef device_h
 #define device_h
 
-#include "../../ftstd/result.h"
+#include "../../ftstd/result.hpp"
 #include <vector>
 #include <vulkan/vulkan.h>
 

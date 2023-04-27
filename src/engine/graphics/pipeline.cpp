@@ -7,14 +7,11 @@
 
 #include "pipeline.hpp"
 #include "../../ftstd/debug_tools.h"
-#include "../../ftstd/result.h"
-#include "../../engine/shaders.h"
 #include "../engine.hpp"
 #include "memory.hpp"
 #include <assert.h>
 #include <filesystem>
 #include <fstream>
-#include <vector>
 
 frametech::graphics::Pipeline::Pipeline()
 {
