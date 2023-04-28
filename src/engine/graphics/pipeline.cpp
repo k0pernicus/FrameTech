@@ -8,6 +8,7 @@
 #include "pipeline.hpp"
 #include "../../ftstd/debug_tools.h"
 #include "../engine.hpp"
+#include "definitions.hpp" // For UBO
 #include "memory.hpp"
 #include <assert.h>
 #include <filesystem>
@@ -15,6 +16,9 @@
 
 frametech::graphics::Pipeline::Pipeline()
 {
+    m_uniform_buffers = std::vector<VkBuffer>(0);
+    m_uniform_buffers_addr = std::vector<void*>(0);
+    m_uniform_buffers_memory = std::vector<VmaAllocation>(0);
 }
 
 frametech::graphics::Pipeline::~Pipeline()
@@ -79,6 +83,36 @@ frametech::graphics::Pipeline::~Pipeline()
         Log("< Destroying the fence...");
         vkDestroyFence(graphics_device, *m_sync_cpu_gpu, nullptr);
         m_sync_cpu_gpu = nullptr;
+    }
+    // Cleanup the UBOs
+    Log("< Destroying UBO...");
+    for (size_t i = 0; i < frametech::Engine::getMaxFramesInFlight(); ++i)
+    {
+        if (m_uniform_buffers.size() > i && m_uniform_buffers[i])
+        {
+            Log("\t< Destroying uniform buffer %d...", i);
+            // TODO: m_uniform_buffers_memory should be renamed
+            // TODO: m_uniform_buffers_memory should be unmapped **before**
+            vmaUnmapMemory(resource_allocator, m_uniform_buffers_memory[i]);
+            vmaDestroyBuffer(resource_allocator, m_uniform_buffers[i], m_uniform_buffers_memory[i]);
+            m_uniform_buffers[i] = nullptr;
+            m_uniform_buffers_memory[i] = VK_NULL_HANDLE;
+        }
+        if (m_uniform_buffers_addr.size() > i && m_uniform_buffers_addr[i])
+        {
+            Log("\t< Destroying uniform buffer data %d...", i);
+            m_uniform_buffers_addr[i] = nullptr;
+        }
+    }
+    // Clear all
+    m_uniform_buffers.clear();
+    m_uniform_buffers_addr.clear();
+    m_uniform_buffers_memory.clear();
+    if (VK_NULL_HANDLE != m_descriptor_set_layout)
+    {
+        Log("< Destroying the descriptor set layout...");
+        vkDestroyDescriptorSetLayout(graphics_device, m_descriptor_set_layout, nullptr);
+        m_descriptor_set_layout = VK_NULL_HANDLE;
     }
 }
 
@@ -269,8 +303,19 @@ ftstd::VResult frametech::graphics::Pipeline::preconfigure()
 {
     Log("> Preconfiguring the graphics pipeline");
 
-    VkPipelineLayoutCreateInfo pipeline_layout_create_info{};
-    pipeline_layout_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    VkPipelineLayoutCreateInfo pipeline_layout_create_info{
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+    };
+
+    if (VK_NULL_HANDLE != m_descriptor_set_layout)
+    {
+        Log(">> Descriptor set layout has been specified in the graphics pipeline");
+        // Once it has been created, specify the descriptor set layout during pipeline creation
+        // Tells Vulkan which descriptors the shaders will be using
+        // POSSIBLE ISSUE: dynamic descriptor set layout may not work here
+        pipeline_layout_create_info.setLayoutCount = 1;
+        pipeline_layout_create_info.pSetLayouts = &m_descriptor_set_layout;
+    }
 
     const auto create_result_code = vkCreatePipelineLayout(
         frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
@@ -581,6 +626,43 @@ ftstd::VResult frametech::graphics::Pipeline::createIndexBuffer() noexcept
     return ftstd::VResult::Ok();
 }
 
+ftstd::VResult frametech::graphics::Pipeline::createUniformBuffers() noexcept
+{
+    VmaAllocator resource_allocator = frametech::Engine::getInstance()->m_allocator;
+    VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+    const uint32_t max_frames_count = frametech::Engine::getMaxFramesInFlight();
+
+    const VkDeviceSize buffer_size = sizeof(UniformBufferObject);
+    m_uniform_buffers = std::vector<VkBuffer>(max_frames_count);
+    m_uniform_buffers_memory = std::vector<VmaAllocation>(max_frames_count);
+    m_uniform_buffers_addr = std::vector<void*>(max_frames_count);
+
+    for (size_t i = 0; i < max_frames_count; ++i)
+    {
+        Log(">> Creating the UBO number %d...", i);
+        if (frametech::graphics::Memory::initBuffer(
+                resource_allocator,
+                &m_uniform_buffers_memory[i],
+                graphics_device,
+                buffer_size,
+                m_uniform_buffers[i],
+                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+                .IsError())
+        {
+            LogE("<< UBO %d has not been created: cannot initialize the UBO buffer", i);
+            return ftstd::VResult::Error((char*)"Cannot initialize the UBO buffer");
+        }
+        if (VK_SUCCESS != vmaMapMemory(resource_allocator, m_uniform_buffers_memory[i], &m_uniform_buffers_addr[i]))
+        {
+            LogE("<< UBO %d has not been created: cannot map memory", i);
+            return ftstd::VResult::Error((char*)"Cannot map memory for UBO");
+        }
+        Log("<< Successfully created!");
+    }
+
+    return ftstd::VResult::Ok();
+}
+
 VkPipeline frametech::graphics::Pipeline::getPipeline()
 {
     return m_pipeline;
@@ -615,6 +697,37 @@ ftstd::VResult frametech::graphics::Pipeline::createSyncObjects()
         if (VK_SUCCESS != vkCreateFence(graphics_device, &create_info, nullptr, m_sync_cpu_gpu))
             return ftstd::VResult::Error((char*)"< Failed to create the fence");
     }
+    return ftstd::VResult::Ok();
+}
+
+ftstd::VResult frametech::graphics::Pipeline::createDescriptorSetLayout(
+    const uint32_t descriptor_count,
+    const VkShaderStageFlagBits shader_stages,
+    const VkDescriptorType descriptor_type,
+    const VkSampler* samplers) noexcept
+{
+    assert(descriptor_count > 0);
+    Log("> Creating a descriptor set layout");
+    if (descriptor_count == 0)
+        return ftstd::VResult::Error((char*)"< The number of descriptors should be \"> 0\"");
+    auto graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+    VkDescriptorSetLayoutBinding descriptor_layout_binding{
+        .binding = 0, // TODO: should be included as a function parameter maybe
+        .descriptorType = descriptor_type,
+        .descriptorCount = descriptor_count,
+        .stageFlags = shader_stages,
+        .pImmutableSamplers = samplers,
+    };
+
+    VkDescriptorSetLayoutCreateInfo descriptor_create_info{
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+        .bindingCount = 1,
+        .pBindings = &descriptor_layout_binding,
+    };
+
+    if (VK_SUCCESS != vkCreateDescriptorSetLayout(graphics_device, &descriptor_create_info, nullptr, &m_descriptor_set_layout))
+        return ftstd::VResult::Error((char*)"< Failed to create the descriptor set layout");
+
     return ftstd::VResult::Ok();
 }
 

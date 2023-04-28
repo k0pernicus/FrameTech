@@ -104,11 +104,30 @@ namespace frametech
             /// @return A VkPipeline object
             VkPipeline getPipeline();
             /// @brief Creates a Vertex Buffer object to use for our shaders
-            /// @return A VResult type to know if the function succeeded or not.
+            /// @return A VResult type to know if the function succeeded or not
             ftstd::VResult createVertexBuffer() noexcept;
             /// @brief Creates an index buffer object to store the vertices to use to display our objects
-            /// @return A VResult type to know if the function succeeded or not.
+            /// @return A VResult type to know if the function succeeded or not
             ftstd::VResult createIndexBuffer() noexcept;
+            /// @brief Creates the uniform buffers to use in our pipeline - should corresponds to the
+            /// maximum number of frames in flight possible
+            /// @return A VResult type to know if the function succeeded or not
+            ftstd::VResult createUniformBuffers() noexcept;
+            /// @brief Creates a descriptor set layout (data layout) to let the shaders
+            /// access to any resource (buffer / image / ...)
+            /// @param descriptor_count The number of descriptors to pass (specify 1 for a single data, or X to
+            /// specify an array of data). **This number should be greater than 0**.
+            /// @param shader_stages The stages to associate the newly (in creation) descriptor set layout (flags).
+            /// @param descriptor_type The associated type to the newly (in creation) descriptor set layout.
+            /// VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER by default.
+            /// @param samplers Optional samplers to associate, for image sampling related descriptors.
+            /// nullptr by default.
+            /// @return A VResult type to know if the function succeeded or not.
+            ftstd::VResult createDescriptorSetLayout(
+                const uint32_t descriptor_count,
+                const VkShaderStageFlagBits shader_stages,
+                const VkDescriptorType descriptor_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                const VkSampler* samplers = nullptr) noexcept;
             /// @brief Returns the Mesh object stored in the object
             /// @return A reference to the stored Mesh object
             const frametech::graphics::Mesh& getMesh() noexcept;
@@ -149,6 +168,8 @@ namespace frametech
             std::vector<VkShaderModule> m_shader_modules;
             /// @brief The pipeline layout created for our renderer
             VkPipelineLayout m_layout = VK_NULL_HANDLE;
+            /// @brief A descriptor set layout to bind & pass information to shaders
+            VkDescriptorSetLayout m_descriptor_set_layout = VK_NULL_HANDLE;
             /// @brief The render pass object
             VkRenderPass m_render_pass = VK_NULL_HANDLE;
             /// @brief The pipeline object
@@ -161,6 +182,13 @@ namespace frametech
             VkBuffer m_index_buffer = VK_NULL_HANDLE;
             /// @brief The index buffer allocation object
             VmaAllocation m_index_buffer_allocation = {};
+            /// @brief Uniform buffers
+            std::vector<VkBuffer> m_uniform_buffers;
+            /// @brief Memory addresses of the uniform buffers
+            std::vector<VmaAllocation> m_uniform_buffers_memory;
+            /// @brief To know if / which uniform buffers are currently used
+            /// TODO: boolean type instead ?
+            std::vector<void*> m_uniform_buffers_addr;
             /// @brief The default mesh to display
             frametech::graphics::Mesh m_mesh = frametech::graphics::MeshUtils::getMesh2D(frametech::graphics::Mesh2D::NONE);
             /// @brief Sync object to signal that an image is ready to

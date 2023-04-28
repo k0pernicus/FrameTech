@@ -311,6 +311,12 @@ ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
         LogE("< Error setuping the render pass");
         return result;
     }
+    // Should be called **BEFORE** the preconfigure
+    if (const auto result = m_graphics_pipeline->createDescriptorSetLayout(1, VK_SHADER_STAGE_VERTEX_BIT); result.IsError())
+    {
+        LogE("< Error creating the descriptor set layout");
+        return result;
+    }
     if (const auto result = m_graphics_pipeline->preconfigure(); result.IsError())
     {
         LogE("< Error pre-configuring the graphics pipeline");
@@ -353,6 +359,12 @@ ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
     if (const auto result = m_graphics_command->createBuffer(); result.IsError())
     {
         LogE("< Error creating the buffer of the Graphics command object");
+        return result;
+    }
+    // Create UBO
+    if (const auto result = m_graphics_pipeline->createUniformBuffers(); result.IsError())
+    {
+        LogE("< Error creating the uniform buffers");
         return result;
     }
     return ftstd::VResult::Ok();
