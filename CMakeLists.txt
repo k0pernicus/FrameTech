@@ -22,7 +22,7 @@ if(WIN32)
 set(CMAKE_CXX_FLAGS_DEBUG "/std:c++17 -Wconversion -Wno-sign-conversion -Werror -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-deprecated-declarations -gcodeview -DDEBUG -DIMGUI -DENABLE_EXCEPTIONS -DUNSET_FPS_LIMIT")
 set(CMAKE_CXX_FLAGS_RELEASE "/std:c++17 -O2 -Wno-sign-conversion -Wno-c++98-compat-pedantic -Wno-c++98-compat  -Wno-deprecated-declarations -DNDEBUG -O2 -DNO_AVG_FPS_RECORDS -DIMGUI")
 elseif(APPLE)
-set(CMAKE_CXX_FLAGS_DEBUG "--std=c++17 -Wconversion -Wno-sign-conversion -Werror -Wno-nullability-completeness -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-deprecated-declarations -DDEBUG -DIMGUI -DENABLE_EXCEPTIONS -DUNSET_FPS_LIMIT")
+set(CMAKE_CXX_FLAGS_DEBUG "--std=c++17 -Wconversion -Wno-sign-conversion -Werror -Wno-nullability-completeness -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-deprecated-declarations -g -DDEBUG -DIMGUI -DENABLE_EXCEPTIONS -DUNSET_FPS_LIMIT")
 set(CMAKE_CXX_FLAGS_RELEASE "--std=c++17 -O2 -Wno-sign-conversion -Wno-nullability-completeness -Wno-c++98-compat-pedantic -Wno-c++98-compat  -Wno-deprecated-declarations -DNDEBUG -O2 -DNO_AVG_FPS_RECORDS -DIMGUI")
 endif()
 
@@ -117,7 +117,7 @@ target_link_libraries(${BUILD_NAME} engine glm imgui glfw ${VULKAN_1_LIB})
 
 # Copy the shaders folder, as a custom POST command
 message("Copying the shaders/ folder, from ${CMAKE_SOURCE_DIR} to ${CMAKE_BINARY_DIR}")
-add_custom_command(TARGET ${BUILD_NAME} POST_BUILD 
+add_custom_command(TARGET ${BUILD_NAME} POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
 			${CMAKE_SOURCE_DIR}/shaders/
 			${CMAKE_CURRENT_BINARY_DIR}/shaders/
