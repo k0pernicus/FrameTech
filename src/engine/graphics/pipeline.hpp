@@ -125,7 +125,7 @@ namespace frametech
             /// @return A VResult type to know if the function succeeded or not.
             ftstd::VResult createDescriptorSetLayout(
                 const uint32_t descriptor_count,
-                const VkShaderStageFlagBits shader_stages,
+                const VkShaderStageFlags shader_stages,
                 const VkDescriptorType descriptor_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
                 const VkSampler* samplers = nullptr) noexcept;
             /// @brief Returns the Mesh object stored in the object

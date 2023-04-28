@@ -702,7 +702,7 @@ ftstd::VResult frametech::graphics::Pipeline::createSyncObjects()
 
 ftstd::VResult frametech::graphics::Pipeline::createDescriptorSetLayout(
     const uint32_t descriptor_count,
-    const VkShaderStageFlagBits shader_stages,
+    const VkShaderStageFlags shader_stages,
     const VkDescriptorType descriptor_type,
     const VkSampler* samplers) noexcept
 {
