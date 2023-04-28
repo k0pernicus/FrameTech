@@ -86,7 +86,8 @@ frametech::graphics::SwapChain* frametech::graphics::SwapChain::m_instance{nullp
 
 frametech::graphics::SwapChain* frametech::graphics::SwapChain::getInstance()
 {
-    if (nullptr == m_instance) m_instance = new frametech::graphics::SwapChain();
+    if (nullptr == m_instance)
+        m_instance = new frametech::graphics::SwapChain();
     return m_instance;
 }
 
