@@ -144,7 +144,8 @@ void frametech::graphics::SwapChain::queryDetails()
 
 ftstd::VResult frametech::graphics::SwapChain::checkDetails()
 {
-    if ((m_details.capabilities.minImageCount <= MAX_BUFFERS && m_details.capabilities.maxImageCount >= MAX_BUFFERS) &&
+    const uint32_t max_frames_count = frametech::Engine::getMaxFramesInFlight();
+    if ((m_details.capabilities.minImageCount <= max_frames_count && m_details.capabilities.maxImageCount >= max_frames_count) &&
         (!m_details.formats.empty() && !m_details.present_modes.empty()) &&
         (m_details.capabilities.minImageCount > 0))
     {
@@ -180,7 +181,7 @@ ftstd::VResult frametech::graphics::SwapChain::create()
 
         .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
         .surface = (*frametech::Engine::getInstance()->m_render->getSurface()),
-        .minImageCount = MAX_BUFFERS,
+        .minImageCount = frametech::Engine::getMaxFramesInFlight(),
         .imageFormat = m_format.format,
         .imageColorSpace = m_format.colorSpace,
         .imageExtent = m_extent,

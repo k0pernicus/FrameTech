@@ -28,6 +28,8 @@ namespace Project
                                                          ENGINE_VERSION_MINOR_NUMBER,
                                                          ENGINE_VERSION_BUGFIX_NUMBER);
 
+    const uint32_t ENGINE_MAX_FRAMES_IN_FLIGHT = 3;
+
 } // namespace Project
 
 #endif // engine_project_h

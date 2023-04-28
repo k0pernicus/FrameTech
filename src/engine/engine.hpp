@@ -97,6 +97,12 @@ namespace frametech
         {
             return Project::ENGINE_NAME;
         }
+        /// @brief Returns the maximal number of frames in flight (number of buffers is associated)
+        /// @return An unsigned 32 bits integer
+        static uint32_t getMaxFramesInFlight() noexcept
+        {
+            return Project::ENGINE_MAX_FRAMES_IN_FLIGHT;
+        }
     };
 
 } // namespace frametech

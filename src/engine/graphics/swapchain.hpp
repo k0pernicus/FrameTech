@@ -18,11 +18,6 @@ namespace frametech
 {
     namespace graphics
     {
-
-        /// @brief The maximum number of buffers / images
-        /// that can be store, waiting to be presenting
-        static constexpr uint8_t MAX_BUFFERS = 3;
-
         /// @brief Structure to get any detail about a swapchain
         /// object.
         /// There are three things to check, in order to know if the
