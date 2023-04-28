@@ -4,9 +4,14 @@ layout (binding = 0) uniform UniformBuffer {
     mat4 model; // glm::mat4
     mat4 view;  // glm::mat4
     mat4 proj;  // glm::mat4
-} ubo;
+} transformation;
+
+layout (location = 0) in vec2 inPosition;   // Vertex attributes
+layout (location = 1) in vec3 inColor;      // Vertex attributes
+
+layout (location = 0) out vec3 outFragment; // Color (fragment)
 
 void main() {
-    gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 0.0, 1.0);
-    fragColor = inColor;
+    gl_Position = transformation.proj * transformation.view * transformation.model * vec4(inPosition, 0.0, 1.0);
+    outFragment = inColor;
 }
