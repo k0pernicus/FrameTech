@@ -2843,13 +2843,16 @@ static void vma_aligned_free(void* VMA_NULLABLE ptr)
 #endif
 
 #ifndef VMA_DEBUG_LOG_FORMAT
+#ifdef DEBUG
+#define VMA_DEBUG_LOG_FORMAT(format, ...) \
+    do                                    \
+    {                                     \
+        printf((format), __VA_ARGS__);    \
+        printf("\n");                     \
+    } while (false)
+#else
 #define VMA_DEBUG_LOG_FORMAT(format, ...)
-/*
-#define VMA_DEBUG_LOG_FORMAT(format, ...) do { \
-    printf((format), __VA_ARGS__); \
-    printf("\n"); \
-} while(false)
-*/
+#endif
 #endif
 
 #ifndef VMA_DEBUG_LOG
