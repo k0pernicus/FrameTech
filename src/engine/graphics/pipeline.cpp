@@ -397,7 +397,7 @@ ftstd::VResult frametech::graphics::Pipeline::create()
         .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
         // Setting VK_TRUE to primitiveRestartEnable returns a validation
         // error (VUID-VkPipelineInputAssemblyStateCreateInfo-topology-00428)
-        .primitiveRestartEnable = VK_FALSE,
+        .primitiveRestartEnable = VK_FALSE, // Set to `true` + 0xFFFF(FFFF) once we allow the engine to reuse the indices
     };
 
     VkPipelineRasterizationStateCreateInfo rasterizer_state_create_info{
@@ -406,7 +406,10 @@ ftstd::VResult frametech::graphics::Pipeline::create()
         .rasterizerDiscardEnable = VK_FALSE,
         .polygonMode = VK_POLYGON_MODE_FILL,
         .cullMode = VK_CULL_MODE_BACK_BIT,
-        .frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE,
+        // Change the frontFace value from VK_FRONT_FACE_CLOCKWISE
+        // to VK_FRONT_FACE_COUNTER_CLOCKWISE if Y-flip has been
+        // executed (as glm stands with OpenGL)
+        .frontFace = VK_FRONT_FACE_CLOCKWISE,
         .depthBiasEnable = VK_FALSE,
         .lineWidth = 1,
     };
@@ -685,7 +688,7 @@ void frametech::graphics::Pipeline::updateUniformBuffer(const uint32_t current_f
         .view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),                // 45 degrees
         .projection = glm::perspective(glm::radians(45.0f), swapchain_extent.width / (float)swapchain_extent.height, 0.1f, 10.0f), // 45 degrees
     };
-    ubo.projection[1][1] *= -1; // glm is for OpenGL (Y is inverted)
+    // ubo.projection[1][1] *= -1; // glm is for OpenGL (Y is inverted)
     memcpy(m_uniform_buffers_data[current_frame_index], &ubo, sizeof(ubo));
 }
 
