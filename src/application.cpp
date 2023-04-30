@@ -357,6 +357,10 @@ void frametech::Application::forceRendererFPSLimit(uint8_t new_limit)
 
 void frametech::Application::drawFrame()
 {
+    // Update the UBOs
+    const uint32_t current_frame_index = m_engine->m_render->getFrameIndex();
+    m_engine->m_render->getGraphicsPipeline()->updateUniformBuffer(current_frame_index);
+
     if (m_FPS_limit != std::nullopt)
     {
         const double wait_ms = 1000.0f / m_FPS_limit.value();
@@ -380,7 +384,6 @@ void frametech::Application::drawFrame()
         ++m_current_frame;
         return;
     }
-    // Log("Drawing frame %d", m_current_frame);
 
     // Real rendering time
     auto begin_real_rendering_timer = ftstd::Timer();

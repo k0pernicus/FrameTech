@@ -64,7 +64,7 @@ ftstd::VResult frametech::graphics::Command::createBuffer()
 
 ftstd::VResult frametech::graphics::Command::record()
 {
-    const auto swapchain_index = frametech::Engine::getInstance()->m_render->getFrameIndex();
+    const auto current_frame_index = frametech::Engine::getInstance()->m_render->getFrameIndex();
     VkCommandBufferBeginInfo begin_info{
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
     };
@@ -78,16 +78,16 @@ ftstd::VResult frametech::graphics::Command::record()
     }
 
     const std::vector<VkFramebuffer> framebuffers = frametech::Engine::getInstance()->m_render->getFramebuffers();
-    if (swapchain_index >= framebuffers.size())
+    if (current_frame_index >= framebuffers.size())
     {
-        return ftstd::VResult::Error((char*)"< The swapchain_index parameter is incorrect: not enough framebuffers");
+        return ftstd::VResult::Error((char*)"< The current_frame_index parameter is incorrect: not enough framebuffers");
     }
 
     VkClearValue clear_color = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
     VkRenderPassBeginInfo render_pass_begin_info{
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getRenderPass(),
-        .framebuffer = framebuffers[swapchain_index],
+        .framebuffer = framebuffers[current_frame_index],
         .renderArea = {
             .offset = {0, 0},
             .extent = frametech::Engine::getInstance()->m_swapchain->getExtent(),
@@ -131,8 +131,22 @@ ftstd::VResult frametech::graphics::Command::record()
     vkCmdBindVertexBuffers(m_buffer, 0, (uint32_t)vertex_buffers.size(), vertex_buffers.data(), memory_offsets.data());
     vkCmdBindIndexBuffer(m_buffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
 
-    uint32_t indices_size = static_cast<uint32_t>(frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getIndices().size());
+    // Bind the right descriptor set to the descriptors in the shaders
+    std::optional<VkDescriptorSet*> current_descriptor_set = frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getDescriptorSet(current_frame_index);
+    if (std::nullopt != current_descriptor_set)
+    {
+        vkCmdBindDescriptorSets(
+            m_buffer,
+            VK_PIPELINE_BIND_POINT_GRAPHICS,
+            frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getPipelineLayout(),
+            0,
+            1,
+            current_descriptor_set.value(),
+            0,
+            nullptr);
+    }
 
+    uint32_t indices_size = static_cast<uint32_t>(frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getIndices().size());
     vkCmdDrawIndexed(m_buffer, indices_size, 1, 0, 0, 0);
 
 #ifdef IMGUI

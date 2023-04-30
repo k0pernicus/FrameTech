@@ -11,14 +11,20 @@
 #include "definitions.hpp" // For UBO
 #include "memory.hpp"
 #include <assert.h>
+#include <chrono>
 #include <filesystem>
 #include <fstream>
+
+// For the transformation / UBOs
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 frametech::graphics::Pipeline::Pipeline()
 {
     m_uniform_buffers = std::vector<VkBuffer>(0);
-    m_uniform_buffers_addr = std::vector<void*>(0);
-    m_uniform_buffers_memory = std::vector<VmaAllocation>(0);
+    m_uniform_buffers_data = std::vector<void*>(0);
+    m_uniform_buffers_allocation = std::vector<VmaAllocation>(0);
 }
 
 frametech::graphics::Pipeline::~Pipeline()
@@ -91,23 +97,22 @@ frametech::graphics::Pipeline::~Pipeline()
         if (m_uniform_buffers.size() > i && m_uniform_buffers[i])
         {
             Log("\t< Destroying uniform buffer %d...", i);
-            // TODO: m_uniform_buffers_memory should be renamed
             // TODO: m_uniform_buffers_memory should be unmapped **before**
-            vmaUnmapMemory(resource_allocator, m_uniform_buffers_memory[i]);
-            vmaDestroyBuffer(resource_allocator, m_uniform_buffers[i], m_uniform_buffers_memory[i]);
+            vmaUnmapMemory(resource_allocator, m_uniform_buffers_allocation[i]);
+            vmaDestroyBuffer(resource_allocator, m_uniform_buffers[i], m_uniform_buffers_allocation[i]);
             m_uniform_buffers[i] = nullptr;
-            m_uniform_buffers_memory[i] = VK_NULL_HANDLE;
+            m_uniform_buffers_allocation[i] = VK_NULL_HANDLE;
         }
-        if (m_uniform_buffers_addr.size() > i && m_uniform_buffers_addr[i])
+        if (m_uniform_buffers_data.size() > i && m_uniform_buffers_data[i])
         {
             Log("\t< Destroying uniform buffer data %d...", i);
-            m_uniform_buffers_addr[i] = nullptr;
+            m_uniform_buffers_data[i] = nullptr;
         }
     }
     // Clear all
     m_uniform_buffers.clear();
-    m_uniform_buffers_addr.clear();
-    m_uniform_buffers_memory.clear();
+    m_uniform_buffers_data.clear();
+    m_uniform_buffers_allocation.clear();
     if (VK_NULL_HANDLE != m_descriptor_set_layout)
     {
         Log("< Destroying the descriptor set layout...");
@@ -401,7 +406,7 @@ ftstd::VResult frametech::graphics::Pipeline::create()
         .rasterizerDiscardEnable = VK_FALSE,
         .polygonMode = VK_POLYGON_MODE_FILL,
         .cullMode = VK_CULL_MODE_BACK_BIT,
-        .frontFace = VK_FRONT_FACE_CLOCKWISE,
+        .frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE,
         .depthBiasEnable = VK_FALSE,
         .lineWidth = 1,
     };
@@ -634,15 +639,15 @@ ftstd::VResult frametech::graphics::Pipeline::createUniformBuffers() noexcept
 
     const VkDeviceSize buffer_size = sizeof(UniformBufferObject);
     m_uniform_buffers = std::vector<VkBuffer>(max_frames_count);
-    m_uniform_buffers_memory = std::vector<VmaAllocation>(max_frames_count);
-    m_uniform_buffers_addr = std::vector<void*>(max_frames_count);
+    m_uniform_buffers_allocation = std::vector<VmaAllocation>(max_frames_count);
+    m_uniform_buffers_data = std::vector<void*>(max_frames_count);
 
     for (size_t i = 0; i < max_frames_count; ++i)
     {
         Log(">> Creating the UBO number %d...", i);
         if (frametech::graphics::Memory::initBuffer(
                 resource_allocator,
-                &m_uniform_buffers_memory[i],
+                &m_uniform_buffers_allocation[i],
                 graphics_device,
                 buffer_size,
                 m_uniform_buffers[i],
@@ -652,7 +657,7 @@ ftstd::VResult frametech::graphics::Pipeline::createUniformBuffers() noexcept
             LogE("<< UBO %d has not been created: cannot initialize the UBO buffer", i);
             return ftstd::VResult::Error((char*)"Cannot initialize the UBO buffer");
         }
-        if (VK_SUCCESS != vmaMapMemory(resource_allocator, m_uniform_buffers_memory[i], &m_uniform_buffers_addr[i]))
+        if (VK_SUCCESS != vmaMapMemory(resource_allocator, m_uniform_buffers_allocation[i], &m_uniform_buffers_data[i]))
         {
             LogE("<< UBO %d has not been created: cannot map memory", i);
             return ftstd::VResult::Error((char*)"Cannot map memory for UBO");
@@ -661,6 +666,27 @@ ftstd::VResult frametech::graphics::Pipeline::createUniformBuffers() noexcept
     }
 
     return ftstd::VResult::Ok();
+}
+
+void frametech::graphics::Pipeline::updateUniformBuffer(const uint32_t current_frame_index) noexcept
+{
+    // Stop there if we ask a frame index that does not corresponds to any UBO
+    if (m_uniform_buffers_data.size() <= current_frame_index)
+    {
+        LogW("Cannot update uniform buffer: frame index is too high");
+        return;
+    }
+    const VkExtent2D& swapchain_extent = frametech::Engine::getInstance()->m_swapchain->getExtent();
+    static std::chrono::steady_clock::time_point start_time = std::chrono::high_resolution_clock::now();
+    std::chrono::steady_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+    float delta_time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
+    UniformBufferObject ubo{
+        .model = glm::rotate(glm::mat4(1.0f), delta_time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),                      // 90 degrees
+        .view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),                // 45 degrees
+        .projection = glm::perspective(glm::radians(45.0f), swapchain_extent.width / (float)swapchain_extent.height, 0.1f, 10.0f), // 45 degrees
+    };
+    ubo.projection[1][1] *= -1; // glm is for OpenGL (Y is inverted)
+    memcpy(m_uniform_buffers_data[current_frame_index], &ubo, sizeof(ubo));
 }
 
 VkPipeline frametech::graphics::Pipeline::getPipeline()
@@ -729,6 +755,75 @@ ftstd::VResult frametech::graphics::Pipeline::createDescriptorSetLayout(
         return ftstd::VResult::Error((char*)"< Failed to create the descriptor set layout");
 
     return ftstd::VResult::Ok();
+}
+
+ftstd::VResult frametech::graphics::Pipeline::createDescriptorSets(
+    const uint32_t descriptor_count,
+    const VkDescriptorType descriptor_type) noexcept
+{
+    const uint32_t max_frames_in_flight = frametech::Engine::getMaxFramesInFlight();
+    VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+    std::vector<VkDescriptorSetLayout> layouts(max_frames_in_flight, m_descriptor_set_layout);
+    VkDescriptorSetAllocateInfo allocate_info{};
+    allocate_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocate_info.descriptorPool = frametech::Engine::getInstance()->getDescriptorPool();
+    allocate_info.descriptorSetCount = static_cast<uint32_t>(max_frames_in_flight);
+    allocate_info.pSetLayouts = layouts.data();
+
+    m_descriptor_sets.resize(max_frames_in_flight);
+    if (vkAllocateDescriptorSets(
+            graphics_device,
+            &allocate_info,
+            m_descriptor_sets.data()) != VK_SUCCESS)
+    {
+        return ftstd::VResult::Error((char*)"Cannot allocate for descriptor sets");
+    }
+
+    // Populate the descriptors now
+    for (size_t i = 0; i < m_descriptor_sets.size(); ++i)
+    {
+        VkDescriptorBufferInfo buffer_info{};
+        buffer_info.buffer = m_uniform_buffers[i];
+        buffer_info.offset = 0;
+        buffer_info.range = sizeof(UniformBufferObject);
+
+        VkWriteDescriptorSet descriptor_write{};
+        descriptor_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptor_write.dstSet = m_descriptor_sets[i];
+        descriptor_write.dstBinding = 0;
+        descriptor_write.dstArrayElement = 0;
+        descriptor_write.descriptorType = descriptor_type;
+        descriptor_write.descriptorCount = descriptor_count;
+        descriptor_write.pBufferInfo = &buffer_info;
+        descriptor_write.pImageInfo = nullptr;
+        descriptor_write.pTexelBufferView = nullptr;
+
+        vkUpdateDescriptorSets(graphics_device, 1, &descriptor_write, 0, nullptr);
+
+        Log("Created descriptor set (type %d) for UBO at index %d...", descriptor_type, i);
+    }
+    return ftstd::VResult::Ok();
+}
+
+VkPipelineLayout frametech::graphics::Pipeline::getPipelineLayout() noexcept
+{
+    return m_layout;
+}
+
+std::vector<VkDescriptorSet>& frametech::graphics::Pipeline::getDescriptorSets() noexcept
+{
+    return m_descriptor_sets;
+}
+
+std::optional<VkDescriptorSet*> frametech::graphics::Pipeline::getDescriptorSet(const uint32_t index) noexcept
+{
+    assert(index < frametech::Engine::getMaxFramesInFlight());
+    if (index >= frametech::Engine::getMaxFramesInFlight())
+    {
+        LogW("Cannot return a descriptor set at an index greater than the maximum number of frames per flight");
+        return std::nullopt;
+    }
+    return &m_descriptor_sets[index];
 }
 
 void frametech::graphics::Pipeline::acquireImage()

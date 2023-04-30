@@ -113,6 +113,12 @@ namespace frametech
             /// maximum number of frames in flight possible
             /// @return A VResult type to know if the function succeeded or not
             ftstd::VResult createUniformBuffers() noexcept;
+            /// @brief Updates, if created, the uniform buffer bounded to the current frame,
+            /// in our current graphics pipeline.
+            /// This function should be call every frame to get the latest / current transformation.
+            /// @param current_frame_index A uint32_t value that represents the current frame index, in order
+            /// to update **only** the right array value
+            void updateUniformBuffer(const uint32_t current_frame_index) noexcept;
             /// @brief Creates a descriptor set layout (data layout) to let the shaders
             /// access to any resource (buffer / image / ...)
             /// @param descriptor_count The number of descriptors to pass (specify 1 for a single data, or X to
@@ -128,6 +134,26 @@ namespace frametech
                 const VkShaderStageFlags shader_stages,
                 const VkDescriptorType descriptor_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
                 const VkSampler* samplers = nullptr) noexcept;
+            /// @brief Creates the descriptor sets
+            /// @param descriptor_count The number of descriptors to pass (specify 1 for a single data, or X to
+            /// specify an array of data). **This number should be greater than 0**.
+            /// @param descriptor_type The associated type to the newly (in creation) descriptor set layout.
+            /// VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER by default.
+            /// @return A VResult type to know if the function succeeded or not.
+            ftstd::VResult createDescriptorSets(
+                const uint32_t descriptor_count,
+                const VkDescriptorType descriptor_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER) noexcept;
+            /// @brief Returns the pipeline layout
+            /// @return a VkPipelineLayout type
+            VkPipelineLayout getPipelineLayout() noexcept;
+            /// @brief Returns the full descriptor sets, as a std::Vector type
+            /// @return The vector of descriptor sets
+            std::vector<VkDescriptorSet>& getDescriptorSets() noexcept;
+            /// @brief Returns the descriptor set at a given index, if it exists
+            /// @param index The index to get the descriptor set
+            /// @return A descriptor set at index `index` as an optional: nullopt means the index is greater
+            /// of the maximum number of frames in flight possible
+            std::optional<VkDescriptorSet*> getDescriptorSet(const uint32_t index) noexcept;
             /// @brief Returns the Mesh object stored in the object
             /// @return A reference to the stored Mesh object
             const frametech::graphics::Mesh& getMesh() noexcept;
@@ -170,6 +196,8 @@ namespace frametech
             VkPipelineLayout m_layout = VK_NULL_HANDLE;
             /// @brief A descriptor set layout to bind & pass information to shaders
             VkDescriptorSetLayout m_descriptor_set_layout = VK_NULL_HANDLE;
+            /// @brief Stores the descriptor sets per frame
+            std::vector<VkDescriptorSet> m_descriptor_sets;
             /// @brief The render pass object
             VkRenderPass m_render_pass = VK_NULL_HANDLE;
             /// @brief The pipeline object
@@ -185,12 +213,12 @@ namespace frametech
             /// @brief Uniform buffers
             std::vector<VkBuffer> m_uniform_buffers;
             /// @brief Memory addresses of the uniform buffers
-            std::vector<VmaAllocation> m_uniform_buffers_memory;
+            std::vector<VmaAllocation> m_uniform_buffers_allocation;
             /// @brief To know if / which uniform buffers are currently used
             /// TODO: boolean type instead ?
-            std::vector<void*> m_uniform_buffers_addr;
+            std::vector<void*> m_uniform_buffers_data;
             /// @brief The default mesh to display
-            frametech::graphics::Mesh m_mesh = frametech::graphics::MeshUtils::getMesh2D(frametech::graphics::Mesh2D::NONE);
+            frametech::graphics::Mesh m_mesh = frametech::graphics::MeshUtils::getMesh2D(frametech::graphics::Mesh2D::BASIC_TRIANGLE);
             /// @brief Sync object to signal that an image is ready to
             /// be displayed
             VkSemaphore* m_sync_image_ready = nullptr;

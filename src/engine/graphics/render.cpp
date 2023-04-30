@@ -196,7 +196,7 @@ ftstd::VResult frametech::graphics::Render::createShaderModule()
 {
     // TODO: vector of ShaderModule type
     const ftstd::Result<std::vector<frametech::graphics::Shader::Module>> shaders_compile_result = m_graphics_pipeline->createGraphicsApplication(
-        "shaders/basic_triangle.vert.spv",
+        "shaders/transformation_triangle.vert.spv",
         "shaders/basic_triangle.frag.spv");
     if (shaders_compile_result.IsError())
         return ftstd::VResult::Error((char*)"cannot compile the application shaders");
@@ -365,6 +365,11 @@ ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
     if (const auto result = m_graphics_pipeline->createUniformBuffers(); result.IsError())
     {
         LogE("< Error creating the uniform buffers");
+        return result;
+    }
+    if (const auto result = m_graphics_pipeline->createDescriptorSets(1); result.IsError())
+    {
+        LogE("< Error creating the descriptor sets");
         return result;
     }
     return ftstd::VResult::Ok();
