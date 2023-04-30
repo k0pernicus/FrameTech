@@ -684,9 +684,9 @@ void frametech::graphics::Pipeline::updateUniformBuffer(const uint32_t current_f
     std::chrono::steady_clock::time_point current_time = std::chrono::high_resolution_clock::now();
     float delta_time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
     UniformBufferObject ubo{
-        .model = glm::rotate(glm::mat4(1.0f), delta_time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),                      // 90 degrees
-        .view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),                // 45 degrees
-        .projection = glm::perspective(glm::radians(45.0f), swapchain_extent.width / (float)swapchain_extent.height, 0.1f, 10.0f), // 45 degrees
+        .model = glm::rotate(glm::mat4(1.0f) * delta_time, delta_time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),                           // 90 degrees
+        .view = glm::lookAt(glm::vec3(4.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),                                  // 45 degrees
+        .projection = glm::perspective(glm::radians(45.0f) * cos(delta_time), swapchain_extent.width / (float)swapchain_extent.height, 0.1f, 10.0f), // 45 degrees
     };
     // ubo.projection[1][1] *= -1; // glm is for OpenGL (Y is inverted)
     memcpy(m_uniform_buffers_data[current_frame_index], &ubo, sizeof(ubo));
