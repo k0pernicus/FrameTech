@@ -36,7 +36,12 @@ Create an empty directory like `out/build` in the root of the project.
 
 Now, build the Makefiles using cmake like this: `cmake -S ../../ -B . -DCMAKE_BUILD_TYPE=Debug -T ClangCL`.
 
-I did not tried to use MSVC to compile the project but it should run (you may have to tweak the compiler's options...).
+The project is compatible with:
+* Visual Studio 2022 (`-G "Visual Studio 17 2022`),
+* Xcode (`-G Xcode`)
+
+I **did not** try MSVC to compile the project but it should works (however you may have to tweak the compiler's 
+options).
 
 Once the Makefiles have been built, go in your `out/build` folder and launch make,
  or open your project in Visual Studio for Microsoft Windows.
