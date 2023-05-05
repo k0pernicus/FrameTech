@@ -107,6 +107,7 @@ include_directories("${CMAKE_SOURCE_DIR}/extern")
 include_directories("${CMAKE_SOURCE_DIR}/extern/imgui")
 include_directories("${CMAKE_SOURCE_DIR}/extern/glfw/include")
 include_directories("${CMAKE_SOURCE_DIR}/extern/vma")
+include_directories("${CMAKE_SOURCE_DIR}/extern/stb")
 include_directories("${CMAKE_SOURCE_DIR}/src/engine")
 include_directories("${CMAKE_SOURCE_DIR}/src/ftstd")
 
