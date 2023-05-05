@@ -11,6 +11,7 @@
 
 // For the transformation / UBOs
 #define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES  // Force GLM to use the alignment requirements - does not work with nested structures !
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
