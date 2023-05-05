@@ -23,6 +23,14 @@ namespace frametech
             glm::vec2 m_position;
             /// @brief Vertex color
             glm::vec3 m_color;
+
+            void setColor(const glm::vec3& new_color) {
+                m_color = new_color;
+            }
+
+            void setPosition(const glm::vec2& new_position) {
+                m_position = new_position;
+            }
         };
 
         class VertexUtils
