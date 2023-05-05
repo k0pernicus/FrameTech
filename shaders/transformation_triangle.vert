@@ -1,6 +1,6 @@
 #version 450
 
-layout (binding = 0) uniform UniformBuffer {
+layout (set = 0, binding = 0) uniform UniformBuffer {
     mat4 model;       // glm::mat4
     mat4 view;        // glm::mat4
     mat4 projection;  // glm::mat4
