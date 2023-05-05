@@ -1,13 +1,13 @@
 //
-//  definitions.hpp
+//  common.hpp
 //  FrameTech
 //
 //  Created by Antonin on 28/04/2023.
 //
 
 #pragma once
-#ifndef definitions_h
-#define definitions_h
+#ifndef common_hpp
+#define common_hpp
 
 #include <glm/glm.hpp>
 
@@ -21,4 +21,4 @@ typedef struct UniformBufferObject
     glm::mat4 projection;
 } UniformBufferObject;
 
-#endif // command_h
+#endif // common_hpp
