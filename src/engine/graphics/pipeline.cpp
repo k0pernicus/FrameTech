@@ -8,17 +8,11 @@
 #include "pipeline.hpp"
 #include "../../ftstd/debug_tools.h"
 #include "../engine.hpp"
-#include "definitions.hpp" // For UBO
 #include "memory.hpp"
 #include <assert.h>
 #include <chrono>
 #include <filesystem>
 #include <fstream>
-
-// For the transformation / UBOs
-#define GLM_FORCE_RADIANS
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 frametech::graphics::Pipeline::Pipeline()
 {
@@ -671,7 +665,7 @@ ftstd::VResult frametech::graphics::Pipeline::createUniformBuffers() noexcept
     return ftstd::VResult::Ok();
 }
 
-void frametech::graphics::Pipeline::updateUniformBuffer(const uint32_t current_frame_index) noexcept
+void frametech::graphics::Pipeline::updateUniformBuffer(const uint32_t current_frame_index, UniformBufferObject& ubo) noexcept
 {
     // Stop there if we ask a frame index that does not corresponds to any UBO
     if (m_uniform_buffers_data.size() <= current_frame_index)
@@ -679,16 +673,6 @@ void frametech::graphics::Pipeline::updateUniformBuffer(const uint32_t current_f
         LogW("Cannot update uniform buffer: frame index is too high");
         return;
     }
-    const VkExtent2D& swapchain_extent = frametech::Engine::getInstance()->m_swapchain->getExtent();
-    static std::chrono::steady_clock::time_point start_time = std::chrono::high_resolution_clock::now();
-    std::chrono::steady_clock::time_point current_time = std::chrono::high_resolution_clock::now();
-    float delta_time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
-    UniformBufferObject ubo{
-        .model = glm::rotate(glm::mat4(1.0f) * delta_time, delta_time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),                           // 90 degrees
-        .view = glm::lookAt(glm::vec3(4.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),                                  // 45 degrees
-        .projection = glm::perspective(glm::radians(45.0f) * cos(delta_time), swapchain_extent.width / (float)swapchain_extent.height, 0.1f, 10.0f), // 45 degrees
-    };
-    // ubo.projection[1][1] *= -1; // glm is for OpenGL (Y is inverted)
     memcpy(m_uniform_buffers_data[current_frame_index], &ubo, sizeof(ubo));
 }
 

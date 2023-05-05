@@ -9,6 +9,11 @@
 #include "ftstd/debug_tools.h"
 #include "project.hpp"
 
+// For the transformation / UBOs
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #ifdef IMGUI
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_vulkan.h"
@@ -218,9 +223,13 @@ void frametech::Application::drawDebugToolImGui()
 
             ImGui::Text("Vulkan memory blocks allocated: %d", stats.blockCount);
             ImGui::Text("VmaAllocation objects allocated: %d", stats.allocationCount);
-            ImGui::Text("Number of bytes allocated in VkDeviceMemory blocks: %lluB", stats.blockBytes);
-            ImGui::Text("Total number of bytes occupied by all VmaAllocation objects: %lluB", stats.allocationBytes);
-
+            ImGui::Text("VkDeviceMemory blocks memory: %llu kB", stats.blockBytes >> 10);
+            if (stats.allocationBytes > 1024) {
+                ImGui::Text("VmaAllocation objects memory: %llukB", stats.allocationBytes >> 10);
+            }
+            else {
+                ImGui::Text("VmaAllocation objects memory: %lluB", stats.allocationBytes);
+            }
             ImGui::TreePop();
             ImGui::Separator();
         }
@@ -242,7 +251,7 @@ void frametech::Application::drawDebugToolImGui()
     {
         const frametech::graphics::Mesh c_mesh = m_engine->m_render->getGraphicsPipeline()->getMesh();
         ImGui::Text("Name: '%s'", c_mesh.m_name);
-        ImGui::Text("%lu vertices", c_mesh.m_vertices.size());
+        ImGui::Text("%llu vertices", c_mesh.m_vertices.size());
         if (ImGui::TreeNode("Vertices"))
         {
             const auto vertices = m_engine->m_render->getGraphicsPipeline()->getVertices();
@@ -259,7 +268,7 @@ void frametech::Application::drawDebugToolImGui()
             ImGui::TreePop();
             ImGui::Separator();
         }
-        ImGui::Text("%lu indices", c_mesh.m_indices.size());
+        ImGui::Text("%llu indices", c_mesh.m_indices.size());
         if (ImGui::TreeNode("Indices"))
         {
             const auto indices = m_engine->m_render->getGraphicsPipeline()->getIndices();
@@ -359,7 +368,20 @@ void frametech::Application::drawFrame()
 {
     // Update the UBOs
     const uint32_t current_frame_index = m_engine->m_render->getFrameIndex();
-    m_engine->m_render->getGraphicsPipeline()->updateUniformBuffer(current_frame_index);
+    {
+        const VkExtent2D& swapchain_extent = m_engine->m_swapchain->getExtent();
+        static std::chrono::steady_clock::time_point start_time = std::chrono::high_resolution_clock::now();
+        std::chrono::steady_clock::time_point current_time = std::chrono::high_resolution_clock::now();
+        float delta_time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
+        UniformBufferObject ubo{
+            .model = glm::rotate(glm::mat4(1.0f) * delta_time, delta_time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),                           // 90 degrees
+            .view = glm::lookAt(glm::vec3(4.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),                                  // 45 degrees
+            .projection = glm::perspective(glm::radians(45.0f) * cos(delta_time), swapchain_extent.width / (float)swapchain_extent.height, 0.1f, 10.0f), // 45 degrees
+        };
+        // ubo.projection[1][1] *= -1; // glm is for OpenGL (Y is inverted)
+    
+        m_engine->m_render->getGraphicsPipeline()->updateUniformBuffer(current_frame_index, ubo);
+    }
 
     if (m_FPS_limit != std::nullopt)
     {

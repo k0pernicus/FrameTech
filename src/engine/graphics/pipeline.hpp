@@ -9,6 +9,7 @@
 #ifndef pipeline_hpp
 #define pipeline_hpp
 
+#include "common.hpp"
 #include "../../engine/shaders.h"
 #include "../../ftstd/result.hpp"
 #include "mesh.hpp"
@@ -118,7 +119,7 @@ namespace frametech
             /// This function should be call every frame to get the latest / current transformation.
             /// @param current_frame_index A uint32_t value that represents the current frame index, in order
             /// to update **only** the right array value
-            void updateUniformBuffer(const uint32_t current_frame_index) noexcept;
+            void updateUniformBuffer(const uint32_t current_frame_index, UniformBufferObject& ubo) noexcept;
             /// @brief Creates a descriptor set layout (data layout) to let the shaders
             /// access to any resource (buffer / image / ...)
             /// @param descriptor_count The number of descriptors to pass (specify 1 for a single data, or X to
