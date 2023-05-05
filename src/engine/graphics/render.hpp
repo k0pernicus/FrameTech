@@ -15,7 +15,7 @@
 #include "vulkan/vulkan.h"
 #include <vector>
 #ifdef WIN32
-#include <memory>
+#include <memory> // Weird that the non-include does not throw an error in Clang for macOS / linux...
 #endif
 
 namespace frametech

@@ -179,7 +179,6 @@ ftstd::VResult frametech::graphics::SwapChain::create()
     m_extent = swap_extent_result.GetValue();
 
     VkSwapchainCreateInfoKHR create_info{
-
         .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
         .surface = (*frametech::Engine::getInstance()->m_render->getSurface()),
         .minImageCount = frametech::Engine::getMaxFramesInFlight(),
