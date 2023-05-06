@@ -155,6 +155,10 @@ ftstd::VResult frametech::graphics::Command::record()
     ImGui::Render();
     ImDrawData* draw_data = ImGui::GetDrawData();
     ImGui_ImplVulkan_RenderDrawData(draw_data, m_buffer);
+    
+    // Update and Render additional Platform Windows
+    ImGui::UpdatePlatformWindows();
+    ImGui::RenderPlatformWindowsDefault();
 #endif
 
     vkCmdEndRenderPass(m_buffer);

@@ -99,7 +99,13 @@ void frametech::Application::setupImGui()
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     // Enable docking mode
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
+    io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
+    io.BackendFlags |= ImGuiBackendFlags_HasMouseHoveredViewport;
     (void)io;
     Log(">> ImGui context has been correctly created");
     ImGui::StyleColorsDark();
