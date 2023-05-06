@@ -253,7 +253,7 @@ void frametech::Application::drawDebugToolImGui()
 
     ImGui::Separator();
 
-    if (ImGui::CollapsingHeader("On screen"))
+    if (ImGui::CollapsingHeader("Scene"))
     {
         const frametech::graphics::Mesh c_mesh = m_engine->m_render->getGraphicsPipeline()->getMesh();
         ImGui::Text("Name: '%s'", c_mesh.m_name);
@@ -286,6 +286,15 @@ void frametech::Application::drawDebugToolImGui()
             }
             ImGui::TreePop();
             ImGui::Separator();
+        }
+    }
+
+    if (ImGui::CollapsingHeader("Camera"))
+    {
+        const auto camera_position = m_engine->m_camera.getDirection();
+        ImGui::Text("Position: %f,%f,%f", camera_position.x, camera_position.y, camera_position.z);
+        if (ImGui::Button("Reset position")) {
+            m_engine->m_camera.resetDirection();
         }
     }
 
