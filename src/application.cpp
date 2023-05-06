@@ -8,12 +8,7 @@
 #include "application.hpp"
 #include "ftstd/debug_tools.h"
 #include "project.hpp"
-
-// For the transformation / UBOs
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES  // Force GLM to use the alignment requirements - does not work with nested structures !
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "engine/graphics/ubo.hpp" // Should be elsewhere
 
 #ifdef IMGUI
 #include "backends/imgui_impl_glfw.h"
@@ -334,6 +329,41 @@ void frametech::Application::drawMeshSelectionImGui()
         }
     }
 
+    if (ImGui::CollapsingHeader("Available transforms"))
+    {
+        if (ImGui::BeginListBox("Transformations"))
+        {
+            const char* items[] = { "Constant", "Rotate", "Rotate and scale" };
+            static int item_current_idx = m_engine->m_render->getGraphicsPipeline()->getTransform();
+            int previously_selected_idx = m_engine->m_render->getGraphicsPipeline()->getTransform();
+            for (int n = 0; n < sizeof(items) / sizeof(items[0]); ++n)
+            {
+                const bool is_selected = (item_current_idx == n);
+                if (ImGui::Selectable(items[n], is_selected))
+                    item_current_idx = n;
+                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                if (is_selected && (item_current_idx != previously_selected_idx))
+                {
+                    previously_selected_idx = item_current_idx;
+                    ImGui::SetItemDefaultFocus();
+                    switch (item_current_idx)
+                    {
+                    case 0:
+                        m_engine->m_render->getGraphicsPipeline()->setTransform(frametech::graphics::Transformation::Constant);
+                        break;
+                    case 1:
+                        m_engine->m_render->getGraphicsPipeline()->setTransform(frametech::graphics::Transformation::Rotate);
+                        break;
+                    case 2:
+                        m_engine->m_render->getGraphicsPipeline()->setTransform(frametech::graphics::Transformation::RotateAndScale);
+                        break;
+                    }
+                }
+            }
+            ImGui::EndListBox();
+        }
+    }
+
     ImGui::Separator();
 
     ImGui::End();
@@ -374,12 +404,13 @@ void frametech::Application::drawFrame()
         static std::chrono::steady_clock::time_point start_time = std::chrono::high_resolution_clock::now();
         std::chrono::steady_clock::time_point current_time = std::chrono::high_resolution_clock::now();
         float delta_time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
-        UniformBufferObject ubo{
-            .model = glm::rotate(glm::mat4(1.0f) * delta_time, delta_time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),                           // 90 degrees
-            .view = glm::lookAt(glm::vec3(4.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),                                  // 45 degrees
-            .projection = glm::perspective(glm::radians(45.0f) * cos(delta_time), swapchain_extent.width / (float)swapchain_extent.height, 0.1f, 10.0f), // 45 degrees
-        };
-        // ubo.projection[1][1] *= -1; // glm is for OpenGL (Y is inverted)
+
+        UniformBufferObject ubo = frametech::graphics::updateUBO(
+            m_engine->m_render->getGraphicsPipeline()->getTransform(), 
+            delta_time, 
+            swapchain_extent.height, 
+            swapchain_extent.width
+        );
     
         m_engine->m_render->getGraphicsPipeline()->updateUniformBuffer(current_frame_index, ubo);
     }

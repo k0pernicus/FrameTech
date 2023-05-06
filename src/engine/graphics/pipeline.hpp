@@ -10,9 +10,10 @@
 #define pipeline_hpp
 
 #include "common.hpp"
-#include "../../engine/shaders.h"
+#include "../shaders.h"
 #include "../../ftstd/result.hpp"
 #include "mesh.hpp"
+#include "ubo.hpp"
 #include <cstdlib>
 #include <optional>
 #include <vector>
@@ -163,6 +164,16 @@ namespace frametech
             /// the entire buffers before creating new ones...
             /// @param new_mesh a Mesh2D enum
             void setMesh2D(frametech::graphics::Mesh2D new_mesh) noexcept;
+            /// @brief Returns the selected transformation to apply to vertices
+            /// @return A Transformation enum
+            frametech::graphics::Transformation getTransform() noexcept {
+                return m_transform;
+            }
+            /// @brief Updates the Transformation enum stored in the pipeline
+            /// @param new_transform The new transformation to apply, as an enum
+            void setTransform(frametech::graphics::Transformation new_transform) noexcept {
+                m_transform = new_transform;
+            }
             /// @brief Performs the acquire image call
             void acquireImage();
             /// @brief Draw the current frame
@@ -220,6 +231,8 @@ namespace frametech
             std::vector<void*> m_uniform_buffers_data;
             /// @brief The default mesh to display
             frametech::graphics::Mesh m_mesh = frametech::graphics::MeshUtils::getMesh2D(frametech::graphics::Mesh2D::BASIC_TRIANGLE);
+            /// @brief The selected transformation
+            frametech::graphics::Transformation m_transform = frametech::graphics::Transformation::Constant;
             /// @brief Sync object to signal that an image is ready to
             /// be displayed
             VkSemaphore* m_sync_image_ready = nullptr;
