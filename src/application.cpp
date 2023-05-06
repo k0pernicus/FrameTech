@@ -469,6 +469,18 @@ void frametech::Application::drawFrame()
     ++m_current_frame;
 }
 
+static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_UP || key == GLFW_KEY_W)
+        frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::UP);
+    if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S)
+        frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::DOWN);
+    if (key == GLFW_KEY_LEFT || key == GLFW_KEY_A)
+        frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::LEFT);
+    if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D)
+        frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::RIGHT);
+}
+
 void frametech::Application::run()
 {
 #ifdef IMGUI
@@ -505,10 +517,13 @@ void frametech::Application::run()
 #ifdef DEBUG
             m_FPS_limit.has_value() ? Log("> Application is running at %d FPS", m_FPS_limit.value()) : Log("> Application is running at unlimited frame");
 #endif
+            // Initialize the callbacks (key events)
+            glfwSetKeyCallback(m_app_window, keyCallback);
             m_state = frametech::Application::State::RUNNING;
             while (!glfwWindowShouldClose(m_app_window) && m_state == frametech::Application::State::RUNNING)
             {
                 glfwPollEvents();
+                m_key_events_handler.pollEvent(false);
 #ifdef IMGUI
                 // Log(">> Rendering ImGui");
                 // Start the Dear ImGui frame

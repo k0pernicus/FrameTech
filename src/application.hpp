@@ -10,6 +10,7 @@
 #define application_hpp
 
 #include "engine/engine.hpp"
+#include "engine/inputs.hpp"
 #include "engine/graphics/monitor.hpp"
 #include "ftstd/timer.h"
 #include "project.hpp"
@@ -140,6 +141,8 @@ namespace frametech
         /// @brief Get the current window size
         /// @return The window size, as a pair of int: height x width
         std::pair<int, int> getWindowSize() const noexcept;
+        /// @brief Key events job manager
+        frametech::inputs::Handler m_key_events_handler;
     };
 
 } // namespace frametech
