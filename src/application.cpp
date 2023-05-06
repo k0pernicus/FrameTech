@@ -322,6 +322,9 @@ void frametech::Application::drawMeshSelectionImGui()
                         case 2:
                             m_engine->m_render->getGraphicsPipeline()->setMesh2D(frametech::graphics::Mesh2D::NONE);
                             break;
+                        default:
+                            LogW("item %d cannot be selected in mesh selection view");
+                            break;
                     }
                 }
             }
@@ -356,6 +359,9 @@ void frametech::Application::drawMeshSelectionImGui()
                         break;
                     case 2:
                         m_engine->m_render->getGraphicsPipeline()->setTransform(frametech::graphics::Transformation::RotateAndScale);
+                        break;
+                    default:
+                        LogW("item %d cannot be selected in transformation selection view");
                         break;
                     }
                 }
