@@ -198,7 +198,11 @@ void frametech::Application::drawDebugToolImGui()
         ImGui::Text("Running average %.3f ms/frame (%.1f FPS) (%llu drawed frames)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate, m_current_frame);
         if (ImGui::TreeNode("Properties"))
         {
-            ImGui::Text("Size: %dx%d", m_app_width, m_app_height);
+            ImGui::Text("Window size: %dx%d", m_app_width, m_app_height);
+            {
+                const auto swapchain_extent = m_engine->getInstance()->m_swapchain->getExtent();
+                ImGui::Text("Viewport size: %dx%d", swapchain_extent.width, swapchain_extent.height);
+            }
             if (m_FPS_limit.has_value())
                 ImGui::Text("App is limited to %d FPS", m_FPS_limit.value());
             else

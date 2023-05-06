@@ -30,7 +30,6 @@
 
 namespace frametech
 {
-
     /// @brief The default height, in pixels, of the window application
     constexpr uint32_t const DEFAULT_WINDOW_HEIGHT = 720;
     /// @brief The default width, in pixels, of the window application
