@@ -922,6 +922,7 @@ const frametech::graphics::Mesh& frametech::graphics::Pipeline::getMesh() noexce
 
 void frametech::graphics::Pipeline::setMesh2D(frametech::graphics::Mesh2D new_mesh) noexcept
 {
+    vkDeviceWaitIdle(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice());
     m_mesh = frametech::graphics::MeshUtils::getMesh2D(new_mesh);
     // Force recreate the buffers
     // TODO: uses fences to do this as it can be VERY dangerous if
