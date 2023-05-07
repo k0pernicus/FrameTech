@@ -13,6 +13,8 @@
 #include <cstdlib>
 #include <optional>
 
+/// @brief Limits of 240 FPS
+constexpr uint8_t FPS_LIMIT_240 = 240;
 /// @brief Limits of 120 FPS
 constexpr uint8_t FPS_LIMIT_120 = 120;
 /// @brief Limits of 60 FPS
