@@ -922,11 +922,10 @@ const frametech::graphics::Mesh& frametech::graphics::Pipeline::getMesh() noexce
 
 void frametech::graphics::Pipeline::setMesh2D(frametech::graphics::Mesh2D new_mesh) noexcept
 {
-    vkDeviceWaitIdle(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice());
     m_mesh = frametech::graphics::MeshUtils::getMesh2D(new_mesh);
+    // Device fence
+    vkDeviceWaitIdle(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice());
     // Force recreate the buffers
-    // TODO: uses fences to do this as it can be VERY dangerous if
-    // any buffer is used during the execution of those commands...
     createVertexBuffer();
     createIndexBuffer();
 }
