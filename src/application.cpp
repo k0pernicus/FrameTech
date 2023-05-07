@@ -8,7 +8,7 @@
 #include "application.hpp"
 #include "ftstd/debug_tools.h"
 #include "project.hpp"
-#include "engine/graphics/ubo.hpp" // Should be elsewhere
+#include "engine/graphics/transform.hpp" // Should be elsewhere
 
 #ifdef IMGUI
 #include "backends/imgui_impl_glfw.h"

@@ -1,13 +1,13 @@
 //
-//  ubo.hpp
+//  transform.hpp
 //  FrameTech
 //
 //  Created by Antonin on 06/05/2023.
 //
 
 #pragma once
-#ifndef ubo_hpp
-#define ubo_hpp
+#ifndef _transform_hpp
+#define _transform_hpp
 
 #include "common.hpp"
 #include <map>
@@ -47,4 +47,4 @@ namespace frametech
 	} // namespace graphics
 } // namespace frametech
 
-#endif // ubo_hpp
+#endif // _transform_hpp
