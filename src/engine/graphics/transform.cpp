@@ -10,8 +10,8 @@
 
 constexpr float FAR = 100.0f;
 
-ModelViewProjection frametech::graphics::updateTransform(
-	const frametech::graphics::Transformation targeted_ubo,
+ModelViewProjection frametech::graphics::computeTransform(
+	const frametech::graphics::Transformation transformation_id,
 	const float delta_time,
 	const uint32_t window_height,
 	const uint32_t window_width
@@ -27,7 +27,7 @@ ModelViewProjection frametech::graphics::updateTransform(
 
 	const float fov = frametech::Engine::getInstance()->m_camera.getFOV();
 
-	switch (targeted_ubo) {
+	switch (transformation_id) {
 	case frametech::graphics::Transformation::Constant:
 		return ModelViewProjection{
 				.model = glm::mat4(1.0f),
@@ -47,7 +47,7 @@ ModelViewProjection frametech::graphics::updateTransform(
 				.projection = glm::perspective(glm::radians(fov) * cos(delta_time), window_width / (float)window_height, 0.1f, FAR),
 		};
 	default:
-		LogW("updateTransform: unknown UBO enum found: %d", targeted_ubo);
+		LogW("computeTransform: unknown UBO enum found: %d", transformation_id);
 		return ModelViewProjection{
 				.model = glm::mat4(1.0f),
 				.view = view,

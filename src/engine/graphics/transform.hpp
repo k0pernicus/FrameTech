@@ -38,8 +38,8 @@ namespace frametech
 		/// @param window_height Height of the swapchain (fixed to the window)
 		/// @param window_width Width of the swapchain (fixed to the window)
 		/// @return A ModelViewProjection structure that contains all the updated data
-		ModelViewProjection updateTransform(
-			const Transformation targeted_ubo,
+		ModelViewProjection computeTransform(
+			const Transformation transformation_id,
 			const float delta_time, 
 			const uint32_t window_height, 
 			const uint32_t window_width

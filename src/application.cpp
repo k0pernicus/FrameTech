@@ -443,7 +443,7 @@ void frametech::Application::drawFrame()
         std::chrono::steady_clock::time_point current_time = std::chrono::high_resolution_clock::now();
         float delta_time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
 
-        ModelViewProjection mvp = frametech::graphics::updateTransform(
+        ModelViewProjection mvp = frametech::graphics::computeTransform(
             m_engine->m_render->getGraphicsPipeline()->getTransform(), 
             delta_time, 
             swapchain_extent.height, 
