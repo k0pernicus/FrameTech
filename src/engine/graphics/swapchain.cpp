@@ -24,6 +24,8 @@ constexpr VkColorSpaceKHR PREFERED_COLOR_SPACE_FORMAT = VK_COLORSPACE_SRGB_NONLI
 /// where the display takes an image from the front of the queue when the display
 /// is refreshed and the program inserts rendered images at the back of the queue.
 /// If the queue is full then the program has to wait.
+/// VK_PRESENT_MODE_FIFO_KHR is the correct way of doing v-sync across all platforms supported by Vulkan **BUT**
+/// it needs to be supported everywhere, which does not seem to be the case everywhere.
 /// In VK_PRESENT_MODE_IMMEDIATE_KHR, there is no wait and it renders
 /// immediately the latest computed image.
 constexpr VkPresentModeKHR PREFERED_PRESENTATION_MODE = Project::APPLICATION_FPS_LIMIT.has_value() ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_IMMEDIATE_KHR;
