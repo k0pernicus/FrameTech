@@ -14,7 +14,7 @@
 
 /// @brief Default field of view - commonly used value of 60 degrees
 constexpr float DEFAULT_FOV = 60.0f;
-constexpr glm::vec3 DEFAULT_DIRECTION = glm::vec3(0.0f);
+constexpr glm::vec3 DEFAULT_DIRECTION = glm::vec3(0.0, 0.0, -1.0f);
 constexpr glm::vec3 DEFAULT_POSITION = glm::vec3(0.0f, 0.0f, 3.0f);
 
 namespace frametech {
