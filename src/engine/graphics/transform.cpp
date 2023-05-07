@@ -27,6 +27,7 @@ ModelViewProjection frametech::graphics::computeTransform(
 
 	const float fov = frametech::Engine::getInstance()->m_camera.getFOV();
 
+	// TODO: check + integrate quaternions
 	switch (transformation_id) {
 	case frametech::graphics::Transformation::Constant:
 		return ModelViewProjection{
