@@ -102,7 +102,9 @@ void frametech::Application::setupImGui()
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+#ifndef __APPLE__ // Not supported on Apple platforms for now
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+#endif
     io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
     io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
     io.BackendFlags |= ImGuiBackendFlags_HasMouseHoveredViewport;
