@@ -15,6 +15,10 @@
 namespace frametech {
 	namespace inputs {
 		enum Key {
+			ALT_UP_COMBINED,
+			ALT_DOWN_COMBINED,
+			ALT_LEFT_COMBINED,
+			ALT_RIGHT_COMBINED,
 			UP,
 			DOWN,
 			LEFT,

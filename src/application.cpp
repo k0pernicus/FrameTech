@@ -291,10 +291,21 @@ void frametech::Application::drawDebugToolImGui()
 
     if (ImGui::CollapsingHeader("Camera"))
     {
-        const auto camera_position = m_engine->m_camera.getDirection();
-        ImGui::Text("Position: %f,%f,%f", camera_position.x, camera_position.y, camera_position.z);
-        if (ImGui::Button("Reset position")) {
-            m_engine->m_camera.resetDirection();
+        ImGui::Text("FOV: %f", m_engine->m_camera.getFOV());
+        ImGui::Text("Type: %s", m_engine->m_camera.getTypeName().c_str());
+        {
+            const auto camera_direction = m_engine->m_camera.getDirection();
+            ImGui::Text("Direction: %f,%f,%f", camera_direction.x, camera_direction.y, camera_direction.z);
+            if (ImGui::Button("Reset direction")) {
+                m_engine->m_camera.resetDirection();
+            }
+        }
+        {
+            const auto camera_position = m_engine->m_camera.getPosition();
+            ImGui::Text("Position: %f,%f,%f", camera_position.x, camera_position.y, camera_position.z);
+            if (ImGui::Button("Reset position")) {
+                m_engine->m_camera.resetPosition();
+            }
         }
     }
 
@@ -480,14 +491,28 @@ void frametech::Application::drawFrame()
 
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if (key == GLFW_KEY_UP || key == GLFW_KEY_W)
-        frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::UP);
-    if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S)
-        frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::DOWN);
-    if (key == GLFW_KEY_LEFT || key == GLFW_KEY_A)
-        frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::LEFT);
-    if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D)
-        frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::RIGHT);
+    if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
+        frametech::Engine::getInstance()->m_camera.setType(frametech::engine::Camera::Type::STATIONARY);
+        if (key == GLFW_KEY_UP || key == GLFW_KEY_W)
+            frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::ALT_UP_COMBINED);
+        if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S)
+            frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::ALT_DOWN_COMBINED);
+        if (key == GLFW_KEY_LEFT || key == GLFW_KEY_A)
+            frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::ALT_LEFT_COMBINED);
+        if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D)
+            frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::ALT_RIGHT_COMBINED);
+    }
+    else {
+        frametech::Engine::getInstance()->m_camera.setType(frametech::engine::Camera::Type::WORLD);
+        if (key == GLFW_KEY_UP || key == GLFW_KEY_W)
+            frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::UP);
+        if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S)
+            frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::DOWN);
+        if (key == GLFW_KEY_LEFT || key == GLFW_KEY_A)
+            frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::LEFT);
+        if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D)
+            frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::RIGHT);
+    }
 }
 
 void frametech::Application::run()
