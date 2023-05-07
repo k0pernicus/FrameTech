@@ -48,7 +48,7 @@ ModelViewProjection frametech::graphics::computeTransform(
 				.projection = glm::perspective(glm::radians(fov) * cos(delta_time), window_width / (float)window_height, 0.1f, FAR),
 		};
 	default:
-		LogW("computeTransform: unknown UBO enum found: %d", transformation_id);
+		LogW("computeTransform: unknown Transformation enum found: %d", transformation_id);
 		return ModelViewProjection{
 				.model = glm::mat4(1.0f),
 				.view = view,
