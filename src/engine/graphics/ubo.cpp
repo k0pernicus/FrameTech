@@ -10,10 +10,7 @@
 
 constexpr float FAR = 100.0f;
 
-// TODO: this should not be an updateUBO function, but an updateTransform function,
-// maybe associated to an object...
-// Also, this should not return an UniformBufferObject structure but a ModelViewProjection data structure
-UniformBufferObject frametech::graphics::updateUBO(
+ModelViewProjection frametech::graphics::updateTransform(
 	const frametech::graphics::Transformation targeted_ubo,
 	const float delta_time,
 	const uint32_t window_height,
@@ -32,26 +29,26 @@ UniformBufferObject frametech::graphics::updateUBO(
 
 	switch (targeted_ubo) {
 	case frametech::graphics::Transformation::Constant:
-		return UniformBufferObject{
+		return ModelViewProjection{
 				.model = glm::mat4(1.0f),
 				.view = view,
 				.projection = glm::perspective(glm::radians(fov), window_width / (float)window_height, 0.1f, FAR),
 		};
 	case frametech::graphics::Transformation::Rotate:
-		return UniformBufferObject{
+		return ModelViewProjection{
 				.model = glm::rotate(glm::mat4(1.0f) * delta_time, delta_time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
 				.view = view,
 				.projection = glm::perspective(glm::radians(fov), window_width / (float)window_height, 0.1f, FAR),
 		};
 	case frametech::graphics::Transformation::RotateAndScale:
-		return UniformBufferObject{
+		return ModelViewProjection{
 				.model = glm::rotate(glm::mat4(1.0f) * delta_time, delta_time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
 				.view = view,
 				.projection = glm::perspective(glm::radians(fov) * cos(delta_time), window_width / (float)window_height, 0.1f, FAR),
 		};
 	default:
-		LogW("updateUBO: unknown UBO enum found: %d", targeted_ubo);
-		return UniformBufferObject{
+		LogW("updateTransform: unknown UBO enum found: %d", targeted_ubo);
+		return ModelViewProjection{
 				.model = glm::mat4(1.0f),
 				.view = view,
 				.projection = glm::mat4(1.0f),

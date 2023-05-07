@@ -634,7 +634,7 @@ ftstd::VResult frametech::graphics::Pipeline::createUniformBuffers() noexcept
     VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
     const uint32_t max_frames_count = frametech::Engine::getMaxFramesInFlight();
 
-    const VkDeviceSize buffer_size = sizeof(UniformBufferObject);
+    const VkDeviceSize buffer_size = sizeof(ModelViewProjection);
     m_uniform_buffers = std::vector<VkBuffer>(max_frames_count);
     m_uniform_buffers_allocation = std::vector<VmaAllocation>(max_frames_count);
     m_uniform_buffers_data = std::vector<void*>(max_frames_count);
@@ -665,7 +665,7 @@ ftstd::VResult frametech::graphics::Pipeline::createUniformBuffers() noexcept
     return ftstd::VResult::Ok();
 }
 
-void frametech::graphics::Pipeline::updateUniformBuffer(const uint32_t current_frame_index, UniformBufferObject& ubo) noexcept
+void frametech::graphics::Pipeline::updateUniformBuffer(const uint32_t current_frame_index, ModelViewProjection& mvp) noexcept
 {
     // Stop there if we ask a frame index that does not corresponds to any UBO
     if (m_uniform_buffers_data.size() <= current_frame_index)
@@ -673,7 +673,7 @@ void frametech::graphics::Pipeline::updateUniformBuffer(const uint32_t current_f
         LogW("Cannot update uniform buffer: frame index is too high");
         return;
     }
-    memcpy(m_uniform_buffers_data[current_frame_index], &ubo, sizeof(ubo));
+    memcpy(m_uniform_buffers_data[current_frame_index], &mvp, sizeof(mvp));
 }
 
 VkPipeline frametech::graphics::Pipeline::getPipeline()
@@ -772,7 +772,7 @@ ftstd::VResult frametech::graphics::Pipeline::createDescriptorSets(
         VkDescriptorBufferInfo buffer_info{};
         buffer_info.buffer = m_uniform_buffers[i];
         buffer_info.offset = 0;
-        buffer_info.range = sizeof(UniformBufferObject);
+        buffer_info.range = sizeof(ModelViewProjection);
 
         VkWriteDescriptorSet descriptor_write{};
         descriptor_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

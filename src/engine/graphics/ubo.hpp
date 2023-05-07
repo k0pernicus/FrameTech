@@ -31,14 +31,14 @@ namespace frametech
 			RotateAndScale,
 		};
 
-		/// @brief Returns a UBO that contains updated data according to: the transformation and associated constant values
+		/// @brief Update data according to: the transformation and associated constant values
 		/// WARNING: This function **does not** flip the Y-axis (for OpenGL compatibility)
 		/// @param targeted_ubo The Transformation to get the data from
 		/// @param delta_time The update time
 		/// @param window_height Height of the swapchain (fixed to the window)
 		/// @param window_width Width of the swapchain (fixed to the window)
-		/// @return A UniformBufferObject structure that contains all the updated data
-		UniformBufferObject updateUBO(
+		/// @return A ModelViewProjection structure that contains all the updated data
+		ModelViewProjection updateTransform(
 			const Transformation targeted_ubo,
 			const float delta_time, 
 			const uint32_t window_height, 

@@ -441,14 +441,14 @@ void frametech::Application::drawFrame()
         std::chrono::steady_clock::time_point current_time = std::chrono::high_resolution_clock::now();
         float delta_time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
 
-        UniformBufferObject ubo = frametech::graphics::updateUBO(
+        ModelViewProjection mvp = frametech::graphics::updateTransform(
             m_engine->m_render->getGraphicsPipeline()->getTransform(), 
             delta_time, 
             swapchain_extent.height, 
             swapchain_extent.width
         );
     
-        m_engine->m_render->getGraphicsPipeline()->updateUniformBuffer(current_frame_index, ubo);
+        m_engine->m_render->getGraphicsPipeline()->updateUniformBuffer(current_frame_index, mvp);
     }
 
     if (m_FPS_limit != std::nullopt)

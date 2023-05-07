@@ -14,11 +14,11 @@
 // Compatibility layer with shaders
 // No need any namespace here
 
-typedef struct UniformBufferObject
+typedef struct ModelViewProjection
 {
     glm::mat4 model;
     glm::mat4 view;
     glm::mat4 projection;
-} UniformBufferObject;
+} ModelViewProjection;
 
 #endif // common_hpp
