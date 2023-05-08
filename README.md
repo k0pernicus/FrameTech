@@ -48,7 +48,9 @@ Once the Makefiles have been built, go in your `out/build` folder and launch mak
 
 ## Screenshots
 
-![State at December 15 of 2022](docs/images/state_12152022.png "State of 15th of December, 2022")
+![State December 15th, 2022](docs/images/state_12152022.png "State December 15th, 2022")
+
+![State May 06th, 2023](docs/images/state_05062023.png "State May 06th, 2023")
 
 ## TODO
 
