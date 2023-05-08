@@ -18,10 +18,7 @@ ModelViewProjection frametech::graphics::computeTransform(
 ) noexcept {
 	// Compute the view of the world
 	glm::vec3 eye = frametech::Engine::getInstance()->m_camera.getPosition();
-	glm::vec3 lookat = eye + glm::vec3(0.0f, 0.0f, -1.0f); 
-	if (frametech::Engine::getInstance()->m_camera.getType() == frametech::engine::Camera::Type::STATIONARY) {
-		lookat = frametech::Engine::getInstance()->m_camera.getDirection();
-	}
+    glm::vec3 lookat = frametech::Engine::getInstance()->m_camera.getDirection();
 	glm::vec3 up = glm::vec3(0, 1, 0); // Front view
 	glm::mat4 view = glm::lookAt(eye, lookat, up);
 
