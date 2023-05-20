@@ -115,72 +115,56 @@ frametech::graphics::Pipeline::~Pipeline()
     }
 }
 
-std::optional<uint64_t> frametech::graphics::Pipeline::fileSize(const char* filepath)
-{
-    try
-    {
-        const auto file_size = std::filesystem::file_size(filepath);
-        return file_size;
-    }
-    catch (const std::exception& e)
-    {
-        LogE("< Error getting the file size at path '%s'", filepath);
-        return std::nullopt;
-    }
-}
-
-std::optional<uint64_t> frametech::graphics::Pipeline::readFile(const char* filepath,
-                                                                char** buffer,
-                                                                uint64_t buffer_length)
+/// @brief Read the content of a file, located at `filepath`, and put the content of it
+/// in `buffer`.
+/// If `buffer_length` is greater than the real file size, there is a cap on the real file size.
+/// Returns the length that is read, or `nullopt` if an error happened.
+/// **Warning**: this function is **not** data-race conditons bullet-proof.
+static uint64_t readFile(const char* filepath, char** buffer, uint64_t buffer_length)
 {
     std::ifstream file(filepath, std::ifstream::binary | std::ifstream::ate);
     assert(file);
-    if (file)
-    {
-        std::optional<uint64_t> opt_length = fileSize(filepath);
-        if (opt_length == std::nullopt)
-        {
-            return std::nullopt;
-        }
-        uint64_t length = opt_length.value();
+    if (!file)
+        return 0;
+    uint64_t length = std::filesystem::file_size(filepath);
+    if (0 == length)
+        return 0;
 
-        // do not read more than enough
-        length = buffer_length < length ? (int)buffer_length : length;
+    // do not read more than enough
+    length = buffer_length < length ? (int)buffer_length : length;
 
-        // read data as a block, close, and return
-        // the length of the file
-        file.seekg(0);
-        file.read(*buffer, length);
-        file.close();
-        return length;
-    }
-    return std::nullopt;
+    // read data as a block, close, and return
+    // the length of the file
+    file.seekg(0);
+    file.read(*buffer, length);
+    file.close();
+    return length;
 }
 
 ftstd::Result<std::vector<frametech::graphics::Shader::Module>> frametech::graphics::Pipeline::createGraphicsApplication(const char* vertex_shader_filepath,
                                                                                                                          const char* fragment_shader_filepath)
 {
     // Get the length
-    const auto vs_file_size_opt = fileSize(vertex_shader_filepath);
-    assert(vs_file_size_opt != std::nullopt);
-    const auto fs_file_size_opt = fileSize(fragment_shader_filepath);
-    assert(fs_file_size_opt != std::nullopt);
+    const auto vs_file_size = std::filesystem::file_size(vertex_shader_filepath);
+    assert(0 != vs_file_size);
+    const auto fs_file_size = std::filesystem::file_size(fragment_shader_filepath);
+    assert(0 != fs_file_size);
     // If one of them are empty, fail
-    if (vs_file_size_opt == std::nullopt || fs_file_size_opt == std::nullopt)
+    if (0 == vs_file_size || 0 == fs_file_size)
     {
         LogE("< Cannot create the program");
         return ftstd::Result<std::vector<frametech::graphics::Shader::Module>>::Error((char*)"vertex or fragment shader is NULL");
     }
+
     // Get the content of the VS
-    const auto vs_file_size = vs_file_size_opt.value();
     auto vs_buffer = new char[vs_file_size];
     readFile(vertex_shader_filepath, &vs_buffer, vs_file_size);
     Log("> For VS file '%s', read file ok (%d bytes)", vertex_shader_filepath, vs_file_size);
     // Get the content of the FS
-    const auto fs_file_size = fs_file_size_opt.value();
     auto fs_buffer = new char[fs_file_size];
     readFile(fragment_shader_filepath, &fs_buffer, fs_file_size);
     Log("> For FS file '%s', read file ok (%d bytes)", fragment_shader_filepath, fs_file_size);
+
     std::vector<frametech::graphics::Shader::Module> shader_modules(
         {frametech::graphics::Shader::Module{
              .m_code = fs_buffer,

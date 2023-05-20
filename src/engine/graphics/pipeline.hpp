@@ -9,9 +9,9 @@
 #ifndef pipeline_hpp
 #define pipeline_hpp
 
-#include "common.hpp"
-#include "../shaders.h"
 #include "../../ftstd/result.hpp"
+#include "../shaders.h"
+#include "common.hpp"
 #include "mesh.hpp"
 #include "transform.hpp"
 #include <cstdlib>
@@ -166,12 +166,14 @@ namespace frametech
             void setMesh2D(frametech::graphics::Mesh2D new_mesh) noexcept;
             /// @brief Returns the selected transformation to apply to vertices
             /// @return A Transformation enum
-            frametech::graphics::Transformation getTransform() noexcept {
+            frametech::graphics::Transformation getTransform() noexcept
+            {
                 return m_transform;
             }
             /// @brief Updates the Transformation enum stored in the pipeline
             /// @param new_transform The new transformation to apply, as an enum
-            void setTransform(frametech::graphics::Transformation new_transform) noexcept {
+            void setTransform(frametech::graphics::Transformation new_transform) noexcept
+            {
                 m_transform = new_transform;
             }
             /// @brief Performs the acquire image call
@@ -185,16 +187,6 @@ namespace frametech
             void present();
 
         private:
-            /// @brief Returns the size, as a `uint64_t` type, of a file located at `filepath`.
-            /// If the file does not exists, or can't be read, return a `nullopt` value.
-            /// **Warning**: this function is **not** data-race conditons bullet-proof.
-            std::optional<uint64_t> fileSize(const char* filepath);
-            /// @brief Read the content of a file, located at `filepath`, and put the content of it
-            /// in `buffer`.
-            /// If `buffer_length` is greater than the real file size, there is a cap on the real file size.
-            /// Returns the length that is read, or `nullopt` if an error happened.
-            /// **Warning**: this function is **not** data-race conditons bullet-proof.
-            std::optional<uint64_t> readFile(const char* filepath, char** buffer, uint64_t buffer_length);
             /// @brief Create all the sync objects (semaphores / fences) to use
             /// in our pipeline / renderer
             /// @return A VResult type to know if the creation has been successfuly
