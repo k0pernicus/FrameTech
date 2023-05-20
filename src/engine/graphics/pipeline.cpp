@@ -12,7 +12,7 @@
 #include <assert.h>
 #include <chrono>
 #include <filesystem>
-#include <fstream>
+#include <fstream> // for readFile function(s)
 
 frametech::graphics::Pipeline::Pipeline()
 {
