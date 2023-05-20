@@ -27,7 +27,6 @@ set(CMAKE_CXX_FLAGS_RELEASE "--std=c++17 -O2 -Wno-sign-conversion -Wno-nullabili
 endif()
 
 add_subdirectory("src/engine")
-add_subdirectory("src/ftstd")
 
 # From https://github.com/PacktPublishing/Learning-Vulkan/ CMakeLists.txt
 if(AUTO_LOCATE_VULKAN AND WIN32)
