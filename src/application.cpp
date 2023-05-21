@@ -257,42 +257,6 @@ void frametech::Application::drawDebugToolImGui()
 
     ImGui::Separator();
 
-    if (ImGui::CollapsingHeader("Scene"))
-    {
-        const frametech::graphics::Mesh c_mesh = m_engine->m_render->getGraphicsPipeline()->getMesh();
-        ImGui::Text("Name: '%s'", c_mesh.m_name);
-        ImGui::Text("%lu vertices", c_mesh.m_vertices.size());
-        if (ImGui::TreeNode("Vertices"))
-        {
-            const auto vertices = m_engine->m_render->getGraphicsPipeline()->getVertices();
-            size_t i = 0;
-            for (const auto vertex : vertices)
-            {
-                char vertex_str[80];
-                frametech::shaders::VertexUtils::toString(vertex_str, vertex);
-                ImGui::Text("%zu:", i);
-                ImGui::SameLine(50);
-                ImGui::Text("%s", vertex_str);
-                ++i;
-            }
-            ImGui::TreePop();
-            ImGui::Separator();
-        }
-        ImGui::Text("%lu indices", c_mesh.m_indices.size());
-        if (ImGui::TreeNode("Indices"))
-        {
-            const auto indices = m_engine->m_render->getGraphicsPipeline()->getIndices();
-            size_t i = 0;
-            for (const auto index : indices)
-            {
-                ImGui::Text("%zu: vertex %d", i, index);
-                ++i;
-            }
-            ImGui::TreePop();
-            ImGui::Separator();
-        }
-    }
-
     if (ImGui::CollapsingHeader("World"))
     {
         ImGui::Text("Selected object: (%p)", m_engine->m_world.getSelectedObject());
@@ -315,6 +279,45 @@ void frametech::Application::drawDebugToolImGui()
                 {
                     m_engine->m_world.getMainCamera().resetPosition();
                 }
+            }
+            ImGui::TreePop();
+            ImGui::Separator();
+        }
+        // Only one object (mesh) for the moment, so should be ok
+        // But this could be way better if the World object handles itself the objects / meshes
+        const frametech::graphics::Mesh c_mesh = m_engine->m_render->getGraphicsPipeline()->getMesh();
+        if (ImGui::TreeNode(c_mesh.m_name))
+        {
+            ImGui::Text("Name: '%s'", c_mesh.m_name);
+            ImGui::Text("%lu vertices", c_mesh.m_vertices.size());
+            if (ImGui::TreeNode("Vertices"))
+            {
+                const auto vertices = m_engine->m_render->getGraphicsPipeline()->getVertices();
+                size_t i = 0;
+                for (const auto vertex : vertices)
+                {
+                    char vertex_str[80];
+                    frametech::shaders::VertexUtils::toString(vertex_str, vertex);
+                    ImGui::Text("%zu:", i);
+                    ImGui::SameLine(50);
+                    ImGui::Text("%s", vertex_str);
+                    ++i;
+                }
+                ImGui::TreePop();
+                ImGui::Separator();
+            }
+            ImGui::Text("%lu indices", c_mesh.m_indices.size());
+            if (ImGui::TreeNode("Indices"))
+            {
+                const auto indices = m_engine->m_render->getGraphicsPipeline()->getIndices();
+                size_t i = 0;
+                for (const auto index : indices)
+                {
+                    ImGui::Text("%zu: vertex %d", i, index);
+                    ++i;
+                }
+                ImGui::TreePop();
+                ImGui::Separator();
             }
             ImGui::TreePop();
             ImGui::Separator();
