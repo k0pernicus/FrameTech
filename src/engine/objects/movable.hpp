@@ -22,6 +22,8 @@ namespace frametech
         public:
             /// @brief Handles move(ment) key
             /// @param key A key handled by frametech's inputs
+            /// TODO: check if necessary to set, as parameter, if the input needs to propagate to children / parents
+            /// or not
             virtual void handleKeyEvent(frametech::inputs::Key& key) noexcept = 0;
         };
     } // namespace engine
