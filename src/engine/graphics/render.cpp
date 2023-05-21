@@ -194,7 +194,6 @@ ftstd::VResult frametech::graphics::Render::createImageViews()
 
 ftstd::VResult frametech::graphics::Render::createShaderModule()
 {
-    // TODO: vector of ShaderModule type
     const ftstd::Result<std::vector<frametech::graphics::Shader::Module>> shaders_compile_result = m_graphics_pipeline->createGraphicsApplication(
         "shaders/transformation_triangle.vert.spv",
         "shaders/basic_triangle.frag.spv");
@@ -246,7 +245,6 @@ ftstd::VResult frametech::graphics::Render::createShaderModule()
             return ftstd::VResult::Error(error_msg);
         }
 
-        // TODO: create the shader stages
         VkPipelineShaderStageCreateInfo shader_stage_create_info{
             .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
             .module = shader_module,

@@ -106,7 +106,6 @@ ftstd::VResult frametech::graphics::Command::record()
         frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getPipeline());
 
     // Setup the viewport and scissor as dynamic
-    // TODO: fix this in the fixed function
     VkViewport viewport{
         .x = 0.0f,
         .y = 0.0f,
