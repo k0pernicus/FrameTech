@@ -9,6 +9,7 @@
 #ifndef _camera_hpp
 #define _camera_hpp
 
+#include "movable.hpp"
 #include <glm/glm.hpp>
 #include <string>
 
@@ -16,12 +17,14 @@
 constexpr float DEFAULT_FOV = 60.0f;
 constexpr glm::vec3 DEFAULT_DIRECTION = glm::vec3(0.0, 0.0, -1.0f);
 constexpr glm::vec3 DEFAULT_POSITION = glm::vec3(0.0f, 0.0f, 3.0f);
+constexpr double CAMERA_ROTATION_STEP = 0.05;
+constexpr double CAMERA_MOVE_STEP = 0.05;
 
 namespace frametech
 {
     namespace engine
     {
-        class Camera
+        class Camera : public frametech::engine::MovableInterface
         {
         public:
             enum Type
@@ -48,6 +51,7 @@ namespace frametech
             /// @brief Return a tag associated to the current camera type
             /// @return A tag, as a string, associated to the current camera type setting
             std::string getTypeName() const noexcept;
+            void handleKeyEvent(frametech::inputs::Key& key) noexcept override;
 
         private:
             glm::vec3 m_original_direction;
