@@ -59,6 +59,7 @@ namespace frametech
             glm::vec3 m_original_position;
             glm::vec3 m_position;
             float m_fov = DEFAULT_FOV;
+            /// @brief States what is the current type of the camera (check for 'Type' enum)
             Type m_type = Type::WORLD;
         };
     } // namespace engine

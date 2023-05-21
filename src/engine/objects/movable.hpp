@@ -15,7 +15,8 @@ namespace frametech
 {
     namespace engine
     {
-        /// @brief Pure abstract class to wrap movements of an object
+        /// @brief Pure abstract class (interface) to let the developer
+        /// easily handle movements (frametech's inputs), for any object
         class MovableInterface
         {
         public:
