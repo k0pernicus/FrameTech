@@ -124,9 +124,6 @@ namespace frametech
         void run();
         /// @brief Draw the frame x
         void drawFrame();
-        /// @brief Update the internal state of the Application object
-        /// @param new_state The new state of the object
-        void setState(State new_state);
         /// @brief Returns a pointer to the Window instance
         GLFWwindow* getWindow() const;
         /// @brief Returns the internal state of the Application object
@@ -138,9 +135,6 @@ namespace frametech
         void forceRendererFPSLimit(uint8_t new_limit);
         /// @brief Returns the current frame of the application
         uint64_t getCurrentFrame();
-        /// @brief Get the current window size
-        /// @return The window size, as a pair of int: height x width
-        std::pair<int, int> getWindowSize() const noexcept;
         /// @brief Key events job manager
         frametech::inputs::EventHandler m_key_events_handler;
     };
