@@ -191,19 +191,19 @@ void frametech::graphics::Pipeline::setShaderStages(const std::vector<VkPipeline
     m_shader_stages = stages;
 }
 
-static VkViewport createViewport(size_t height, size_t width)
+static VkViewport createViewport(const float x, const float y, const float height, const float width)
 {
     VkViewport viewport{};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.height = (float)height;
-    viewport.width = (float)width;
+    viewport.x = x;
+    viewport.y = y;
+    viewport.height = height;
+    viewport.width = width;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
     return viewport;
 }
 
-static VkRect2D createScissor(const VkExtent2D& swapchain_extent)
+static VkRect2D createScissor(const VkOffset2D offset, const VkExtent2D& swapchain_extent)
 {
     VkRect2D scissor{};
     scissor.offset = {0, 0};
@@ -342,8 +342,8 @@ ftstd::VResult frametech::graphics::Pipeline::create()
     // TODO: change for dynamic state, in order to pass the viewport & scissor
     // through the command buffer
     const VkExtent2D& swapchain_extent = frametech::Engine::getInstance()->m_swapchain->getExtent();
-    const VkViewport viewport = createViewport(swapchain_extent.height, swapchain_extent.width);
-    const VkRect2D scissor = createScissor(swapchain_extent);
+    const VkViewport viewport = createViewport(0.0, 0.0, swapchain_extent.height, swapchain_extent.width);
+    const VkRect2D scissor = createScissor({0, 0}, swapchain_extent);
     VkPipelineViewportStateCreateInfo viewport_state_create_info{
         .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
         .viewportCount = 1,
