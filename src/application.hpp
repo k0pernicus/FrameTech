@@ -10,8 +10,8 @@
 #define application_hpp
 
 #include "engine/engine.hpp"
-#include "engine/inputs.hpp"
 #include "engine/graphics/monitor.hpp"
+#include "engine/inputs.hpp"
 #include "ftstd/timer.h"
 #include "project.hpp"
 #include <GLFW/glfw3.h>
@@ -142,7 +142,7 @@ namespace frametech
         /// @return The window size, as a pair of int: height x width
         std::pair<int, int> getWindowSize() const noexcept;
         /// @brief Key events job manager
-        frametech::inputs::Handler m_key_events_handler;
+        frametech::inputs::EventHandler m_key_events_handler;
     };
 
 } // namespace frametech

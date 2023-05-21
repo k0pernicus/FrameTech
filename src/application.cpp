@@ -6,9 +6,9 @@
 //
 
 #include "application.hpp"
+#include "engine/graphics/transform.hpp" // Should be elsewhere
 #include "ftstd/debug_tools.h"
 #include "project.hpp"
-#include "engine/graphics/transform.hpp" // Should be elsewhere
 
 #ifdef IMGUI
 #include "backends/imgui_impl_glfw.h"
@@ -232,10 +232,12 @@ void frametech::Application::drawDebugToolImGui()
             ImGui::Text("Vulkan memory blocks allocated: %d", stats.blockCount);
             ImGui::Text("VmaAllocation objects allocated: %d", stats.allocationCount);
             ImGui::Text("VkDeviceMemory blocks memory: %llu kB", stats.blockBytes >> 10);
-            if (stats.allocationBytes > 1024) {
+            if (stats.allocationBytes > 1024)
+            {
                 ImGui::Text("VmaAllocation objects memory: %llukB", stats.allocationBytes >> 10);
             }
-            else {
+            else
+            {
                 ImGui::Text("VmaAllocation objects memory: %lluB", stats.allocationBytes);
             }
             ImGui::TreePop();
@@ -259,7 +261,7 @@ void frametech::Application::drawDebugToolImGui()
     {
         const frametech::graphics::Mesh c_mesh = m_engine->m_render->getGraphicsPipeline()->getMesh();
         ImGui::Text("Name: '%s'", c_mesh.m_name);
-        ImGui::Text("%llu vertices", c_mesh.m_vertices.size());
+        ImGui::Text("%lu vertices", c_mesh.m_vertices.size());
         if (ImGui::TreeNode("Vertices"))
         {
             const auto vertices = m_engine->m_render->getGraphicsPipeline()->getVertices();
@@ -276,7 +278,7 @@ void frametech::Application::drawDebugToolImGui()
             ImGui::TreePop();
             ImGui::Separator();
         }
-        ImGui::Text("%llu indices", c_mesh.m_indices.size());
+        ImGui::Text("%lu indices", c_mesh.m_indices.size());
         if (ImGui::TreeNode("Indices"))
         {
             const auto indices = m_engine->m_render->getGraphicsPipeline()->getIndices();
@@ -291,23 +293,31 @@ void frametech::Application::drawDebugToolImGui()
         }
     }
 
-    if (ImGui::CollapsingHeader("Camera"))
+    if (ImGui::CollapsingHeader("World"))
     {
-        ImGui::Text("FOV: %f", m_engine->m_camera.getFOV());
-        ImGui::Text("Type: %s", m_engine->m_camera.getTypeName().c_str());
+        ImGui::Text("Selected object: (%p)", m_engine->m_world.getSelectedObject());
+        if (ImGui::TreeNode("Camera"))
         {
-            const auto camera_direction = m_engine->m_camera.getDirection();
-            ImGui::Text("Direction: %f,%f,%f", camera_direction.x, camera_direction.y, camera_direction.z);
-            if (ImGui::Button("Reset direction")) {
-                m_engine->m_camera.resetDirection();
+            ImGui::Text("FOV: %f", m_engine->m_world.getMainCamera().getFOV());
+            ImGui::Text("Type: %s", m_engine->m_world.getMainCamera().getTypeName().c_str());
+            {
+                const auto camera_direction = m_engine->m_world.getMainCamera().getDirection();
+                ImGui::Text("Direction: %f,%f,%f", camera_direction.x, camera_direction.y, camera_direction.z);
+                if (ImGui::Button("Reset direction"))
+                {
+                    m_engine->m_world.getMainCamera().resetDirection();
+                }
             }
-        }
-        {
-            const auto camera_position = m_engine->m_camera.getPosition();
-            ImGui::Text("Position: %f,%f,%f", camera_position.x, camera_position.y, camera_position.z);
-            if (ImGui::Button("Reset position")) {
-                m_engine->m_camera.resetPosition();
+            {
+                const auto camera_position = m_engine->m_world.getMainCamera().getPosition();
+                ImGui::Text("Position: %f,%f,%f", camera_position.x, camera_position.y, camera_position.z);
+                if (ImGui::Button("Reset position"))
+                {
+                    m_engine->m_world.getMainCamera().resetPosition();
+                }
             }
+            ImGui::TreePop();
+            ImGui::Separator();
         }
     }
 
@@ -368,7 +378,7 @@ void frametech::Application::drawMeshSelectionImGui()
     {
         if (ImGui::BeginListBox("Transformations"))
         {
-            const char* items[] = { "Constant", "Rotate", "Rotate and scale" };
+            const char* items[] = {"Constant", "Rotate", "Rotate and scale"};
             static int item_current_idx = m_engine->m_render->getGraphicsPipeline()->getTransform();
             int previously_selected_idx = m_engine->m_render->getGraphicsPipeline()->getTransform();
             for (int n = 0; n < sizeof(items) / sizeof(items[0]); ++n)
@@ -383,18 +393,18 @@ void frametech::Application::drawMeshSelectionImGui()
                     ImGui::SetItemDefaultFocus();
                     switch (item_current_idx)
                     {
-                    case 0:
-                        m_engine->m_render->getGraphicsPipeline()->setTransform(frametech::graphics::Transformation::Constant);
-                        break;
-                    case 1:
-                        m_engine->m_render->getGraphicsPipeline()->setTransform(frametech::graphics::Transformation::Rotate);
-                        break;
-                    case 2:
-                        m_engine->m_render->getGraphicsPipeline()->setTransform(frametech::graphics::Transformation::RotateAndScale);
-                        break;
-                    default:
-                        LogW("item %d cannot be selected in transformation selection view");
-                        break;
+                        case 0:
+                            m_engine->m_render->getGraphicsPipeline()->setTransform(frametech::graphics::Transformation::Constant);
+                            break;
+                        case 1:
+                            m_engine->m_render->getGraphicsPipeline()->setTransform(frametech::graphics::Transformation::Rotate);
+                            break;
+                        case 2:
+                            m_engine->m_render->getGraphicsPipeline()->setTransform(frametech::graphics::Transformation::RotateAndScale);
+                            break;
+                        default:
+                            LogW("item %d cannot be selected in transformation selection view");
+                            break;
                     }
                 }
             }
@@ -444,12 +454,11 @@ void frametech::Application::drawFrame()
         float delta_time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
 
         ModelViewProjection mvp = frametech::graphics::computeTransform(
-            m_engine->m_render->getGraphicsPipeline()->getTransform(), 
-            delta_time, 
-            swapchain_extent.height, 
-            swapchain_extent.width
-        );
-    
+            m_engine->m_render->getGraphicsPipeline()->getTransform(),
+            delta_time,
+            swapchain_extent.height,
+            swapchain_extent.width);
+
         m_engine->m_render->getGraphicsPipeline()->updateUniformBuffer(current_frame_index, mvp);
     }
 
@@ -493,27 +502,29 @@ void frametech::Application::drawFrame()
 
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
-        frametech::Engine::getInstance()->m_camera.setType(frametech::engine::Camera::Type::STATIONARY);
+    if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
+    {
+        frametech::Engine::getInstance()->m_world.getMainCamera().setType(frametech::engine::Camera::Type::STATIONARY);
         if (key == GLFW_KEY_UP || key == GLFW_KEY_W)
-            frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::ALT_UP_COMBINED);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::inputs::Key::ALT_UP_COMBINED);
         if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S)
-            frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::ALT_DOWN_COMBINED);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::inputs::Key::ALT_DOWN_COMBINED);
         if (key == GLFW_KEY_LEFT || key == GLFW_KEY_A)
-            frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::ALT_LEFT_COMBINED);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::inputs::Key::ALT_LEFT_COMBINED);
         if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D)
-            frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::ALT_RIGHT_COMBINED);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::inputs::Key::ALT_RIGHT_COMBINED);
     }
-    else {
-        frametech::Engine::getInstance()->m_camera.setType(frametech::engine::Camera::Type::WORLD);
+    else
+    {
+        frametech::Engine::getInstance()->m_world.getMainCamera().setType(frametech::engine::Camera::Type::WORLD);
         if (key == GLFW_KEY_UP || key == GLFW_KEY_W)
-            frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::UP);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::inputs::Key::UP);
         if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S)
-            frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::DOWN);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::inputs::Key::DOWN);
         if (key == GLFW_KEY_LEFT || key == GLFW_KEY_A)
-            frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::LEFT);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::inputs::Key::LEFT);
         if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D)
-            frametech::Application::getInstance("")->m_key_events_handler.addKeyEvent(frametech::inputs::Key::RIGHT);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::inputs::Key::RIGHT);
     }
 }
 
@@ -553,13 +564,16 @@ void frametech::Application::run()
 #ifdef DEBUG
             m_FPS_limit.has_value() ? Log("> Application is running at %d FPS", m_FPS_limit.value()) : Log("> Application is running at unlimited frame");
 #endif
+            // Initialize our world
+            // TODO: move the World object to Application, and not Engine
+            m_engine->m_world.init();
             // Initialize the callbacks (key events)
             glfwSetKeyCallback(m_app_window, keyCallback);
             m_state = frametech::Application::State::RUNNING;
             while (!glfwWindowShouldClose(m_app_window) && m_state == frametech::Application::State::RUNNING)
             {
                 glfwPollEvents();
-                m_key_events_handler.pollEvent(false);
+                m_key_events_handler.poll(false);
 #ifdef IMGUI
                 // Log(">> Rendering ImGui");
                 // Start the Dear ImGui frame
