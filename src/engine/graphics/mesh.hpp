@@ -16,6 +16,9 @@ namespace frametech
 {
     namespace graphics
     {
+        /// @brief Maximum number of characters to name a mesh
+        constexpr uint32_t MESH_2D_NAME_LENGTH = 20;
+
         /// @brief Mesh 2D IDs
         enum Mesh2D
         {
@@ -68,7 +71,7 @@ namespace frametech
                             .m_vertices = vertices,
                             .m_indices = indices,
                             .m_type = Mesh2D::BASIC_QUAD};
-                        snprintf(mesh.m_name, 20, "basic_quad");
+                        snprintf(mesh.m_name, MESH_2D_NAME_LENGTH, "basic_quad");
                         return mesh;
                     }
                     case Mesh2D::BASIC_TRIANGLE:
@@ -86,7 +89,7 @@ namespace frametech
                             .m_vertices = vertices,
                             .m_indices = indices,
                             .m_type = Mesh2D::BASIC_TRIANGLE};
-                        snprintf(mesh.m_name, 20, "basic_triangle");
+                        snprintf(mesh.m_name, MESH_2D_NAME_LENGTH, "basic_triangle");
                         return mesh;
                     }
                     case Mesh2D::NONE:
@@ -101,7 +104,7 @@ namespace frametech
                             .m_vertices = vertices,
                             .m_indices = indices,
                             .m_type = Mesh2D::NONE};
-                        snprintf(mesh.m_name, 20, "None");
+                        snprintf(mesh.m_name, MESH_2D_NAME_LENGTH, "none");
                         return mesh;
                     }
                 }
