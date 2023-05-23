@@ -25,12 +25,10 @@ int main(int argc, const char* argv[])
 {
     auto arg_parse = ftstd::ArgParse(argc, argv);
     {
-        // char c_version[18];
         Project::APPLICATION_VERSION.toString(S_APP_VERSION);
         Log("Application '%s' (version %s)", Project::APPLICATION_NAME, S_APP_VERSION);
     }
     {
-        // char c_version[18];
         Project::ENGINE_VERSION.toString(S_ENGINE_VERSION);
         Log("Engine '%s' (version: %s)", Project::ENGINE_NAME, S_ENGINE_VERSION);
     }
