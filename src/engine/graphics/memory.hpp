@@ -21,7 +21,7 @@ namespace frametech
     {
         class Memory
         {
-        public:
+        private:
             static ftstd::Result<uint32_t> findMemoryType(
                 const VkPhysicalDevice& physical_device,
                 const uint32_t type_filter,
@@ -39,6 +39,7 @@ namespace frametech
                 return ftstd::Result<uint32_t>::Error((char*)"findMemoryType: did not found any memory type with favorite filter / properties");
             }
 
+        public:
             /// @brief Initialize a given buffer
             /// @param buffer_size The size to allocate
             /// @param buffer The buffer to allocate
@@ -118,20 +119,22 @@ namespace frametech
                 const VkQueue& transfert_queue,
                 const VkDeviceSize size)
             {
-                frametech::graphics::Command command_buffer(transfert_command_pool);
+
+                frametech::graphics::Command command_buffer(*transfert_command_pool);
+                command_buffer.createBuffer();
                 command_buffer.begin();
 
-                uint32_t submit_count = 1;
+                uint32_t submit_count = 0;
 
                 // Build the packet
                 {
-                    // Specify to copy from 0 to (size - 1)
                     VkBufferCopy copy_region{
                         .srcOffset = src_offset,
                         .dstOffset = dst_offset,
                         .size = size,
                     };
                     vkCmdCopyBuffer(*command_buffer.getBuffer(), src, dst, 1, &copy_region);
+                    ++submit_count;
                 }
 
                 command_buffer.end(transfert_queue, submit_count);

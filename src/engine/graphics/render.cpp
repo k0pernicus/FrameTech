@@ -53,11 +53,15 @@ frametech::graphics::Render::~Render()
     if (nullptr != m_graphics_command)
     {
         Log("< Destroying the Command object...");
+        if (nullptr != m_graphics_command->getPool())
+            vkDestroyCommandPool(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), *m_graphics_command->getPool(), nullptr);
         m_graphics_command = nullptr;
     }
     if (nullptr != m_transfert_command)
     {
         Log("< Destroying the Transfert object...");
+        if (nullptr != m_transfert_command->getPool())
+            vkDestroyCommandPool(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), *m_transfert_command->getPool(), nullptr);
         m_transfert_command = nullptr;
     }
     m_instance = nullptr;
@@ -332,7 +336,7 @@ ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
         LogE("< Error creating the pool of the Transfert command object");
         return result;
     }
-    if (const auto result = m_transfert_command->begin(); result.IsError())
+    if (const auto result = m_transfert_command->createBuffer(); result.IsError())
     {
         LogE("< Error creating the buffer of the Transfert command object");
         return result;
@@ -354,7 +358,7 @@ ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
         LogE("< Error creating the index buffer object of the Graphics command object");
         return result;
     }
-    if (const auto result = m_graphics_command->begin(); result.IsError())
+    if (const auto result = m_graphics_command->createBuffer(); result.IsError())
     {
         LogE("< Error creating the buffer of the Graphics command object");
         return result;

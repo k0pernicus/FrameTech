@@ -24,7 +24,7 @@ namespace frametech
             Command();
             /// @brief Public constructor
             /// @param command_pool The command pool to use
-            Command(VkCommandPool* command_pool);
+            Command(VkCommandPool command_pool);
             /// @brief Public destructor
             ~Command();
             /// @brief Returns the VkCommandPool object
@@ -37,9 +37,11 @@ namespace frametech
             /// @param family_index The queue family index to bind
             /// @return A VResult type
             ftstd::VResult createPool(const uint32_t family_index);
-            /// @brief Creates the command buffer
+            /// @brief Creates and initialize the internal buffer
             /// @return A VResult type
-            // TODO: rename to begin()
+            ftstd::VResult createBuffer();
+            /// @brief Initializes the command buffer
+            /// @return A VResult type
             ftstd::VResult begin();
             /// @brief Ends the record of the current command buffer
             /// @return A VResult type
@@ -53,9 +55,9 @@ namespace frametech
             /// @brief Command should not be assignable
             void operator=(const Command& other) = delete;
             /// @brief The command pool
-            VkCommandPool* m_pool;
+            VkCommandPool m_pool = nullptr;
             /// @brief The command buffer
-            VkCommandBuffer m_buffer;
+            VkCommandBuffer m_buffer = nullptr;
         };
     } // namespace graphics
 } // namespace frametech
