@@ -342,7 +342,7 @@ ftstd::VResult frametech::graphics::Pipeline::create()
     // TODO: change for dynamic state, in order to pass the viewport & scissor
     // through the command buffer
     const VkExtent2D& swapchain_extent = frametech::Engine::getInstance()->m_swapchain->getExtent();
-    const VkViewport viewport = createViewport(0.0, 0.0, swapchain_extent.height, swapchain_extent.width);
+    const VkViewport viewport = createViewport(0.0, 0.0, (float)swapchain_extent.height, (float)swapchain_extent.width);
     const VkRect2D scissor = createScissor({0, 0}, swapchain_extent);
     VkPipelineViewportStateCreateInfo viewport_state_create_info{
         .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
@@ -481,7 +481,6 @@ ftstd::VResult frametech::graphics::Pipeline::createVertexBuffer() noexcept
     if (const auto result = frametech::graphics::Memory::initBuffer(
             resource_allocator,
             &staging_buffer_allocation,
-            graphics_device,
             buffer_size,
             staging_buffer,
             VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
@@ -506,7 +505,6 @@ ftstd::VResult frametech::graphics::Pipeline::createVertexBuffer() noexcept
     if (const auto result = frametech::graphics::Memory::initBuffer(
             resource_allocator,
             &m_vertex_buffer_allocation,
-            graphics_device,
             buffer_size,
             m_vertex_buffer,
             VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
@@ -558,7 +556,6 @@ ftstd::VResult frametech::graphics::Pipeline::createIndexBuffer() noexcept
     if (const auto result = frametech::graphics::Memory::initBuffer(
             resource_allocator,
             &staging_buffer_allocation,
-            graphics_device,
             buffer_size,
             staging_buffer,
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
@@ -584,7 +581,6 @@ ftstd::VResult frametech::graphics::Pipeline::createIndexBuffer() noexcept
     if (const auto result = frametech::graphics::Memory::initBuffer(
             resource_allocator,
             &m_index_buffer_allocation,
-            graphics_device,
             buffer_size,
             m_index_buffer,
             VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
@@ -615,7 +611,6 @@ ftstd::VResult frametech::graphics::Pipeline::createIndexBuffer() noexcept
 ftstd::VResult frametech::graphics::Pipeline::createUniformBuffers() noexcept
 {
     VmaAllocator resource_allocator = frametech::Engine::getInstance()->m_allocator;
-    VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
     const uint32_t max_frames_count = frametech::Engine::getMaxFramesInFlight();
 
     const VkDeviceSize buffer_size = sizeof(ModelViewProjection);
@@ -629,8 +624,7 @@ ftstd::VResult frametech::graphics::Pipeline::createUniformBuffers() noexcept
         if (frametech::graphics::Memory::initBuffer(
                 resource_allocator,
                 &m_uniform_buffers_allocation[i],
-                graphics_device,
-                buffer_size,
+                static_cast<size_t>(buffer_size),
                 m_uniform_buffers[i],
                 VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
                 .IsError())
