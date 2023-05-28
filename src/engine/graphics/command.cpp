@@ -18,12 +18,14 @@ constexpr VkClearValue CLEAR_COLOR = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
 
 frametech::graphics::Command::Command(){};
 
+frametech::graphics::Command::Command(VkCommandPool* command_pool): m_pool(command_pool) {};
+
 frametech::graphics::Command::~Command()
 {
     if (nullptr != m_pool)
     {
         if (nullptr != frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice())
-            vkDestroyCommandPool(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), m_pool, nullptr);
+            vkDestroyCommandPool(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), *m_pool, nullptr);
         m_pool = nullptr;
     }
     m_buffer = nullptr;
@@ -40,19 +42,19 @@ ftstd::VResult frametech::graphics::Command::createPool(const uint32_t family_in
         frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
         &pool_create_info,
         nullptr,
-        &m_pool);
+        m_pool);
     if (VK_SUCCESS == create_result)
         return ftstd::VResult::Ok();
     return ftstd::VResult::Error((char*)"> Error creating the command pool in the command buffer object");
 }
 
-ftstd::VResult frametech::graphics::Command::createBuffer()
+ftstd::VResult frametech::graphics::Command::begin()
 {
     if (nullptr == m_pool)
         return ftstd::VResult::Error((char*)"> Error creating the buffer: no memory pool");
     VkCommandBufferAllocateInfo alloc_info{};
     alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    alloc_info.commandPool = (m_pool);
+    alloc_info.commandPool = (*m_pool);
     alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     alloc_info.commandBufferCount = 1;
 
@@ -63,6 +65,24 @@ ftstd::VResult frametech::graphics::Command::createBuffer()
     if (create_result == VK_SUCCESS)
         return ftstd::VResult::Ok();
     return ftstd::VResult::Error((char*)"> Error creating the buffer in the command buffer object");
+}
+
+ftstd::VResult frametech::graphics::Command::end(const VkQueue& queue, const uint32_t submit_count) {
+    VkSubmitInfo submitInfo{
+        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .commandBufferCount = 1,
+        .pCommandBuffers = &m_buffer,
+    };
+
+    vkQueueSubmit(queue, submit_count, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(queue);
+
+    vkFreeCommandBuffers(
+        frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
+        *m_pool,
+        1,
+        &m_buffer);
+    return ftstd::VResult::Error((char*)"> Error ending the record of the command buffer object");
 }
 
 ftstd::VResult frametech::graphics::Command::record()
@@ -180,5 +200,5 @@ VkCommandBuffer* frametech::graphics::Command::getBuffer()
 
 VkCommandPool* frametech::graphics::Command::getPool()
 {
-    return &m_pool;
+    return m_pool;
 };

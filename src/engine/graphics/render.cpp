@@ -332,7 +332,7 @@ ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
         LogE("< Error creating the pool of the Transfert command object");
         return result;
     }
-    if (const auto result = m_transfert_command->createBuffer(); result.IsError())
+    if (const auto result = m_transfert_command->begin(); result.IsError())
     {
         LogE("< Error creating the buffer of the Transfert command object");
         return result;
@@ -354,7 +354,7 @@ ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
         LogE("< Error creating the index buffer object of the Graphics command object");
         return result;
     }
-    if (const auto result = m_graphics_command->createBuffer(); result.IsError())
+    if (const auto result = m_graphics_command->begin(); result.IsError())
     {
         LogE("< Error creating the buffer of the Graphics command object");
         return result;

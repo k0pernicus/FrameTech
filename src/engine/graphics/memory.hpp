@@ -9,6 +9,7 @@
 #ifndef memory_h
 #define memory_h
 
+#include "command.hpp"
 #include "../../ftstd/result.hpp"
 #include <assert.h>
 #include <vk_mem_alloc.h>
@@ -20,7 +21,7 @@ namespace frametech
     {
         class Memory
         {
-        private:
+        public:
             static ftstd::Result<uint32_t> findMemoryType(
                 const VkPhysicalDevice& physical_device,
                 const uint32_t type_filter,
@@ -38,9 +39,7 @@ namespace frametech
                 return ftstd::Result<uint32_t>::Error((char*)"findMemoryType: did not found any memory type with favorite filter / properties");
             }
 
-        public:
             /// @brief Initialize a given buffer
-            /// @param graphics_device The graphics (or logical) device instance
             /// @param buffer_size The size to allocate
             /// @param buffer The buffer to allocate
             /// @param buffer_usage Usage flag(s) for the buffer
@@ -49,7 +48,6 @@ namespace frametech
             static ftstd::VResult initBuffer(
                 VmaAllocator& resources_allocator,
                 VmaAllocation* allocation,
-                const VkDevice& graphics_device,
                 const size_t buffer_size,
                 VkBuffer& buffer,
                 const VkBufferUsageFlags buffer_usage,
@@ -69,11 +67,38 @@ namespace frametech
 
                 if (vmaCreateBuffer(resources_allocator, &buffer_create_info, &alloc_info, &buffer, allocation, nullptr) != VK_SUCCESS)
                 {
-                    LogE("vkCreateBuffer: cannot initiate the buffer with size of %d bytes", buffer_size);
-                    return ftstd::VResult::Error((char*)"vkCreateBuffer: cannot initiate the buffer");
+                    LogE("vmaCreateBuffer: cannot initiate the buffer with size of %d bytes", buffer_size);
+                    return ftstd::VResult::Error((char*)"vmaCreateBuffer: cannot initiate the buffer");
                 }
                 return ftstd::VResult::Ok();
             }
+
+            /// @brief Copy the data from the source image to the destination VkImage
+            /// @param resources_allocator Allocator for the resources
+            /// @param allocation Allocation structure (out)
+            /// @param image A reference to a VkImage
+            /// @param image_create_info Create info structure about the image
+            /// @param buffer_sharing_mode Sharing mode for the image
+            /// @return A VResult type to know if the initialization succeeded or not
+            static ftstd::VResult initImage(
+                VmaAllocator& resources_allocator,
+                VmaAllocation* allocation,
+                VkImage& image,
+                VkImageCreateInfo& image_create_info) noexcept
+            {
+                VmaAllocationCreateInfo alloc_info = {
+                    .flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
+                    .usage = VMA_MEMORY_USAGE_AUTO,
+                };
+
+                if (vmaCreateImage(resources_allocator, &image_create_info, &alloc_info, &image, allocation, nullptr) != VK_SUCCESS)
+                {
+                    LogE("vmaCreateImage: cannot initiate the image");
+                    return ftstd::VResult::Error((char*)"vmaCreateImage: cannot initiate the image");
+                }
+                return ftstd::VResult::Ok();
+            }
+
             /// @brief Copy the data from the source buffer to the destination buffer
             /// @param graphics_device The graphics (or logical) device
             /// @param src The source buffer to copy from
@@ -85,19 +110,14 @@ namespace frametech
                 const VkDevice& graphics_device,
                 VkBuffer& src,
                 VkBuffer& dst,
-                const VkCommandPool* transfert_command_pool,
+                VkCommandPool* transfert_command_pool,
                 const VkQueue& transfert_queue,
                 const VkDeviceSize size)
             {
-                VkCommandBufferAllocateInfo alloc_info{
-                    .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-                    .commandPool = *(transfert_command_pool),
-                    .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-                    .commandBufferCount = 1};
-                VkCommandBuffer command_buffer;
-                const auto operation_result = vkAllocateCommandBuffers(graphics_device, &alloc_info, &command_buffer);
-                if (operation_result != VK_SUCCESS)
-                    return ftstd::VResult::Error((char*)"vkAllocateCommandBuffers failed: cannot allocate memory for the dst buffer");
+                frametech::graphics::Command command_buffer(transfert_command_pool);
+                command_buffer.begin();
+
+                uint32_t submit_count = 1;
 
                 // Build the packet
                 {
@@ -105,7 +125,7 @@ namespace frametech
                         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
                         .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, // Wait before submit
                     };
-                    vkBeginCommandBuffer(command_buffer, &command_buffer_begin_info);
+                    vkBeginCommandBuffer(*command_buffer.getBuffer(), &command_buffer_begin_info);
 
                     // Specify to copy from 0 to (size - 1)
                     VkBufferCopy copy_region{
@@ -113,23 +133,12 @@ namespace frametech
                         .dstOffset = 0,
                         .size = size,
                     };
-                    vkCmdCopyBuffer(command_buffer, src, dst, 1, &copy_region);
+                    vkCmdCopyBuffer(*command_buffer.getBuffer(), src, dst, 1, &copy_region);
 
-                    vkEndCommandBuffer(command_buffer);
+                    vkEndCommandBuffer(*command_buffer.getBuffer());
                 }
 
-                // Execute the command buffer to complete the transfert
-                VkSubmitInfo submit_info{
-                    .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-                    .commandBufferCount = 1,
-                    .pCommandBuffers = &command_buffer,
-                };
-                vkQueueSubmit(transfert_queue, 1, &submit_info, VK_NULL_HANDLE);
-                // Wait operation
-                // TODO: use fences next time for opti & multi-sync
-                vkQueueWaitIdle(transfert_queue);
-                // Clean the command buffer used for the transfert operation
-                vkFreeCommandBuffers(graphics_device, *transfert_command_pool, 1, &command_buffer);
+                command_buffer.end(transfert_queue, submit_count);
                 return ftstd::VResult::Ok();
             }
         };
