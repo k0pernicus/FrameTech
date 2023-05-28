@@ -513,13 +513,14 @@ ftstd::VResult frametech::graphics::Pipeline::createVertexBuffer() noexcept
 
     // Now, copy the data
     if (const auto operation_result = frametech::graphics::Memory::copyBuffer(
-            graphics_device,
-            staging_buffer,
-            m_vertex_buffer,
-            transfert_command_pool,
-            transfert_queue,
-            buffer_size);
-        operation_result.IsError())
+        graphics_device,
+        staging_buffer,
+        0,
+        m_vertex_buffer,
+        0,
+        transfert_command_pool,
+        transfert_queue,
+        buffer_size); operation_result.IsError())
     {
         vmaDestroyBuffer(resource_allocator, staging_buffer, staging_buffer_allocation);
         staging_buffer_allocation = VK_NULL_HANDLE;
@@ -589,13 +590,14 @@ ftstd::VResult frametech::graphics::Pipeline::createIndexBuffer() noexcept
 
     // Now, copy the data
     if (const auto operation_result = frametech::graphics::Memory::copyBuffer(
-            graphics_device,
-            staging_buffer,
-            m_index_buffer,
-            transfert_command_pool,
-            transfert_queue,
-            buffer_size);
-        operation_result.IsError())
+        graphics_device,
+        staging_buffer,
+        0,
+        m_index_buffer,
+        0,
+        transfert_command_pool,
+        transfert_queue,
+        buffer_size); operation_result.IsError())
     {
         vmaDestroyBuffer(resource_allocator, staging_buffer, staging_buffer_allocation);
         staging_buffer_allocation = VK_NULL_HANDLE;

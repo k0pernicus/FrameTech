@@ -102,14 +102,18 @@ namespace frametech
             /// @brief Copy the data from the source buffer to the destination buffer
             /// @param graphics_device The graphics (or logical) device
             /// @param src The source buffer to copy from
+            /// @param src_offset Offset of the source buffer to copy from (default should be 0)
             /// @param dst The destination buffer to copy to
+            /// @param dst_offset Offset of the destination buffer to copy to (default should be 0)
             /// @param transfert_command_pool The Transfert command pool
             /// @param size The size of the buffer to copy
             /// @return A VResult type to know if the operation performed well or not
             static ftstd::VResult copyBuffer(
                 const VkDevice& graphics_device,
                 VkBuffer& src,
+                VkDeviceSize src_offset,
                 VkBuffer& dst,
+                VkDeviceSize dst_offset,
                 VkCommandPool* transfert_command_pool,
                 const VkQueue& transfert_queue,
                 const VkDeviceSize size)
@@ -121,21 +125,13 @@ namespace frametech
 
                 // Build the packet
                 {
-                    VkCommandBufferBeginInfo command_buffer_begin_info{
-                        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-                        .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, // Wait before submit
-                    };
-                    vkBeginCommandBuffer(*command_buffer.getBuffer(), &command_buffer_begin_info);
-
                     // Specify to copy from 0 to (size - 1)
                     VkBufferCopy copy_region{
-                        .srcOffset = 0,
-                        .dstOffset = 0,
+                        .srcOffset = src_offset,
+                        .dstOffset = dst_offset,
                         .size = size,
                     };
                     vkCmdCopyBuffer(*command_buffer.getBuffer(), src, dst, 1, &copy_region);
-
-                    vkEndCommandBuffer(*command_buffer.getBuffer());
                 }
 
                 command_buffer.end(transfert_queue, submit_count);

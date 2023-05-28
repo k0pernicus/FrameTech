@@ -62,12 +62,22 @@ ftstd::VResult frametech::graphics::Command::begin()
         frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
         &alloc_info,
         &m_buffer);
-    if (create_result == VK_SUCCESS)
+    if (VK_SUCCESS != create_result)
+        return ftstd::VResult::Error((char*)"> Error creating the buffer in the command buffer object");
+    
+    VkCommandBufferBeginInfo command_buffer_begin_info{
+        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+        .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, // Wait before submit
+    };
+    if (VK_SUCCESS == vkBeginCommandBuffer(m_buffer, &command_buffer_begin_info))
         return ftstd::VResult::Ok();
-    return ftstd::VResult::Error((char*)"> Error creating the buffer in the command buffer object");
+    return ftstd::VResult::Error((char*)"> Error calling vkBeginCommandBuffer");
 }
 
 ftstd::VResult frametech::graphics::Command::end(const VkQueue& queue, const uint32_t submit_count) {
+    if (VK_SUCCESS != vkEndCommandBuffer(m_buffer))
+        return ftstd::VResult::Error((char*)"> Error calling vkEndCommandBuffer");
+    
     VkSubmitInfo submitInfo{
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
         .commandBufferCount = 1,
