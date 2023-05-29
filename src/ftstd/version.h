@@ -33,7 +33,7 @@ namespace ftstd
 
     public:
         /// @brief The default constructor for a Version object.
-        Version(uint8_t bug_fix, uint8_t minor, uint8_t major)
+        Version(uint8_t major, uint8_t minor, uint8_t bug_fix)
         {
             this->m_major = major;
             this->m_minor = minor;
