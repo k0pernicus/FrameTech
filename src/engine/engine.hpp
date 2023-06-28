@@ -10,7 +10,6 @@
 #define engine_hpp
 
 #include "../ftstd/result.hpp"
-#include "../gameframework/world.hpp"
 #include "graphics/device.hpp"
 #include "graphics/pipeline.hpp"
 #include "graphics/render.hpp"

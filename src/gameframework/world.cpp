@@ -28,7 +28,7 @@ frametech::gameframework::Camera& frametech::gameframework::World::getMainCamera
     return m_main_camera;
 }
 
-void frametech::gameframework::World::init() noexcept
+void frametech::gameframework::World::setup() noexcept
 {
     // The default selected object of the world is the main camera
     m_selected_object = static_cast<frametech::gameframework::MovableInterface*>(&m_main_camera);

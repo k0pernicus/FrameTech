@@ -13,6 +13,7 @@
 #include "engine/graphics/monitor.hpp"
 #include "engine/inputs/inputs.hpp"
 #include "ftstd/timer.h"
+#include "gameframework/world.hpp"
 #include "project.hpp"
 #include <GLFW/glfw3.h>
 #include <optional>

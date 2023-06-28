@@ -115,7 +115,6 @@ void frametech::Application::setupImGui()
 
     ImGui_ImplGlfw_InitForVulkan(m_app_window, true);
     ImGui_ImplVulkan_InitInfo init_info{};
-    // TODO, setup
     Log("<< Ended up to setup the Vulkan renderer...");
     init_info.Instance = m_engine->m_graphics_instance;
     init_info.PhysicalDevice = m_engine->m_graphics_device.getPhysicalDevice();
@@ -572,8 +571,7 @@ void frametech::Application::run()
             m_FPS_limit.has_value() ? Log("> Application is running at %d FPS", m_FPS_limit.value()) : Log("> Application is running at unlimited frame");
 #endif
             // Initialize our world
-            // TODO: move the World object to Application, and not Engine
-            m_world.init();
+            m_world.setup();
             // Initialize the callbacks (key events)
             glfwSetKeyCallback(m_app_window, keyCallback);
             m_state = frametech::Application::State::RUNNING;

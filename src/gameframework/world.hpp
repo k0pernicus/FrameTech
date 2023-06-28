@@ -9,8 +9,10 @@
 #ifndef _world_hpp
 #define _world_hpp
 
+#include "../engine/graphics/texture.hpp"
 #include "camera.hpp"
 #include "movable.hpp"
+#include <map> // For cache maps
 #include <optional>
 
 namespace frametech
@@ -21,7 +23,7 @@ namespace frametech
         {
         public:
             /// @brief Makes the main camera as the first selected object in the world
-            void init() noexcept;
+            void setup() noexcept;
             /// @brief Returns the current selected object
             /// @return A pointer to a MovableInterface inherited object
             frametech::gameframework::MovableInterface* getSelectedObject() noexcept;
@@ -40,6 +42,9 @@ namespace frametech
             frametech::gameframework::Camera m_main_camera{};
             /// @brief Returns the current selected object in the world
             frametech::gameframework::MovableInterface* m_selected_object = nullptr;
+            /// @brief Textures cache, attached to the world
+            /// Each texture is a unique_ptr used by anywhere here
+            std::map<std::hash<char*>, std::unique_ptr<frametech::engine::graphics::Texture>> m_textures_cache;
         };
     } // namespace gameframework
 } // namespace frametech
