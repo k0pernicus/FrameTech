@@ -22,9 +22,9 @@ constexpr double CAMERA_MOVE_STEP = 0.05;
 
 namespace frametech
 {
-    namespace engine
+    namespace gameframework
     {
-        class Camera : public frametech::engine::MovableInterface
+        class Camera : public frametech::gameframework::MovableInterface
         {
         public:
             enum Type
@@ -51,7 +51,7 @@ namespace frametech
             /// @brief Return a tag associated to the current camera type
             /// @return A tag, as a string, associated to the current camera type setting
             std::string getTypeName() const noexcept;
-            void handleKeyEvent(frametech::inputs::Key& key) noexcept override;
+            void handleKeyEvent(frametech::engine::inputs::Key& key) noexcept override;
 
         private:
             glm::vec3 m_original_direction;
@@ -62,7 +62,7 @@ namespace frametech
             /// @brief States what is the current type of the camera (check for 'Type' enum)
             Type m_type = Type::WORLD;
         };
-    } // namespace engine
+    } // namespace gameframework
 } // namespace frametech
 
 #endif // _camera_hpp

@@ -197,6 +197,7 @@ void frametech::Application::drawDebugToolImGui()
         ImGui::Text("Name: '%s'", m_app_title);
         ImGui::SameLine(220);
         ImGui::Text("Version: %s", S_APP_VERSION);
+        // TODO: get the internal frame counter with recorded_frames variable, instead of ImGui
         ImGui::Text("Running average %.3f ms/frame (%.1f FPS) (%llu drawed frames)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate, m_current_frame);
         if (ImGui::TreeNode("Properties"))
         {
@@ -507,27 +508,27 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
 {
     if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
     {
-        frametech::Engine::getInstance()->m_world.getMainCamera().setType(frametech::engine::Camera::Type::STATIONARY);
+        frametech::Engine::getInstance()->m_world.getMainCamera().setType(frametech::gameframework::Camera::Type::STATIONARY);
         if (key == GLFW_KEY_UP || key == GLFW_KEY_W)
-            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::inputs::Key::ALT_UP_COMBINED);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::ALT_UP_COMBINED);
         if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S)
-            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::inputs::Key::ALT_DOWN_COMBINED);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::ALT_DOWN_COMBINED);
         if (key == GLFW_KEY_LEFT || key == GLFW_KEY_A)
-            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::inputs::Key::ALT_LEFT_COMBINED);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::ALT_LEFT_COMBINED);
         if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D)
-            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::inputs::Key::ALT_RIGHT_COMBINED);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::ALT_RIGHT_COMBINED);
     }
     else
     {
-        frametech::Engine::getInstance()->m_world.getMainCamera().setType(frametech::engine::Camera::Type::WORLD);
+        frametech::Engine::getInstance()->m_world.getMainCamera().setType(frametech::gameframework::Camera::Type::WORLD);
         if (key == GLFW_KEY_UP || key == GLFW_KEY_W)
-            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::inputs::Key::UP);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::UP);
         if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S)
-            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::inputs::Key::DOWN);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::DOWN);
         if (key == GLFW_KEY_LEFT || key == GLFW_KEY_A)
-            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::inputs::Key::LEFT);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::LEFT);
         if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D)
-            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::inputs::Key::RIGHT);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::RIGHT);
     }
 }
 

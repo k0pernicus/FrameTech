@@ -6,10 +6,10 @@
 //
 
 #include "inputs.hpp"
-#include "debug_tools.h"
-#include "engine.hpp"
+#include "../engine.hpp"
+#include "../ftstd/debug_tools.h"
 
-void frametech::inputs::EventHandler::poll(bool blank) noexcept
+void frametech::engine::inputs::EventHandler::poll(bool blank) noexcept
 {
     if (blank)
         return;
@@ -21,7 +21,7 @@ void frametech::inputs::EventHandler::poll(bool blank) noexcept
     m_keys.pop_front();
 }
 
-void frametech::inputs::EventHandler::addKey(const Key key) noexcept
+void frametech::engine::inputs::EventHandler::addKey(const Key key) noexcept
 {
     std::scoped_lock<std::mutex> guard(m_lock);
     m_keys.push_back(key);

@@ -88,5 +88,6 @@ include_directories("${CMAKE_SOURCE_DIR}/extern/imgui")
 include_directories("${CMAKE_SOURCE_DIR}/extern/vma")
 include_directories("${CMAKE_SOURCE_DIR}/extern/stb")
 include_directories("${CMAKE_SOURCE_DIR}/src/ftstd")
+include_directories("${CMAKE_SOURCE_DIR}/src/gameframework")
 
 target_compile_features(engine PRIVATE cxx_std_17)

@@ -10,11 +10,11 @@
 #define engine_hpp
 
 #include "../ftstd/result.hpp"
+#include "../gameframework/world.hpp"
 #include "graphics/device.hpp"
 #include "graphics/pipeline.hpp"
 #include "graphics/render.hpp"
 #include "graphics/swapchain.hpp"
-#include "objects/world.hpp"
 #include "project.hpp"
 #include <cstdlib>
 #include <vk_mem_alloc.h>
@@ -91,7 +91,7 @@ namespace frametech
         /// @brief The swapchain of the engine
         std::unique_ptr<frametech::graphics::SwapChain> m_swapchain;
         /// @brief The world, nothing less, nothing more
-        frametech::engine::World m_world;
+        frametech::gameframework::World m_world;
         /// @brief Returns a VkDescriptorPool object, associated to the current object
         VkDescriptorPool getDescriptorPool() const noexcept;
         /// @brief Returns the current name / tag of the rendering engine

@@ -11,7 +11,7 @@
 
 #include "engine/engine.hpp"
 #include "engine/graphics/monitor.hpp"
-#include "engine/inputs.hpp"
+#include "engine/inputs/inputs.hpp"
 #include "ftstd/timer.h"
 #include "project.hpp"
 #include <GLFW/glfw3.h>
@@ -61,6 +61,7 @@ namespace frametech
         };
         static Application* m_instance;
 #ifdef IMGUI
+        // TODO: add in a proper namespace called 'gui'
         /// @brief ImGui window
         static ImGui_ImplVulkanH_Window m_imgui_app_window;
         /// @brief Setup the ImGui window & API
@@ -136,7 +137,7 @@ namespace frametech
         /// @brief Returns the current frame of the application
         uint64_t getCurrentFrame();
         /// @brief Key events job manager
-        frametech::inputs::EventHandler m_key_events_handler;
+        frametech::engine::inputs::EventHandler m_key_events_handler;
     };
 
 } // namespace frametech
