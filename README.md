@@ -46,6 +46,19 @@ options).
 Once the Makefiles have been built, go in your `out/build` folder and launch make,
  or open your project in Visual Studio for Microsoft Windows.
 
+## About game settings
+
+The game settings must be in a file called `game.toml`, and must follow TOML specifications:
+
+```toml
+APPLICATION_NAME = "Example"
+APPLICATION_FPS_TARGET = 60
+APPLICATION_VERSION = "0.1.0"
+APPLICATION_DEPENDENCIES = ["TEXTURES.ZIP", "SOUNDS.ZIP"]
+```
+
+The file must be at the root of the executable call.
+
 ## Screenshots
 
 ![State December 15th, 2022](docs/images/state_12152022.png "State December 15th, 2022")
