@@ -59,6 +59,8 @@ APPLICATION_DEPENDENCIES = ["TEXTURES.ZIP", "SOUNDS.ZIP"]
 
 The file must be at the root of the executable call.
 
+TODO: propose a list of specs keys and their description.
+
 ## Screenshots
 
 ![State December 15th, 2022](docs/images/state_12152022.png "State December 15th, 2022")
