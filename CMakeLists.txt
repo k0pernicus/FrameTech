@@ -17,6 +17,7 @@ message("FrameTech build for ${CMAKE_SYSTEM_NAME}")
 add_subdirectory("extern/glm")
 add_subdirectory("extern/glfw")
 add_subdirectory("extern/imgui")
+add_subdirectory("extern/libzip-1.10.0")
 
 # NOTE: -Wno-implicit-int-conversion is required here as stb_image has issues with
 # integer / float type conversions
@@ -107,6 +108,7 @@ endif()
 
 include_directories("${CMAKE_SOURCE_DIR}/extern")
 include_directories("${CMAKE_SOURCE_DIR}/extern/imgui")
+include_directories("${CMAKE_SOURCE_DIR}/extern/libzip-1.10.0/lib")
 include_directories("${CMAKE_SOURCE_DIR}/extern/glfw/include")
 include_directories("${CMAKE_SOURCE_DIR}/extern/vma")
 include_directories("${CMAKE_SOURCE_DIR}/extern/stb")
@@ -118,7 +120,7 @@ include_directories("${CMAKE_SOURCE_DIR}/src/gameframework")
 #frametech
 add_executable(${BUILD_NAME} "src/main.cpp" "src/application.cpp" "src/application.hpp" "src/project.hpp" ${CMAKE_CURRENT_BINARY_DIR}/shaders/)
 target_compile_features(${BUILD_NAME} PRIVATE cxx_std_17)
-target_link_libraries(${BUILD_NAME} engine gameframework glm imgui glfw ${VULKAN_1_LIB})
+target_link_libraries(${BUILD_NAME} zip engine gameframework glm imgui glfw ${VULKAN_1_LIB})
 
 # Copy the shaders folder, as a custom POST command
 message("Copying the shaders/ folder, from ${CMAKE_SOURCE_DIR} to ${CMAKE_BINARY_DIR}")
