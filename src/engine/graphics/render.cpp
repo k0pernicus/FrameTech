@@ -85,7 +85,7 @@ ftstd::VResult frametech::graphics::Render::createSurface()
 {
     const auto window_surface_result = glfwCreateWindowSurface(
         frametech::Engine::getInstance()->m_graphics_instance,
-        frametech::Application::getInstance(Project::APPLICATION_NAME)->getWindow(),
+        frametech::Application::getInstance(GAME_APPLICATION_SETTINGS->name.c_str())->getWindow(),
         nullptr,
         &m_surface);
     if (VK_SUCCESS == window_surface_result)

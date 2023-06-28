@@ -96,6 +96,21 @@ namespace ftstd
         {
             snprintf(version, 8, "%d.%d.%d", this->m_major, this->m_minor, this->m_bug_fix);
         }
+
+        uint8_t majorVersion() const noexcept
+        {
+            return m_major;
+        }
+
+        uint8_t minorVersion() const noexcept
+        {
+            return m_minor;
+        }
+
+        uint8_t bugFixVersion() const noexcept
+        {
+            return m_bug_fix;
+        }
     };
 
 } // namespace ftstd

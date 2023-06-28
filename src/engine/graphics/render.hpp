@@ -92,8 +92,7 @@ namespace frametech
             /// 1. Read the SPIR-V shaders,
             /// 2. Create the shader modules,
             /// 3. Create the shader stages.
-            /// @return A Result type to know if the function succeeded
-            /// or not.
+            /// @return A Result type to know if the function succeeded or not.
             ftstd::VResult createShaderModule();
             /// @brief The current frame index, or swap chain index
             uint32_t m_frame_index = 0;

@@ -205,8 +205,8 @@ void frametech::Application::drawDebugToolImGui()
                 const auto swapchain_extent = m_engine->getInstance()->m_swapchain->getExtent();
                 ImGui::Text("Viewport size: %dx%d", swapchain_extent.width, swapchain_extent.height);
             }
-            if (m_FPS_limit.has_value())
-                ImGui::Text("App is limited to %d FPS", m_FPS_limit.value());
+            if (GAME_APPLICATION_SETTINGS->fps_target.has_value())
+                ImGui::Text("App is limited to %d FPS", GAME_APPLICATION_SETTINGS->fps_target.value());
             else
                 ImGui::Text("App has no rendering limitation");
             ImGui::TreePop();
@@ -437,15 +437,28 @@ void frametech::Application::initEngine()
     m_engine->initialize();
 }
 
+ftstd::VResult frametech::Application::loadGameAssets() noexcept
+{
+    // The game world **should not** be loaded
+    assert(!m_world.hasBeenSetup());
+    if (GAME_APPLICATION_SETTINGS->asset_archives.empty())
+    {
+        LogW("No assets have been set for this application");
+        return ftstd::VResult::Ok();
+    }
+    WARN_RT_UNIMPLEMENTED;
+    return ftstd::VResult::Error((char*)"Unimplemented loadGameAssets function");
+}
+
 void frametech::Application::forceRendererFPSLimit(uint8_t new_limit)
 {
-    if (m_FPS_limit == std::nullopt)
+    if (GAME_APPLICATION_SETTINGS->fps_target == std::nullopt)
         Log("Setting FPS limit to %d", new_limit);
     else if (new_limit > 0)
-        Log("Replacing FPS limit from %d to %d", m_FPS_limit, new_limit);
+        Log("Replacing FPS limit from %d to %d", GAME_APPLICATION_SETTINGS->fps_target, new_limit);
     else
         Log("Disabling FPS limit");
-    m_FPS_limit = new_limit > 0 ? std::optional<uint8_t>(new_limit) : std::nullopt;
+    GAME_APPLICATION_SETTINGS->fps_target = new_limit > 0 ? std::optional<uint8_t>(new_limit) : std::nullopt;
 }
 
 void frametech::Application::drawFrame()
@@ -467,9 +480,9 @@ void frametech::Application::drawFrame()
         m_engine->m_render->getGraphicsPipeline()->updateUniformBuffer(current_frame_index, mvp);
     }
 
-    if (m_FPS_limit != std::nullopt)
+    if (GAME_APPLICATION_SETTINGS->fps_target != std::nullopt)
     {
-        const double wait_ms = 1000.0f / m_FPS_limit.value();
+        const double wait_ms = 1000.0f / GAME_APPLICATION_SETTINGS->fps_target.value();
         double wait_until_ms = ftstd::Timer::get_time_limit(wait_ms);
         // Log("Drawing frame %d...", m_current_frame);
 
@@ -554,21 +567,21 @@ void frametech::Application::run()
         case frametech::Engine::State::INITIALIZED:
         {
             Log("> Application loop...");
-            if (m_FPS_limit.has_value() && nullptr != m_monitor.getCurrentProperties().m_current_video_mode)
+            if (GAME_APPLICATION_SETTINGS->fps_target.has_value() && nullptr != m_monitor.getCurrentProperties().m_current_video_mode)
             {
                 // Set the refresh rate of the monitor by default
                 const auto monitor_refresh_rate = m_monitor.getCurrentProperties().m_current_video_mode->refreshRate;
-                const auto c_FPS_limit = m_FPS_limit.value();
+                const auto c_FPS_limit = GAME_APPLICATION_SETTINGS->fps_target.value();
                 // Cap to the supported refrest rate
                 // As an example: no 120FPS is the monitor is capped to 60Hz
                 if (c_FPS_limit > monitor_refresh_rate)
                 {
                     LogW("The monitor is using a refresh rate lower than the current cap setting (set to %d) - engine lowered it to %d FPS", c_FPS_limit, monitor_refresh_rate);
-                    m_FPS_limit = monitor_refresh_rate;
+                    GAME_APPLICATION_SETTINGS->fps_target = monitor_refresh_rate;
                 }
             }
 #ifdef DEBUG
-            m_FPS_limit.has_value() ? Log("> Application is running at %d FPS", m_FPS_limit.value()) : Log("> Application is running at unlimited frame");
+            GAME_APPLICATION_SETTINGS->fps_target.has_value() ? Log("> Application is running at %d FPS", GAME_APPLICATION_SETTINGS->fps_target.value()) : Log("> Application is running at unlimited frame");
 #endif
             // Initialize our world
             m_world.setup();

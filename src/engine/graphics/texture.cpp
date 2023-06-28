@@ -13,9 +13,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-frametech::engine::graphics::Texture::Texture(const std::string& filename) : m_tag(filename)
-{
-}
+frametech::engine::graphics::Texture::Texture() : m_tag("Unknown") {}
 
 frametech::engine::graphics::Texture::~Texture()
 {
@@ -93,6 +91,10 @@ ftstd::VResult frametech::engine::graphics::Texture::setup(
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,   // Used by one queue family, the one that supports graphics
         .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED, // first transition will discard the texels
     };
+
+#if defined(DEBUG)
+    assert(is_1D_texture ? create_info.extent.depth == 0 : create_info.extent.depth == 1);
+#endif
 
     if (frametech::graphics::Memory::initImage(
             resource_allocator,

@@ -34,7 +34,7 @@ namespace frametech
                     T1D, // 1D texture
                     T2D, // 2D texture
                 };
-                Texture(const std::string& filename);
+                Texture();
                 ~Texture();
                 /// @brief Load the texture data and get the metadata from it
                 /// @return A VResult type
@@ -48,9 +48,11 @@ namespace frametech
                 int m_height = 0;
                 int m_width = 0;
                 int m_channels = 0;
-                bool m_supports_alpha = true; // Alpha channel by default
+                /// @brief Alpha channel by default
+                bool m_supports_alpha = true;
                 VkImage m_image = VK_NULL_HANDLE;
                 VmaAllocation m_staging_image_allocation = VK_NULL_HANDLE;
+                /// @brief Takes the filename as a tag
                 std::string m_tag;
                 Type m_type;
             };

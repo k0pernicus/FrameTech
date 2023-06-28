@@ -90,9 +90,6 @@ namespace frametech
         State m_state = State::UNINITIALIZED;
         /// @brief The frame that is being draw
         uint64_t m_current_frame = 1;
-        /// @brief The current FPS limit per second to draw
-        /// Optional value as the default value is NULL
-        std::optional<uint8_t> m_FPS_limit = Project::APPLICATION_FPS_LIMIT;
         /// @brief The unique instance of the Engine object
         std::unique_ptr<frametech::Engine> m_engine;
         /// @brief Recorded frames to make
@@ -124,6 +121,9 @@ namespace frametech
         ftstd::VResult initWindow();
         /// @brief Initialize the app's graphics engine
         void initEngine();
+        /// @brief Load all assets for the game - should be called
+        /// **after** initializing the engine
+        ftstd::VResult loadGameAssets() noexcept;
         /// @brief Run the app and wait until the user close it
         void run();
         /// @brief Draw the frame x

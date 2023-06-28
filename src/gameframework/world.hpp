@@ -34,6 +34,9 @@ namespace frametech
             /// @brief Returns the main camera object
             /// @return A reference to the main camera object
             frametech::gameframework::Camera& getMainCamera() noexcept;
+            /// @brief Returns if the world has been setup or not
+            /// @return A boolean value
+            bool hasBeenSetup() const noexcept;
 
         private:
             /// @brief Main camera of the world
@@ -45,6 +48,8 @@ namespace frametech
             /// @brief Textures cache, attached to the world
             /// Each texture is a unique_ptr used by anywhere here
             std::map<std::hash<char*>, std::unique_ptr<frametech::engine::graphics::Texture>> m_textures_cache;
+            /// @brief Internal state to know if the world has been setup
+            bool m_has_been_setup = false;
         };
     } // namespace gameframework
 } // namespace frametech

@@ -35,11 +35,11 @@ static VkApplicationInfo createApplicationInfo()
     // and the Vulkan library
     VkApplicationInfo application_info{};
     application_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    application_info.pApplicationName = Project::APPLICATION_NAME;
+    application_info.pApplicationName = GAME_APPLICATION_SETTINGS->name.c_str();
     application_info.applicationVersion = VK_MAKE_VERSION(
-        Project::APPLICATION_VERSION_MAJOR_NUMBER,
-        Project::APPLICATION_VERSION_MINOR_NUMBER,
-        Project::APPLICATION_VERSION_BUGFIX_NUMBER);
+        GAME_APPLICATION_SETTINGS->version.majorVersion(),
+        GAME_APPLICATION_SETTINGS->version.minorVersion(),
+        GAME_APPLICATION_SETTINGS->version.bugFixVersion());
     application_info.pEngineName = Project::ENGINE_NAME;
     application_info.engineVersion = VK_MAKE_VERSION(
         Project::ENGINE_VERSION_MAJOR_NUMBER,

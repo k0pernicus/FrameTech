@@ -32,4 +32,10 @@ void frametech::gameframework::World::setup() noexcept
 {
     // The default selected object of the world is the main camera
     m_selected_object = static_cast<frametech::gameframework::MovableInterface*>(&m_main_camera);
+    m_has_been_setup = true;
+}
+
+bool frametech::gameframework::World::hasBeenSetup() const noexcept
+{
+    return m_has_been_setup;
 }
