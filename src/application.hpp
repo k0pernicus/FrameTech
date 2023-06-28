@@ -104,6 +104,8 @@ namespace frametech
         std::unique_ptr<ftstd::Timer> m_app_timer = nullptr;
         /// @brief The monitor to set / display the application
         frametech::graphics::Monitor m_monitor;
+        /// @brief The world, nothing less, nothing more
+        frametech::gameframework::World m_world;
 
     public:
         /// @brief Private destructor
@@ -136,6 +138,8 @@ namespace frametech
         void forceRendererFPSLimit(uint8_t new_limit);
         /// @brief Returns the current frame of the application
         uint64_t getCurrentFrame();
+        /// @brief Returns the current 2D/3D world of the game
+        frametech::gameframework::World& getCurrentWorld() noexcept;
         /// @brief Key events job manager
         frametech::engine::inputs::EventHandler m_key_events_handler;
     };

@@ -90,8 +90,6 @@ namespace frametech
         std::unique_ptr<frametech::graphics::Render> m_render;
         /// @brief The swapchain of the engine
         std::unique_ptr<frametech::graphics::SwapChain> m_swapchain;
-        /// @brief The world, nothing less, nothing more
-        frametech::gameframework::World m_world;
         /// @brief Returns a VkDescriptorPool object, associated to the current object
         VkDescriptorPool getDescriptorPool() const noexcept;
         /// @brief Returns the current name / tag of the rendering engine

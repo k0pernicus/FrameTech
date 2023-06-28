@@ -352,8 +352,8 @@ ftstd::VResult frametech::graphics::Pipeline::create()
         .pScissors = &scissor,
     };
 
-    const auto vertex_binding_description = frametech::shaders::VertexUtils::getVertexBindingDescription();
-    const auto vertex_attribute_descriptions = frametech::shaders::VertexUtils::getVertexAttributeDescriptions();
+    const auto vertex_binding_description = frametech::engine::graphics::shaders::VertexUtils::getVertexBindingDescription();
+    const auto vertex_attribute_descriptions = frametech::engine::graphics::shaders::VertexUtils::getVertexAttributeDescriptions();
 
     // Vertex data settings:
     // * bindings: spacing between data, and whether the data is per-vertex or per-instance,
@@ -875,7 +875,7 @@ ftstd::Result<int> frametech::graphics::Pipeline::draw()
     return ftstd::Result<int>::Ok(0);
 }
 
-const std::vector<frametech::shaders::Vertex>& frametech::graphics::Pipeline::getVertices() noexcept
+const std::vector<frametech::engine::graphics::shaders::Vertex>& frametech::graphics::Pipeline::getVertices() noexcept
 {
     return m_mesh.m_vertices;
 }

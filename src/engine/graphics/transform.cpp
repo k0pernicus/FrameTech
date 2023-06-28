@@ -6,6 +6,7 @@
 //
 
 #include "transform.hpp"
+#include "../application.hpp"
 #include "../engine.hpp"
 
 constexpr float FAR = 100.0f;
@@ -17,12 +18,13 @@ ModelViewProjection frametech::graphics::computeTransform(
     const uint32_t window_width) noexcept
 {
     // Compute the view of the world
-    glm::vec3 eye = frametech::Engine::getInstance()->m_world.getMainCamera().getPosition();
-    glm::vec3 lookat = frametech::Engine::getInstance()->m_world.getMainCamera().getDirection();
+    const frametech::gameframework::Camera& world_camera = frametech::Application::getInstance("")->getCurrentWorld().getMainCamera();
+    glm::vec3 eye = world_camera.getPosition();
+    glm::vec3 lookat = world_camera.getDirection();
     glm::vec3 up = glm::vec3(0, 1, 0); // Front view
     glm::mat4 view = glm::lookAt(eye, lookat, up);
 
-    const float fov = frametech::Engine::getInstance()->m_world.getMainCamera().getFOV();
+    const float fov = world_camera.getFOV();
 
     // TODO: check + integrate quaternions
     switch (transformation_id)

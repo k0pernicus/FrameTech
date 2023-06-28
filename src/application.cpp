@@ -260,25 +260,27 @@ void frametech::Application::drawDebugToolImGui()
 
     if (ImGui::CollapsingHeader("World"))
     {
-        ImGui::Text("Selected object: (%p)", m_engine->m_world.getSelectedObject());
+        frametech::gameframework::World& current_world = frametech::Application::getInstance("")->getCurrentWorld();
+        frametech::gameframework::Camera& main_camera = current_world.getMainCamera();
+        ImGui::Text("Selected object: (%p)", current_world.getSelectedObject());
         if (ImGui::TreeNode("Camera"))
         {
-            ImGui::Text("FOV: %f", m_engine->m_world.getMainCamera().getFOV());
-            ImGui::Text("Type: %s", m_engine->m_world.getMainCamera().getTypeName().c_str());
+            ImGui::Text("FOV: %f", main_camera.getFOV());
+            ImGui::Text("Type: %s", main_camera.getTypeName().c_str());
             {
-                const auto camera_direction = m_engine->m_world.getMainCamera().getDirection();
+                const auto camera_direction = main_camera.getDirection();
                 ImGui::Text("Direction: %f,%f,%f", camera_direction.x, camera_direction.y, camera_direction.z);
                 if (ImGui::Button("Reset direction"))
                 {
-                    m_engine->m_world.getMainCamera().resetDirection();
+                    main_camera.resetDirection();
                 }
             }
             {
-                const auto camera_position = m_engine->m_world.getMainCamera().getPosition();
+                const auto camera_position = main_camera.getPosition();
                 ImGui::Text("Position: %f,%f,%f", camera_position.x, camera_position.y, camera_position.z);
                 if (ImGui::Button("Reset position"))
                 {
-                    m_engine->m_world.getMainCamera().resetPosition();
+                    main_camera.resetPosition();
                 }
             }
             ImGui::TreePop();
@@ -298,7 +300,7 @@ void frametech::Application::drawDebugToolImGui()
                 for (const auto vertex : vertices)
                 {
                     char vertex_str[80];
-                    frametech::shaders::VertexUtils::toString(vertex_str, vertex);
+                    frametech::engine::graphics::shaders::VertexUtils::toString(vertex_str, vertex);
                     ImGui::Text("%zu:", i);
                     ImGui::SameLine(50);
                     ImGui::Text("%s", vertex_str);
@@ -506,9 +508,10 @@ void frametech::Application::drawFrame()
 
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    frametech::gameframework::World& current_world = frametech::Application::getInstance("")->getCurrentWorld();
     if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
     {
-        frametech::Engine::getInstance()->m_world.getMainCamera().setType(frametech::gameframework::Camera::Type::STATIONARY);
+        current_world.getMainCamera().setType(frametech::gameframework::Camera::Type::STATIONARY);
         if (key == GLFW_KEY_UP || key == GLFW_KEY_W)
             frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::ALT_UP_COMBINED);
         if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S)
@@ -520,7 +523,7 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
     }
     else
     {
-        frametech::Engine::getInstance()->m_world.getMainCamera().setType(frametech::gameframework::Camera::Type::WORLD);
+        current_world.getMainCamera().setType(frametech::gameframework::Camera::Type::WORLD);
         if (key == GLFW_KEY_UP || key == GLFW_KEY_W)
             frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::UP);
         if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S)
@@ -570,7 +573,7 @@ void frametech::Application::run()
 #endif
             // Initialize our world
             // TODO: move the World object to Application, and not Engine
-            m_engine->m_world.init();
+            m_world.init();
             // Initialize the callbacks (key events)
             glfwSetKeyCallback(m_app_window, keyCallback);
             m_state = frametech::Application::State::RUNNING;
@@ -604,4 +607,9 @@ void frametech::Application::run()
 uint64_t frametech::Application::getCurrentFrame()
 {
     return m_current_frame;
+}
+
+frametech::gameframework::World& frametech::Application::getCurrentWorld() noexcept
+{
+    return m_world;
 }

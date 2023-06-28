@@ -6,6 +6,7 @@
 //
 
 #include "inputs.hpp"
+#include "../application.hpp"
 #include "../engine.hpp"
 #include "../ftstd/debug_tools.h"
 
@@ -16,8 +17,9 @@ void frametech::engine::inputs::EventHandler::poll(bool blank) noexcept
     std::scoped_lock<std::mutex> guard(m_lock);
     if (m_keys.empty())
         return;
-    if (nullptr != frametech::Engine::getInstance()->m_world.getSelectedObject())
-        frametech::Engine::getInstance()->m_world.getSelectedObject()->handleKeyEvent(m_keys.front());
+    frametech::gameframework::MovableInterface* selected_object = frametech::Application::getInstance("")->getCurrentWorld().getSelectedObject();
+    if (nullptr != selected_object)
+        selected_object->handleKeyEvent(m_keys.front());
     m_keys.pop_front();
 }
 

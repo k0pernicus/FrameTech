@@ -6,6 +6,7 @@
 //
 
 #include "camera.hpp"
+#include "../application.hpp"
 #include "../engine/engine.hpp"
 #include "../ftstd/debug_tools.h"
 
@@ -69,8 +70,9 @@ std::string frametech::gameframework::Camera::getTypeName() const noexcept
 
 void frametech::gameframework::Camera::handleKeyEvent(frametech::engine::inputs::Key& key) noexcept
 {
-    const glm::vec3 camera_direction = frametech::Engine::getInstance()->m_world.getMainCamera().getDirection();
-    const glm::vec3 camera_position = frametech::Engine::getInstance()->m_world.getMainCamera().getPosition();
+    const frametech::gameframework::Camera& world_camera = frametech::Application::getInstance("")->getCurrentWorld().getMainCamera();
+    const glm::vec3 camera_direction = world_camera.getDirection();
+    const glm::vec3 camera_position = world_camera.getPosition();
     switch (key)
     {
         case frametech::engine::inputs::Key::ALT_RIGHT_COMBINED:
