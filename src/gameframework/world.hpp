@@ -37,6 +37,9 @@ namespace frametech
             /// @brief Returns if the world has been setup or not
             /// @return A boolean value
             bool hasBeenSetup() const noexcept;
+            /// @brief Textures cache, attached to the world
+            /// Each texture is a unique_ptr used by anywhere here
+            std::map<std::string, std::unique_ptr<frametech::engine::graphics::Texture>> m_textures_cache;
 
         private:
             /// @brief Main camera of the world
@@ -45,9 +48,6 @@ namespace frametech
             frametech::gameframework::Camera m_main_camera{};
             /// @brief Returns the current selected object in the world
             frametech::gameframework::MovableInterface* m_selected_object = nullptr;
-            /// @brief Textures cache, attached to the world
-            /// Each texture is a unique_ptr used by anywhere here
-            std::map<std::hash<char*>, std::unique_ptr<frametech::engine::graphics::Texture>> m_textures_cache;
             /// @brief Internal state to know if the world has been setup
             bool m_has_been_setup = false;
         };

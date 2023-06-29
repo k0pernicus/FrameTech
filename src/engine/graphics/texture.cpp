@@ -20,7 +20,7 @@ frametech::engine::graphics::Texture::~Texture()
     const auto resource_allocator = frametech::Engine::getInstance()->m_allocator;
     if (VK_NULL_HANDLE != m_image)
     {
-        Log("< Destroying the image object...");
+        Log("< Destroying the image object with tag %s...", m_tag.c_str());
         vmaDestroyImage(resource_allocator, m_image, m_staging_image_allocation);
         m_image = VK_NULL_HANDLE;
         m_staging_image_allocation = VK_NULL_HANDLE;
@@ -28,15 +28,21 @@ frametech::engine::graphics::Texture::~Texture()
 }
 
 ftstd::VResult frametech::engine::graphics::Texture::setup(
+    char* content,
+    const int content_size,
     const bool supports_alpha,
     const frametech::engine::graphics::Texture::Type texture_type,
-    const VkFormat texture_format) noexcept
+    const VkFormat texture_format,
+    const std::string& tag) noexcept
 {
     const int req_comp = supports_alpha ? STBI_rgb_alpha : STBI_rgb;
     m_supports_alpha = supports_alpha;
-    void* content = nullptr;
+    m_tag = tag;
+
+    unsigned char* image_data = NULL;
+
     // Load the data
-    if (content = stbi_load(m_tag.c_str(), &m_width, &m_height, &m_channels, req_comp); nullptr == content)
+    if (image_data = stbi_load_from_memory((unsigned char*)content, content_size, &m_width, &m_height, &m_channels, req_comp); nullptr == image_data)
     {
         LogE("Cannot load the texture with name '%s', should not happen", m_tag.c_str());
         return ftstd::VResult::Error((char*)"Error loading texture data");
@@ -59,18 +65,18 @@ ftstd::VResult frametech::engine::graphics::Texture::setup(
         result.IsError())
     {
         LogE("Cannot initialize the buffer");
-        stbi_image_free(content);
+        stbi_image_free(image_data);
         return result;
     }
 
     // Now, fill the staging buffer with the actual data
     void* data;
     vmaMapMemory(resource_allocator, staging_buffer_allocation, &data);
-    memcpy(data, content, static_cast<size_t>(texture_size));
+    memcpy(data, image_data, static_cast<size_t>(texture_size));
     vmaUnmapMemory(resource_allocator, staging_buffer_allocation);
 
     // No need the raw data, as we mapped the data in VMA
-    stbi_image_free(content);
+    stbi_image_free(image_data);
 
     const bool is_1D_texture = texture_type == frametech::engine::graphics::Texture::Type::T1D;
 
@@ -103,11 +109,15 @@ ftstd::VResult frametech::engine::graphics::Texture::setup(
             create_info)
             .IsError())
     {
+        vmaDestroyBuffer(resource_allocator, staging_buffer, staging_buffer_allocation);
         return ftstd::VResult::Error((char*)"Failed to initialize memory for the image");
     }
 
     // Finally, bind the image
-    vmaBindImageMemory(resource_allocator, m_staging_image_allocation, m_image);
+    // TODO: check if vmaCreateImage is same than vmaBindImageMemory
+    // vmaBindImageMemory(resource_allocator, m_staging_image_allocation, m_image);
+
+    vmaDestroyBuffer(resource_allocator, staging_buffer, staging_buffer_allocation);
 
     return ftstd::VResult::Ok();
 }

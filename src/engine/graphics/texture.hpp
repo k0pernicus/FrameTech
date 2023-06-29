@@ -36,12 +36,15 @@ namespace frametech
                 };
                 Texture();
                 ~Texture();
-                /// @brief Load the texture data and get the metadata from it
+                /// @brief Load the compressed texture data and get the metadata from it
                 /// @return A VResult type
                 ftstd::VResult setup(
+                    char* content,
+                    const int content_size,
                     const bool supports_alpha,
                     const frametech::engine::graphics::Texture::Type texture_type,
-                    const VkFormat texture_format = VK_FORMAT_R8G8B8A8_SRGB) noexcept;
+                    const VkFormat texture_format = VK_FORMAT_R8G8B8A8_SRGB,
+                    const std::string& tag = "Unknown") noexcept;
                 inline int getTextureSize() const noexcept;
 
             private:

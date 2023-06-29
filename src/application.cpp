@@ -9,6 +9,7 @@
 #include "engine/graphics/transform.hpp" // Should be elsewhere
 #include "ftstd/debug_tools.h"
 #include "project.hpp"
+#include "zip.h" // To retrieve all zipped assets
 
 #ifdef IMGUI
 #include "backends/imgui_impl_glfw.h"
@@ -446,7 +447,50 @@ ftstd::VResult frametech::Application::loadGameAssets() noexcept
         LogW("No assets have been set for this application");
         return ftstd::VResult::Ok();
     }
-    WARN_RT_UNIMPLEMENTED;
+    for (const std::string& asset_lib_name : GAME_APPLICATION_SETTINGS->asset_archives)
+    {
+        int err = 0;
+        zip* z = zip_open(asset_lib_name.c_str(), 0, &err);
+
+        // Search for the file of given name
+        struct zip_stat st;
+        zip_stat_init(&st);
+        auto num_entries = zip_get_num_entries(z, 0);
+        for (auto i = 0; i < num_entries; ++i)
+        {
+            const char* const name = zip_get_name(z, i, 0);
+            zip_stat(z, name, 0, &st);
+            if (name == nullptr)
+            {
+                LogE("Error getting file from %s at entry %d", asset_lib_name.c_str(), i);
+            }
+
+            Log("Found entry %d with name %s", i, name);
+            char* contents = new char[st.size]; // Compressed data
+            zip_file* f = zip_fopen(z, name, 0);
+            zip_fread(f, contents, st.size);
+            zip_fclose(f);
+
+            const std::string str_name = std::string(name);
+
+            m_world.m_textures_cache[str_name] = std::make_unique<frametech::engine::graphics::Texture>();
+            if (m_world.m_textures_cache[str_name]->setup(contents,
+                                                          (int)st.size,
+                                                          true,
+                                                          frametech::engine::graphics::Texture::Type::T2D,
+                                                          VK_FORMAT_R8G8B8A8_SRGB,
+                                                          name)
+                    .IsError())
+            {
+                m_world.m_textures_cache.erase(str_name);
+            }
+
+            delete[] contents;
+        }
+
+        // And close the archive
+        zip_close(z);
+    }
     return ftstd::VResult::Error((char*)"Unimplemented loadGameAssets function");
 }
 
