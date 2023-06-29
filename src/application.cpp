@@ -56,6 +56,8 @@ frametech::Application* frametech::Application::getInstance(const char* app_titl
 void frametech::Application::clean()
 {
     Log("< Cleaning the Application object");
+    // Force override in order to destroy the internal state of the World object
+    m_world = frametech::gameframework::World();
     m_app_title = nullptr;
     m_engine = nullptr;
     glfwDestroyWindow(m_app_window);
