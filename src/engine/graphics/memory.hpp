@@ -9,8 +9,8 @@
 #ifndef memory_h
 #define memory_h
 
-#include "command.hpp"
 #include "../../ftstd/result.hpp"
+#include "command.hpp"
 #include <assert.h>
 #include <vk_mem_alloc.h>
 #include <vulkan/vulkan.h>
@@ -101,7 +101,6 @@ namespace frametech
             }
 
             /// @brief Copy the data from the source buffer to the destination buffer
-            /// @param graphics_device The graphics (or logical) device
             /// @param src The source buffer to copy from
             /// @param src_offset Offset of the source buffer to copy from (default should be 0)
             /// @param dst The destination buffer to copy to
@@ -109,8 +108,7 @@ namespace frametech
             /// @param transfert_command_pool The Transfert command pool
             /// @param size The size of the buffer to copy
             /// @return A VResult type to know if the operation performed well or not
-            static ftstd::VResult copyBuffer(
-                const VkDevice& graphics_device,
+            static ftstd::VResult copyBufferToBuffer(
                 VkBuffer& src,
                 VkDeviceSize src_offset,
                 VkBuffer& dst,
@@ -134,6 +132,58 @@ namespace frametech
                         .size = size,
                     };
                     vkCmdCopyBuffer(*command_buffer.getBuffer(), src, dst, 1, &copy_region);
+                    ++submit_count;
+                }
+
+                command_buffer.end(transfert_queue, submit_count);
+                return ftstd::VResult::Ok();
+            }
+
+            /// @brief Copy the data from the source buffer to the VkImage destination
+            /// @param src_buffer The source buffer to copy from
+            /// @param src_offset Offset of the source buffer to copy from (default should be 0)
+            /// @param dst_image The VkImage destination
+            /// @param transfert_command_pool The Transfert command pool
+            /// @param image_height The height of the image to copy in
+            /// @param image_width The width of the image to copy in
+            /// @return A VResult type to know if the operation performed well or not
+            static ftstd::VResult copyBufferToImage(
+                VkBuffer& src_buffer,
+                VkDeviceSize src_offset,
+                VkImage& dst_image,
+                VkCommandPool* transfert_command_pool,
+                const VkQueue& transfert_queue,
+                const uint32_t image_height,
+                const uint32_t image_width)
+            {
+
+                frametech::graphics::Command command_buffer(*transfert_command_pool);
+                command_buffer.createBuffer();
+                command_buffer.begin();
+
+                uint32_t submit_count = 0;
+
+                // Build the packet
+                {
+                    VkBufferImageCopy copy_region{
+                        .bufferOffset = src_offset,
+                        .bufferRowLength = 0,
+                        .bufferImageHeight = 0,
+                        .imageSubresource = {
+                            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                            .mipLevel = 0,
+                            .baseArrayLayer = 0,
+                            .layerCount = 1,
+                        },
+                        .imageOffset = {0, 0, 0},
+                        .imageExtent = {.width = image_width, .height = image_height, .depth = 1}};
+                    vkCmdCopyBufferToImage(
+                        *command_buffer.getBuffer(),
+                        src_buffer,
+                        dst_image,
+                        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                        1,
+                        &copy_region);
                     ++submit_count;
                 }
 

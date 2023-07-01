@@ -18,7 +18,8 @@ constexpr VkClearValue CLEAR_COLOR = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
 
 frametech::graphics::Command::Command(){};
 
-frametech::graphics::Command::Command(VkCommandPool command_pool) {
+frametech::graphics::Command::Command(VkCommandPool command_pool)
+{
     m_pool = command_pool;
 };
 
@@ -42,10 +43,12 @@ ftstd::VResult frametech::graphics::Command::createPool(const uint32_t family_in
         &m_pool);
     if (VK_SUCCESS == create_result)
         return ftstd::VResult::Ok();
+    m_queue_family_index_created_with = family_index;
     return ftstd::VResult::Error((char*)"> Error creating the command pool in the command buffer object");
 }
 
-ftstd::VResult frametech::graphics::Command::createBuffer() {
+ftstd::VResult frametech::graphics::Command::createBuffer()
+{
     if (nullptr == m_pool)
         return ftstd::VResult::Error((char*)"> Error creating the buffer: no memory pool");
     VkCommandBufferAllocateInfo alloc_info{};
@@ -65,18 +68,25 @@ ftstd::VResult frametech::graphics::Command::createBuffer() {
 
 ftstd::VResult frametech::graphics::Command::begin()
 {
+    assert(CommandState::S_ENDED == m_state || CommandState::S_UNKNOWN == m_state);
     VkCommandBufferBeginInfo command_buffer_begin_info{
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
         .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, // Wait before submit
     };
     if (VK_SUCCESS == vkBeginCommandBuffer(m_buffer, &command_buffer_begin_info))
+    {
+        m_state = CommandState::S_BEGAN;
         return ftstd::VResult::Ok();
+    }
+    m_state = CommandState::S_ERROR;
     return ftstd::VResult::Error((char*)"> Error calling vkBeginCommandBuffer");
 }
 
-ftstd::VResult frametech::graphics::Command::end(const VkQueue& queue, const uint32_t submit_count) {
+ftstd::VResult frametech::graphics::Command::end(const VkQueue& queue, const uint32_t submit_count)
+{
+    assert(CommandState::S_BEGAN == m_state);
     vkEndCommandBuffer(m_buffer);
-    
+
     VkSubmitInfo submitInfo{
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
         .commandBufferCount = 1,
@@ -91,7 +101,42 @@ ftstd::VResult frametech::graphics::Command::end(const VkQueue& queue, const uin
         m_pool,
         1,
         &m_buffer);
+
+    m_state = CommandState::S_ENDED;
     return ftstd::VResult::Ok();
+}
+
+void frametech::graphics::Command::transition(
+    const VkImage& image,
+    const VkImageLayout new_layout,
+    const VkImageLayout old_layout,
+    const uint32_t src_queue_family_index,
+    const uint32_t dst_queue_family_index) const noexcept
+{
+    assert(CommandState::S_BEGAN == m_state);
+    VkImageMemoryBarrier memory_barrier{
+        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+        .newLayout = new_layout,
+        .oldLayout = old_layout,
+        .srcQueueFamilyIndex = src_queue_family_index,
+        .dstQueueFamilyIndex = dst_queue_family_index,
+        .image = image,
+        .subresourceRange = {
+            .layerCount = 1,
+            .baseArrayLayer = 0,
+            .levelCount = 1,
+            .baseMipLevel = 0,
+            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+        },
+        .srcAccessMask = 0, // TODO : .srcStageMask must not be 0 unless synchronization2 is enabled. The Vulkan spec states: If the synchronization2 feature is not enabled, pname:srcStageMask must not be 0
+        .dstAccessMask = 0, // TODO : .dstStageMask must not be 0 unless synchronization2 is enabled. The Vulkan spec states: If the synchronization2 feature is not enabled, pname:dstStageMask must not be 0
+    };
+    vkCmdPipelineBarrier(m_buffer,
+                         memory_barrier.srcAccessMask, memory_barrier.dstAccessMask,
+                         0,
+                         0, nullptr,
+                         0, nullptr,
+                         1, &memory_barrier);
 }
 
 ftstd::VResult frametech::graphics::Command::record()

@@ -113,9 +113,51 @@ ftstd::VResult frametech::engine::graphics::Texture::setup(
         return ftstd::VResult::Error((char*)"Failed to initialize memory for the image");
     }
 
-    // Finally, bind the image
-    // TODO: check if vmaCreateImage is same than vmaBindImageMemory
-    // vmaBindImageMemory(resource_allocator, m_staging_image_allocation, m_image);
+    // Transition - TOO COMPLEX, REDUCE COMPLEXITY OF TRANSITIONING HERE
+    VkQueue transfert_queue = frametech::Engine::getInstance()->m_graphics_device.getTransfertQueue();
+    auto transfert_command_buffer = frametech::Engine::getInstance()->m_render->getTransfertCommand();
+    VkCommandPool* transfert_command_pool = transfert_command_buffer->getPool();
+
+    const uint32_t transfert_queue_family_index = transfert_command_buffer->m_queue_family_index_created_with;
+
+    {
+        frametech::graphics::Command command_buffer(*transfert_command_pool);
+        command_buffer.createBuffer();
+        command_buffer.begin();
+        // TODO: command_buffer.transition(...);
+        command_buffer.transition(
+            m_image,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, // New
+            VK_IMAGE_LAYOUT_UNDEFINED,            // Old
+            transfert_queue_family_index,
+            transfert_queue_family_index);
+        command_buffer.end(transfert_queue, 1);
+    }
+
+    // TODO: frametech::graphics::Memory::copyBufferToImage(...);
+
+    frametech::graphics::Memory::copyBufferToImage(
+        staging_buffer,
+        0,
+        m_image,
+        transfert_command_pool,
+        transfert_queue,
+        m_height,
+        m_width);
+
+    {
+        frametech::graphics::Command command_buffer(*transfert_command_pool);
+        command_buffer.createBuffer();
+        command_buffer.begin();
+        // TODO: command_buffer.transition(...);
+        command_buffer.transition(
+            m_image,
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, // New
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,     // Old
+            transfert_queue_family_index,
+            transfert_queue_family_index);
+        command_buffer.end(transfert_queue, 1);
+    }
 
     vmaDestroyBuffer(resource_allocator, staging_buffer, staging_buffer_allocation);
 
