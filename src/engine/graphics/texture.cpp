@@ -18,6 +18,13 @@ frametech::engine::graphics::Texture::Texture() : m_tag("Unknown") {}
 frametech::engine::graphics::Texture::~Texture()
 {
     const auto resource_allocator = frametech::Engine::getInstance()->m_allocator;
+    if (VK_NULL_HANDLE != m_image_view)
+    {
+        Log("< Destroying the image view object for tag %s...", m_tag.c_str());
+        const auto graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+        vkDestroyImageView(graphics_device, m_image_view, nullptr);
+        m_image_view = VK_NULL_HANDLE;
+    }
     if (VK_NULL_HANDLE != m_image)
     {
         Log("< Destroying the image object with tag %s...", m_tag.c_str());
@@ -113,6 +120,31 @@ ftstd::VResult frametech::engine::graphics::Texture::setup(
         return ftstd::VResult::Error((char*)"Failed to initialize memory for the image");
     }
 
+    // Initialize the image view
+    {
+        VkImageViewCreateInfo viewInfo{
+            .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+            .image = m_image,
+            .viewType = is_1D_texture ? VK_IMAGE_VIEW_TYPE_1D : VK_IMAGE_VIEW_TYPE_2D,
+            .format = texture_format,
+            .subresourceRange = {
+                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                .baseMipLevel = 0,
+                .levelCount = 1,
+                .baseArrayLayer = 0,
+                .layerCount = 1,
+            }};
+
+        const VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+
+        if (const auto result = vkCreateImageView(graphics_device, &viewInfo, nullptr, &m_image_view); VK_SUCCESS != result)
+        {
+            vmaDestroyBuffer(resource_allocator, staging_buffer, staging_buffer_allocation);
+            LogE("Failed to initialize the image view for %s", tag.c_str());
+            return ftstd::VResult::Error((char*)"Failed to initialize the image view");
+        }
+    }
+
     // Transition - TOO COMPLEX, REDUCE COMPLEXITY OF TRANSITIONING HERE
     VkQueue transfert_queue = frametech::Engine::getInstance()->m_graphics_device.getTransfertQueue();
     auto transfert_command_buffer = frametech::Engine::getInstance()->m_render->getTransfertCommand();
@@ -124,7 +156,6 @@ ftstd::VResult frametech::engine::graphics::Texture::setup(
         frametech::graphics::Command command_buffer(*transfert_command_pool);
         command_buffer.createBuffer();
         command_buffer.begin();
-        // TODO: command_buffer.transition(...);
         command_buffer.transition(
             m_image,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, // New
@@ -133,8 +164,6 @@ ftstd::VResult frametech::engine::graphics::Texture::setup(
             transfert_queue_family_index);
         command_buffer.end(transfert_queue, 1);
     }
-
-    // TODO: frametech::graphics::Memory::copyBufferToImage(...);
 
     frametech::graphics::Memory::copyBufferToImage(
         staging_buffer,
@@ -149,7 +178,6 @@ ftstd::VResult frametech::engine::graphics::Texture::setup(
         frametech::graphics::Command command_buffer(*transfert_command_pool);
         command_buffer.createBuffer();
         command_buffer.begin();
-        // TODO: command_buffer.transition(...);
         command_buffer.transition(
             m_image,
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, // New

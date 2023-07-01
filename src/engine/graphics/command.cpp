@@ -114,6 +114,43 @@ void frametech::graphics::Command::transition(
     const uint32_t dst_queue_family_index) const noexcept
 {
     assert(CommandState::S_BEGAN == m_state);
+
+    VkAccessFlags src_access_mask;
+    VkAccessFlags dst_access_mask;
+    VkPipelineStageFlags src_stage_mask;
+    VkPipelineStageFlags dst_stage_mask;
+
+    // Compute the stage masks based on the layouts & index parameters
+    switch (new_layout)
+    {
+        // Transition to copy the buffer to the image -> no need to wait
+        // The transition **must** be occured in the Transfer stage
+        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+        {
+            src_access_mask = 0;
+            dst_access_mask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            src_stage_mask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+            dst_stage_mask = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        }
+        break;
+        // Transition for a (fragment) shader -> wait on resource
+        // Fragment shader as the image is considered as a texture
+        // The resource is coming from the Transfer stage as it just
+        // been copied from a buffer
+        case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+        {
+            src_access_mask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            dst_access_mask = VK_ACCESS_SHADER_READ_BIT;
+            src_stage_mask = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            dst_stage_mask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        }
+        break;
+        default:
+            // Let it crash, let it craaaaaaash...
+            LogE("Error in transition : no right state found (new layout with %d)", new_layout);
+            return;
+    }
+
     VkImageMemoryBarrier memory_barrier{
         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
         .newLayout = new_layout,
@@ -128,11 +165,11 @@ void frametech::graphics::Command::transition(
             .baseMipLevel = 0,
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
         },
-        .srcAccessMask = 0, // TODO : .srcStageMask must not be 0 unless synchronization2 is enabled. The Vulkan spec states: If the synchronization2 feature is not enabled, pname:srcStageMask must not be 0
-        .dstAccessMask = 0, // TODO : .dstStageMask must not be 0 unless synchronization2 is enabled. The Vulkan spec states: If the synchronization2 feature is not enabled, pname:dstStageMask must not be 0
+        .srcAccessMask = src_access_mask,
+        .dstAccessMask = dst_access_mask,
     };
     vkCmdPipelineBarrier(m_buffer,
-                         memory_barrier.srcAccessMask, memory_barrier.dstAccessMask,
+                         src_stage_mask, dst_stage_mask,
                          0,
                          0, nullptr,
                          0, nullptr,

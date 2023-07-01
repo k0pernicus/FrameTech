@@ -48,12 +48,19 @@ namespace frametech
                 inline int getTextureSize() const noexcept;
 
             private:
+                /// @brief Height of the texture image
                 int m_height = 0;
+                /// @brief Width of the texture image
                 int m_width = 0;
+                /// @brief Number of channels in the texture image
                 int m_channels = 0;
                 /// @brief Alpha channel by default
                 bool m_supports_alpha = true;
+                /// @brief Vulkan image object
                 VkImage m_image = VK_NULL_HANDLE;
+                /// @brief Vulkan image view to access the texture for the GPU
+                VkImageView m_image_view = VK_NULL_HANDLE;
+                /// @brief Resource allocation object, required for VMA
                 VmaAllocation m_staging_image_allocation = VK_NULL_HANDLE;
                 /// @brief Takes the filename as a tag
                 std::string m_tag;
