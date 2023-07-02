@@ -46,6 +46,11 @@ namespace frametech
             /// @brief Textures cache, attached to the world
             /// Each texture is a unique_ptr used by anywhere here
             std::map<std::string, frametech::engine::graphics::Texture*> m_textures_cache;
+            /// @brief Returns m_selected_texture
+            /// @return A standard string object
+            std::string getSelectedTexture() const noexcept { return m_selected_texture; };
+            /// @brief Sets m_selected_texture
+            void setSelectedTexture(const std::string& new_texture) noexcept { m_selected_texture = new_texture; };
 
         private:
             /// @brief Main camera of the world
@@ -56,6 +61,8 @@ namespace frametech
             frametech::gameframework::MovableInterface* m_selected_object = nullptr;
             /// @brief Internal state to know if the world has been setup
             bool m_has_been_setup = false;
+            /// @brief Current selected texture (one for all objects)
+            std::string m_selected_texture;
         };
     } // namespace gameframework
 } // namespace frametech

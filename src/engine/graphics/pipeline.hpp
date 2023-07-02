@@ -136,6 +136,8 @@ namespace frametech
                 const VkShaderStageFlags shader_stages,
                 const VkDescriptorType descriptor_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
                 const VkSampler* samplers = nullptr) noexcept;
+            /// @brief Updates the registered descriptor sets
+            void updateDescriptorSets(bool waitForDeviceIdleState = true) noexcept;
             /// @brief Creates the descriptor sets
             /// @return A VResult type to know if the function succeeded or not.
             ftstd::VResult createDescriptorSets() noexcept;

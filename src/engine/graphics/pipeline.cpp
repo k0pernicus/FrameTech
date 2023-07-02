@@ -760,7 +760,18 @@ ftstd::VResult frametech::graphics::Pipeline::createDescriptorSets() noexcept
     {
         return ftstd::VResult::Error((char*)"Cannot allocate for descriptor sets");
     }
+    updateDescriptorSets(false); // No need to wait at creation
+    return ftstd::VResult::Ok();
+}
 
+void frametech::graphics::Pipeline::updateDescriptorSets(bool waitForDeviceIdleState) noexcept
+{
+    VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+    if (waitForDeviceIdleState)
+    {
+        // Need to wait that the device is idle
+        vkDeviceWaitIdle(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice());
+    }
     // Populate the descriptors now
     for (size_t i = 0; i < m_descriptor_sets.size(); ++i)
     {
@@ -777,14 +788,19 @@ ftstd::VResult frametech::graphics::Pipeline::createDescriptorSets() noexcept
         // * gameframework/world.hpp
 
         const frametech::gameframework::World& c_world = frametech::Application::getInstance("")->getCurrentWorld();
+        const std::string texture_name = c_world.getSelectedTexture();
         std::vector<VkDescriptorImageInfo> image_info_descriptors = std::vector<VkDescriptorImageInfo>(c_world.m_textures_cache.size());
-        for (const auto& [_, cached_texture] : c_world.m_textures_cache)
+
+        for (const auto& [texture_tag, texture] : c_world.m_textures_cache)
         {
-            VkDescriptorImageInfo image_info{};
-            image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            image_info.imageView = cached_texture->getImageView();
-            image_info.sampler = cached_texture->getSampler();
-            image_info_descriptors.emplace_back(image_info);
+            if (texture_tag == texture_name)
+            {
+                VkDescriptorImageInfo image_info{};
+                image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                image_info.imageView = texture->getImageView();
+                image_info.sampler = texture->getSampler();
+                image_info_descriptors.emplace_back(image_info);
+            }
         }
 
         std::vector<VkWriteDescriptorSet> descriptor_sets = std::vector<VkWriteDescriptorSet>(image_info_descriptors.size() + 1);
@@ -822,9 +838,8 @@ ftstd::VResult frametech::graphics::Pipeline::createDescriptorSets() noexcept
             0,
             nullptr);
 
-        Log("Created descriptor set at index %d...", i);
+        Log("Updated descriptor set at index %d...", i);
     }
-    return ftstd::VResult::Ok();
 }
 
 VkPipelineLayout frametech::graphics::Pipeline::getPipelineLayout() noexcept

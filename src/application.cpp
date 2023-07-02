@@ -420,6 +420,36 @@ void frametech::Application::drawMeshSelectionImGui()
         }
     }
 
+    if (ImGui::CollapsingHeader("Available textures"))
+    {
+        if (ImGui::BeginListBox("Textures"))
+        {
+            std::vector<std::string> items = std::vector<std::string>(m_world.m_textures_cache.size());
+            int index = 0;
+            for (const auto& [texture_id, _] : m_world.m_textures_cache)
+            {
+                items[index++] = texture_id;
+            }
+            static std::string item_current_selected = m_world.getSelectedTexture();
+            std::string previously_selected_item = m_world.getSelectedTexture();
+            for (int n = 0; n < items.size(); ++n)
+            {
+                const bool is_selected = (items[n] == previously_selected_item);
+                if (ImGui::Selectable(items[n].c_str(), is_selected))
+                    item_current_selected = items[n];
+                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                if (is_selected && (item_current_selected != previously_selected_item))
+                {
+                    previously_selected_item = item_current_selected;
+                    ImGui::SetItemDefaultFocus();
+                    m_world.setSelectedTexture(item_current_selected);
+                    m_engine->m_render->getGraphicsPipeline()->updateDescriptorSets();
+                }
+            }
+            ImGui::EndListBox();
+        }
+    }
+
     ImGui::Separator();
 
     ImGui::End();
@@ -491,6 +521,10 @@ ftstd::VResult frametech::Application::loadGameAssets() noexcept
                     .IsError())
             {
                 m_world.m_textures_cache.erase(str_name);
+            }
+            else
+            {
+                m_world.setSelectedTexture(str_name);
             }
 
             delete[] contents;
