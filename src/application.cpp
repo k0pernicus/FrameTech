@@ -57,7 +57,7 @@ void frametech::Application::clean()
 {
     Log("< Cleaning the Application object");
     // Force override in order to destroy the internal state of the World object
-    m_world = frametech::gameframework::World();
+    m_world.clean();
     m_app_title = nullptr;
     m_engine = nullptr;
     glfwDestroyWindow(m_app_window);
@@ -440,6 +440,12 @@ void frametech::Application::initEngine()
     m_engine->initialize();
 }
 
+void frametech::Application::initDescriptorSets()
+{
+    assert(nullptr != m_engine);
+    m_engine->m_render->getGraphicsPipeline()->createDescriptorSets();
+}
+
 ftstd::VResult frametech::Application::loadGameAssets() noexcept
 {
     // The game world **should not** be loaded
@@ -475,7 +481,7 @@ ftstd::VResult frametech::Application::loadGameAssets() noexcept
 
             const std::string str_name = std::string(name);
 
-            m_world.m_textures_cache[str_name] = std::make_unique<frametech::engine::graphics::Texture>();
+            m_world.m_textures_cache[str_name] = new frametech::engine::graphics::Texture();
             if (m_world.m_textures_cache[str_name]->setup(contents,
                                                           (int)st.size,
                                                           true,

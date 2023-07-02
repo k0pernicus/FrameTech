@@ -369,11 +369,11 @@ ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
         LogE("< Error creating the uniform buffers");
         return result;
     }
-    if (const auto result = m_graphics_pipeline->createDescriptorSets(1); result.IsError())
-    {
-        LogE("< Error creating the descriptor sets");
-        return result;
-    }
+    // if (const auto result = m_graphics_pipeline->createDescriptorSets(); result.IsError())
+    // {
+    //     LogE("< Error creating the descriptor sets");
+    //     return result;
+    // }
     return ftstd::VResult::Ok();
 }
 

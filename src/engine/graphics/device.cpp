@@ -249,10 +249,9 @@ ftstd::VResult frametech::graphics::Device::createLogicalDevice()
     }
 
     const SupportFeatures supported_flags[3] = {
-        SupportFeatures::GRAPHICS, 
-        SupportFeatures::PRESENTS, 
-        SupportFeatures::TRANSFERT
-    };
+        SupportFeatures::GRAPHICS,
+        SupportFeatures::PRESENTS,
+        SupportFeatures::TRANSFERT};
     std::vector<VkDeviceQueueCreateInfo> queues(sizeof(supported_flags) / sizeof(supported_flags[0]));
     // TODO: make Vulkan uses the same queue for GRAPHICS and PRESENTS,
     // and avoid this trick
@@ -312,9 +311,9 @@ ftstd::VResult frametech::graphics::Device::createLogicalDevice()
         }
     }
 
-    // Specify GRAPHICS feature - set everyone
-    // to VK_FALSE for the moment
+    // Specify GRAPHICS feature
     VkPhysicalDeviceFeatures device_features{};
+    device_features.samplerAnisotropy = VK_TRUE;
 
     // Initializes the logical device
     VkDeviceCreateInfo logical_device_create_info{

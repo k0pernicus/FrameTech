@@ -27,6 +27,8 @@ namespace frametech
                     glm::vec2 m_position;
                     /// @brief Vertex color
                     glm::vec3 m_color;
+                    /// @brief Vertex color
+                    glm::vec2 m_texture_coordinates;
 
                     void setColor(const glm::vec3& new_color)
                     {
@@ -36,6 +38,11 @@ namespace frametech
                     void setPosition(const glm::vec2& new_position)
                     {
                         m_position = new_position;
+                    }
+
+                    void setTextureCoordinates(const glm::vec2& new_coordinates)
+                    {
+                        m_texture_coordinates = new_coordinates;
                     }
                 };
 
@@ -60,7 +67,7 @@ namespace frametech
                     }
                     /// @brief Returns an array of attribute descriptions of the Vertex structure
                     /// @return an array of length 2: position and color of the shader (in this particular order)
-                    [[maybe_unused]] static std::array<VkVertexInputAttributeDescription, 2> getVertexAttributeDescriptions() noexcept
+                    [[maybe_unused]] static std::array<VkVertexInputAttributeDescription, 3> getVertexAttributeDescriptions() noexcept
                     {
                         /* Attribute description type of data
                          * ----------------------------------
@@ -69,18 +76,27 @@ namespace frametech
                          * vec3: VK_FORMAT_R32G32B32_SFLOAT
                          * vec4: VK_FORMAT_R32G32B32A32_SFLOAT
                          * */
-                        std::array<VkVertexInputAttributeDescription, 2> attribute_descriptions{};
+                        std::array<VkVertexInputAttributeDescription, 3> attribute_descriptions{};
+                        // Vertices pos
                         attribute_descriptions[0] = VkVertexInputAttributeDescription{
                             .location = 0,
                             .binding = 0,
                             .format = VK_FORMAT_R32G32_SFLOAT, // Position -> 2 floats
                             .offset = offsetof(Vertex, m_position),
                         };
+                        // Colors
                         attribute_descriptions[1] = VkVertexInputAttributeDescription{
                             .location = 1,
                             .binding = 0,
                             .format = VK_FORMAT_R32G32B32_SFLOAT, // Color -> 3 floats
                             .offset = offsetof(Vertex, m_color),
+                        };
+                        // Texture attributes (coordinates : UV)
+                        attribute_descriptions[2] = VkVertexInputAttributeDescription{
+                            .location = 2,
+                            .binding = 0,
+                            .format = VK_FORMAT_R32G32_SFLOAT,
+                            .offset = offsetof(Vertex, m_texture_coordinates),
                         };
                         return attribute_descriptions;
                     }

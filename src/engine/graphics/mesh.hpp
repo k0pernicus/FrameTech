@@ -63,10 +63,10 @@ namespace frametech
                         // Vertices
                         std::vector<frametech::engine::graphics::shaders::Vertex> vertices(4);
                         vertices = {
-                            {{-1.0f, -1.0f}, {1.0f, 1.0f, 1.0f}},
-                            {{1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},
-                            {{1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
-                            {{-1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}}};
+                            {{-1.0f, -1.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+                            {{1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+                            {{1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+                            {{-1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}}};
                         auto mesh = Mesh{
                             .m_vertices = vertices,
                             .m_indices = indices,
@@ -82,9 +82,9 @@ namespace frametech
                         // Vertices
                         std::vector<frametech::engine::graphics::shaders::Vertex> vertices(3);
                         vertices = {
-                            {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
-                            {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-                            {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
+                            {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+                            {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+                            {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}}};
                         auto mesh = Mesh{
                             .m_vertices = vertices,
                             .m_indices = indices,
@@ -99,7 +99,7 @@ namespace frametech
                         indices = {0};
                         // Vertices
                         std::vector<frametech::engine::graphics::shaders::Vertex> vertices(0);
-                        vertices = {{{0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}}};
+                        vertices = {{{0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}}};
                         auto mesh = Mesh{
                             .m_vertices = vertices,
                             .m_indices = indices,

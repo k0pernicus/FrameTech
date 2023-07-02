@@ -119,8 +119,10 @@ namespace frametech
         void clean();
         /// @brief Initialize the app window
         ftstd::VResult initWindow();
-        /// @brief Initialize the app's graphics engine
+        /// @brief Initialize the app's engine
         void initEngine();
+        /// @brief Initialize the app's engine descriptor sets
+        void initDescriptorSets();
         /// @brief Load all assets for the game - should be called
         /// **after** initializing the engine
         ftstd::VResult loadGameAssets() noexcept;

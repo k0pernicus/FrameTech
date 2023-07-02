@@ -18,10 +18,10 @@ frametech::engine::graphics::Texture::Texture() : m_tag("Unknown") {}
 frametech::engine::graphics::Texture::~Texture()
 {
     const auto resource_allocator = frametech::Engine::getInstance()->m_allocator;
+    const auto graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
     if (VK_NULL_HANDLE != m_image_view)
     {
         Log("< Destroying the image view object for tag %s...", m_tag.c_str());
-        const auto graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
         vkDestroyImageView(graphics_device, m_image_view, nullptr);
         m_image_view = VK_NULL_HANDLE;
     }
@@ -32,6 +32,112 @@ frametech::engine::graphics::Texture::~Texture()
         m_image = VK_NULL_HANDLE;
         m_staging_image_allocation = VK_NULL_HANDLE;
     }
+    if (VK_NULL_HANDLE != m_sampler)
+    {
+        Log("< Destroying the image sampler with tag %s...", m_tag.c_str());
+        vkDestroySampler(graphics_device, m_sampler, nullptr);
+        m_sampler = VK_NULL_HANDLE;
+    }
+}
+
+ftstd::VResult frametech::engine::graphics::Texture::createImage(
+    const frametech::engine::graphics::Texture::Type texture_type,
+    const VkFormat texture_format,
+    VmaAllocator resource_allocator) noexcept
+{
+    const bool is_1D_texture = texture_type == frametech::engine::graphics::Texture::Type::T1D;
+
+    VkImageCreateInfo create_info{
+        .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+        .imageType = is_1D_texture ? VK_IMAGE_TYPE_1D : VK_IMAGE_TYPE_2D,
+        .format = texture_format,
+        .extent = {
+            .width = static_cast<uint32_t>(m_width),
+            .height = static_cast<uint32_t>(m_height),
+            .depth = is_1D_texture ? static_cast<uint32_t>(0) : static_cast<uint32_t>(1), // FIXME !!! Big errors will happen for 3D textures - handle the depth via the image load function,
+        },
+        .mipLevels = 1,
+        .arrayLayers = 1,
+        .samples = VK_SAMPLE_COUNT_1_BIT,  // Related to multisampling
+        .tiling = VK_IMAGE_TILING_OPTIMAL, // TODO: switch maybe to Optimal in the future, or let the dev decides of it
+        .usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+        .sharingMode = VK_SHARING_MODE_EXCLUSIVE,   // Used by one queue family, the one that supports graphics
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED, // first transition will discard the texels
+    };
+
+#if defined(DEBUG)
+    assert(is_1D_texture ? create_info.extent.depth == 0 : create_info.extent.depth == 1);
+#endif
+
+    if (frametech::graphics::Memory::initImage(
+            resource_allocator,
+            &m_staging_image_allocation,
+            m_image,
+            create_info)
+            .IsError())
+    {
+        return ftstd::VResult::Error((char*)"Failed to initialize memory for the image");
+    }
+    return ftstd::VResult::Ok();
+}
+
+ftstd::VResult frametech::engine::graphics::Texture::createImageView(
+    const frametech::engine::graphics::Texture::Type texture_type,
+    const VkFormat texture_format) noexcept
+{
+    const bool is_1D_texture = texture_type == frametech::engine::graphics::Texture::Type::T1D;
+
+    VkImageViewCreateInfo view_info{
+        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .image = m_image,
+        .viewType = is_1D_texture ? VK_IMAGE_VIEW_TYPE_1D : VK_IMAGE_VIEW_TYPE_2D,
+        .format = texture_format,
+        .subresourceRange = {
+            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .baseMipLevel = 0,
+            .levelCount = 1,
+            .baseArrayLayer = 0,
+            .layerCount = 1,
+        }};
+
+    const VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+
+    if (const auto result = vkCreateImageView(graphics_device, &view_info, nullptr, &m_image_view); VK_SUCCESS != result)
+    {
+        return ftstd::VResult::Error((char*)"Failed to initialize the image view");
+    }
+    return ftstd::VResult::Ok();
+}
+
+ftstd::VResult frametech::engine::graphics::Texture::createSampler() noexcept
+{
+    VkSamplerCreateInfo create_info{
+        .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+        .magFilter = VK_FILTER_LINEAR,
+        .minFilter = VK_FILTER_LINEAR,
+        .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+        .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+        .addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+        .anisotropyEnable = VK_TRUE,
+        .maxAnisotropy = 2.0,
+        .borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
+        .unnormalizedCoordinates = VK_FALSE,
+        .compareEnable = VK_FALSE,
+        .compareOp = VK_COMPARE_OP_ALWAYS,
+        .mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
+        .mipLodBias = 0.0f,
+        .minLod = 0.0f,
+        .maxLod = 0.0f, 
+    };
+
+    const VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+
+    if (const auto result = vkCreateSampler(graphics_device, &create_info, nullptr, &m_sampler); VK_SUCCESS != result)
+    {
+        return ftstd::VResult::Error((char*)"Failed to initialize the sampler");
+    }
+
+    return ftstd::VResult::Ok();
 }
 
 ftstd::VResult frametech::engine::graphics::Texture::setup(
@@ -85,64 +191,24 @@ ftstd::VResult frametech::engine::graphics::Texture::setup(
     // No need the raw data, as we mapped the data in VMA
     stbi_image_free(image_data);
 
-    const bool is_1D_texture = texture_type == frametech::engine::graphics::Texture::Type::T1D;
-
-    VkImageCreateInfo create_info{
-        .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-        .imageType = is_1D_texture ? VK_IMAGE_TYPE_1D : VK_IMAGE_TYPE_2D,
-        .format = texture_format,
-        .extent = {
-            .width = static_cast<uint32_t>(m_width),
-            .height = static_cast<uint32_t>(m_height),
-            .depth = is_1D_texture ? static_cast<uint32_t>(0) : static_cast<uint32_t>(1), // FIXME !!! Big errors will happen for 3D textures - handle the depth via the image load function,
-        },
-        .mipLevels = 1,
-        .arrayLayers = 1,
-        .samples = VK_SAMPLE_COUNT_1_BIT,  // Related to multisampling
-        .tiling = VK_IMAGE_TILING_OPTIMAL, // TODO: switch maybe to Optimal in the future, or let the dev decides of it
-        .usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-        .sharingMode = VK_SHARING_MODE_EXCLUSIVE,   // Used by one queue family, the one that supports graphics
-        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED, // first transition will discard the texels
-    };
-
-#if defined(DEBUG)
-    assert(is_1D_texture ? create_info.extent.depth == 0 : create_info.extent.depth == 1);
-#endif
-
-    if (frametech::graphics::Memory::initImage(
-            resource_allocator,
-            &m_staging_image_allocation,
-            m_image,
-            create_info)
-            .IsError())
+    if (const auto result = createImage(texture_type, texture_format, resource_allocator); result.IsError())
     {
+        LogE("Failed to initialize memory for the image %s", tag.c_str());
         vmaDestroyBuffer(resource_allocator, staging_buffer, staging_buffer_allocation);
-        return ftstd::VResult::Error((char*)"Failed to initialize memory for the image");
+        return result;
     }
 
-    // Initialize the image view
+    if (const auto result = createImageView(texture_type, texture_format); result.IsError())
     {
-        VkImageViewCreateInfo viewInfo{
-            .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-            .image = m_image,
-            .viewType = is_1D_texture ? VK_IMAGE_VIEW_TYPE_1D : VK_IMAGE_VIEW_TYPE_2D,
-            .format = texture_format,
-            .subresourceRange = {
-                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                .baseMipLevel = 0,
-                .levelCount = 1,
-                .baseArrayLayer = 0,
-                .layerCount = 1,
-            }};
+        LogE("Failed to initialize memory for the image view %s", tag.c_str());
+        vmaDestroyBuffer(resource_allocator, staging_buffer, staging_buffer_allocation);
+        return result;
+    }
 
-        const VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
-
-        if (const auto result = vkCreateImageView(graphics_device, &viewInfo, nullptr, &m_image_view); VK_SUCCESS != result)
-        {
-            vmaDestroyBuffer(resource_allocator, staging_buffer, staging_buffer_allocation);
-            LogE("Failed to initialize the image view for %s", tag.c_str());
-            return ftstd::VResult::Error((char*)"Failed to initialize the image view");
-        }
+    if (const auto result = createSampler(); result.IsError())
+    {
+        vmaDestroyBuffer(resource_allocator, staging_buffer, staging_buffer_allocation);
+        return result;
     }
 
     // Transition - TOO COMPLEX, REDUCE COMPLEXITY OF TRANSITIONING HERE

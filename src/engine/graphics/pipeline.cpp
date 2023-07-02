@@ -6,8 +6,10 @@
 //
 
 #include "pipeline.hpp"
+#include "../../application.hpp" // To link getting the current world - to remove if refactoring
 #include "../../ftstd/debug_tools.h"
 #include "../engine.hpp"
+#include "../gameframework/world.hpp" // To link getting the current world - to remove if refactoring
 #include "memory.hpp"
 #include <assert.h>
 #include <chrono>
@@ -704,7 +706,9 @@ ftstd::VResult frametech::graphics::Pipeline::createDescriptorSetLayout(
     if (descriptor_count == 0)
         return ftstd::VResult::Error((char*)"< The number of descriptors should be \"> 0\"");
     auto graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
-    VkDescriptorSetLayoutBinding descriptor_layout_binding{
+
+    // Uniform
+    VkDescriptorSetLayoutBinding uniform_descriptor_layout_binding{
         .binding = 0, // TODO: should be included as a function parameter maybe
         .descriptorType = descriptor_type,
         .descriptorCount = descriptor_count,
@@ -712,10 +716,23 @@ ftstd::VResult frametech::graphics::Pipeline::createDescriptorSetLayout(
         .pImmutableSamplers = samplers,
     };
 
+    // Sampler(s)
+    VkDescriptorSetLayoutBinding sampler_descriptor_layout_binding{
+        .binding = 1,
+        .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+        .descriptorCount = 1,
+        .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+        .pImmutableSamplers = nullptr,
+    };
+
+    std::array<VkDescriptorSetLayoutBinding, 2> bindings = {
+        uniform_descriptor_layout_binding,
+        sampler_descriptor_layout_binding};
+
     VkDescriptorSetLayoutCreateInfo descriptor_create_info{
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .bindingCount = 1,
-        .pBindings = &descriptor_layout_binding,
+        .bindingCount = static_cast<uint32_t>(bindings.size()),
+        .pBindings = bindings.data(),
     };
 
     if (VK_SUCCESS != vkCreateDescriptorSetLayout(graphics_device, &descriptor_create_info, nullptr, &m_descriptor_set_layout))
@@ -724,9 +741,7 @@ ftstd::VResult frametech::graphics::Pipeline::createDescriptorSetLayout(
     return ftstd::VResult::Ok();
 }
 
-ftstd::VResult frametech::graphics::Pipeline::createDescriptorSets(
-    const uint32_t descriptor_count,
-    const VkDescriptorType descriptor_type) noexcept
+ftstd::VResult frametech::graphics::Pipeline::createDescriptorSets() noexcept
 {
     const uint32_t max_frames_in_flight = frametech::Engine::getMaxFramesInFlight();
     VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
@@ -754,20 +769,60 @@ ftstd::VResult frametech::graphics::Pipeline::createDescriptorSets(
         buffer_info.offset = 0;
         buffer_info.range = sizeof(ModelViewProjection);
 
+        // TODO : The engine **should not** reference the application here
+        // TODO : Refactor this part to get a link to all textures & samplers
+        // used & to reference
+        // TODO : After refacto, remove the two following headers:
+        // * application.hpp
+        // * gameframework/world.hpp
+
+        const frametech::gameframework::World& c_world = frametech::Application::getInstance("")->getCurrentWorld();
+        std::vector<VkDescriptorImageInfo> image_info_descriptors = std::vector<VkDescriptorImageInfo>(c_world.m_textures_cache.size());
+        for (const auto& [_, cached_texture] : c_world.m_textures_cache)
+        {
+            VkDescriptorImageInfo image_info{};
+            image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            image_info.imageView = cached_texture->getImageView();
+            image_info.sampler = cached_texture->getSampler();
+            image_info_descriptors.emplace_back(image_info);
+        }
+
+        std::vector<VkWriteDescriptorSet> descriptor_sets = std::vector<VkWriteDescriptorSet>(image_info_descriptors.size() + 1);
+        int descriptor_index = 0;
+
         VkWriteDescriptorSet descriptor_write{};
         descriptor_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptor_write.dstSet = m_descriptor_sets[i];
         descriptor_write.dstBinding = 0;
         descriptor_write.dstArrayElement = 0;
-        descriptor_write.descriptorType = descriptor_type;
-        descriptor_write.descriptorCount = descriptor_count;
+        descriptor_write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptor_write.descriptorCount = 1;
         descriptor_write.pBufferInfo = &buffer_info;
         descriptor_write.pImageInfo = nullptr;
         descriptor_write.pTexelBufferView = nullptr;
+        descriptor_sets[descriptor_index++] = descriptor_write;
 
-        vkUpdateDescriptorSets(graphics_device, 1, &descriptor_write, 0, nullptr);
+        for (const auto descriptor : image_info_descriptors)
+        {
+            VkWriteDescriptorSet descriptor_write{};
+            descriptor_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptor_write.dstSet = m_descriptor_sets[i];
+            descriptor_write.dstBinding = 1; // TODO: change for multiple samplers ?
+            descriptor_write.dstArrayElement = 0;
+            descriptor_write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            descriptor_write.descriptorCount = 1;
+            descriptor_write.pImageInfo = &descriptor;
+            descriptor_sets[descriptor_index++] = descriptor_write;
+        }
 
-        Log("Created descriptor set (type %d) for UBO at index %d...", descriptor_type, i);
+        vkUpdateDescriptorSets(
+            graphics_device,
+            descriptor_index,
+            descriptor_sets.data(),
+            0,
+            nullptr);
+
+        Log("Created descriptor set at index %d...", i);
     }
     return ftstd::VResult::Ok();
 }

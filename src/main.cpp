@@ -57,8 +57,16 @@ int main(int argc, const char* argv[])
     {
         if (const auto result_code = app->initWindow(); result_code.IsError())
             return EXIT_FAILURE;
+
+        // The following state machine is pretty bad, as we should not initialize the engine, load assets, and
+        // then finish to initialize the engine with descriptor sets...
+        // We have to do this as descriptor sets require samplers & image objects to be init, but game assets
+        // require some renderer parts to allocate & init textures and samplers...
+        // TODO: find a good solution here to solve this very bad issue !
+
         app->initEngine();
         app->loadGameAssets();
+        app->initDescriptorSets();
         app->run();
     }
 #ifdef ENABLE_EXCEPTIONS

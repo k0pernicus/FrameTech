@@ -137,14 +137,8 @@ namespace frametech
                 const VkDescriptorType descriptor_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
                 const VkSampler* samplers = nullptr) noexcept;
             /// @brief Creates the descriptor sets
-            /// @param descriptor_count The number of descriptors to pass (specify 1 for a single data, or X to
-            /// specify an array of data). **This number should be greater than 0**.
-            /// @param descriptor_type The associated type to the newly (in creation) descriptor set layout.
-            /// VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER by default.
             /// @return A VResult type to know if the function succeeded or not.
-            ftstd::VResult createDescriptorSets(
-                const uint32_t descriptor_count,
-                const VkDescriptorType descriptor_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER) noexcept;
+            ftstd::VResult createDescriptorSets() noexcept;
             /// @brief Returns the pipeline layout
             /// @return a VkPipelineLayout type
             VkPipelineLayout getPipelineLayout() noexcept;

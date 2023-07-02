@@ -36,6 +36,8 @@ namespace frametech
                 };
                 Texture();
                 ~Texture();
+                Texture(Texture const&) = delete;
+                Texture& operator=(Texture const&) = delete;
                 /// @brief Load the compressed texture data and get the metadata from it
                 /// @return A VResult type
                 ftstd::VResult setup(
@@ -46,6 +48,12 @@ namespace frametech
                     const VkFormat texture_format = VK_FORMAT_R8G8B8A8_SRGB,
                     const std::string& tag = "Unknown") noexcept;
                 inline int getTextureSize() const noexcept;
+                /// @brief Returns a copy of the registered sampler
+                /// @return VkSampler
+                VkSampler getSampler() noexcept { return m_sampler; }
+                /// @brief Returns a copy of the registered image view
+                /// @return VkImageView
+                VkImageView getImageView() noexcept { return m_image_view; }
 
             private:
                 /// @brief Height of the texture image
@@ -60,8 +68,22 @@ namespace frametech
                 VkImage m_image = VK_NULL_HANDLE;
                 /// @brief Vulkan image view to access the texture for the GPU
                 VkImageView m_image_view = VK_NULL_HANDLE;
+                /// @brief The sampler associated to the texture
+                VkSampler m_sampler = VK_NULL_HANDLE;
                 /// @brief Resource allocation object, required for VMA
                 VmaAllocation m_staging_image_allocation = VK_NULL_HANDLE;
+                /// @brief Creates the VkImage of the current object
+                /// @return As a result
+                ftstd::VResult createImage(const frametech::engine::graphics::Texture::Type texture_type,
+                                           const VkFormat texture_format,
+                                           VmaAllocator resource_allocator) noexcept;
+                /// @brief Creates the VkImageView of the current object
+                /// @return As a result
+                ftstd::VResult createImageView(const frametech::engine::graphics::Texture::Type texture_type,
+                                               const VkFormat texture_format) noexcept;
+                /// @brief Creates the VkSampler of the current object
+                /// @return As a result
+                ftstd::VResult createSampler() noexcept;
                 /// @brief Takes the filename as a tag
                 std::string m_tag;
                 Type m_type;

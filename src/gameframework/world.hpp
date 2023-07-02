@@ -22,8 +22,14 @@ namespace frametech
         class World
         {
         public:
+            ~World()
+            {
+                clean();
+            }
             /// @brief Makes the main camera as the first selected object in the world
             void setup() noexcept;
+            /// @brief Destroy the current object
+            void clean() noexcept;
             /// @brief Returns the current selected object
             /// @return A pointer to a MovableInterface inherited object
             frametech::gameframework::MovableInterface* getSelectedObject() noexcept;
@@ -39,7 +45,7 @@ namespace frametech
             bool hasBeenSetup() const noexcept;
             /// @brief Textures cache, attached to the world
             /// Each texture is a unique_ptr used by anywhere here
-            std::map<std::string, std::unique_ptr<frametech::engine::graphics::Texture>> m_textures_cache;
+            std::map<std::string, frametech::engine::graphics::Texture*> m_textures_cache;
 
         private:
             /// @brief Main camera of the world

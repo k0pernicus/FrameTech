@@ -35,6 +35,18 @@ void frametech::gameframework::World::setup() noexcept
     m_has_been_setup = true;
 }
 
+void frametech::gameframework::World::clean() noexcept
+{
+    if (!m_textures_cache.empty())
+    {
+        for (const auto& [key, value] : m_textures_cache)
+        {
+            delete value;
+        }
+        m_textures_cache.clear();
+    }
+}
+
 bool frametech::gameframework::World::hasBeenSetup() const noexcept
 {
     return m_has_been_setup;
