@@ -67,6 +67,8 @@ TODO: propose a list of specs keys and their description.
 
 ![State May 06th, 2023](docs/images/state_05062023.png "State May 06th, 2023")
 
+![State July the 2nd, 2023](docs/images/state_07022023.png "State July the 2nd, 2023")
+
 ## TODO
 
 1. Multiple buffers allocation using **one** _VkBuffer_ only,
