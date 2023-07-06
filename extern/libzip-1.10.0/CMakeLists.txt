@@ -9,10 +9,10 @@ project(libzip
   VERSION 1.10.0
   LANGUAGES C)
 
-option(ENABLE_COMMONCRYPTO "Enable use of CommonCrypto" ON)
-option(ENABLE_GNUTLS "Enable use of GnuTLS" ON)
-option(ENABLE_MBEDTLS "Enable use of mbed TLS" ON)
-option(ENABLE_OPENSSL "Enable use of OpenSSL" ON)
+option(ENABLE_COMMONCRYPTO "Enable use of CommonCrypto" OFF)
+option(ENABLE_GNUTLS "Enable use of GnuTLS" OFF)
+option(ENABLE_MBEDTLS "Enable use of mbed TLS" OFF)
+option(ENABLE_OPENSSL "Enable use of OpenSSL" OFF)
 option(ENABLE_WINDOWS_CRYPTO "Enable use of Windows cryptography libraries" ON)
 
 option(ENABLE_BZIP2 "Enable use of BZip2" ON)
@@ -188,6 +188,13 @@ int foo(char * _Nullable bar);
 int main(int argc, char *argv[]) { }" HAVE_NULLABLE)
 
 test_big_endian(WORDS_BIGENDIAN)
+
+if (WIN32)
+	message(STATUS "Setting Zlib environment variables......")
+
+	set(ZLIB_LIBRARY "C:/Program Files (x86)/GnuWin32/lib")
+	set(ZLIB_INCLUDE_DIR "C:/Program Files (x86)/GnuWin32/include")
+endif()
 
 find_package(ZLIB 1.1.2 REQUIRED)
 # so developers on systems where zlib is named differently (Windows, sometimes)
