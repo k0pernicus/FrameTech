@@ -153,20 +153,20 @@ void frametech::graphics::Command::transition(
 
     VkImageMemoryBarrier memory_barrier{
         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-        .newLayout = new_layout,
+        .srcAccessMask = src_access_mask,
+        .dstAccessMask = dst_access_mask,
         .oldLayout = old_layout,
+        .newLayout = new_layout,
         .srcQueueFamilyIndex = src_queue_family_index,
         .dstQueueFamilyIndex = dst_queue_family_index,
         .image = image,
         .subresourceRange = {
-            .layerCount = 1,
-            .baseArrayLayer = 0,
-            .levelCount = 1,
-            .baseMipLevel = 0,
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .baseMipLevel = 0,
+            .levelCount = 1,
+            .baseArrayLayer = 0,
+            .layerCount = 1,
         },
-        .srcAccessMask = src_access_mask,
-        .dstAccessMask = dst_access_mask,
     };
     vkCmdPipelineBarrier(m_buffer,
                          src_stage_mask, dst_stage_mask,

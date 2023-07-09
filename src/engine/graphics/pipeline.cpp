@@ -461,7 +461,6 @@ ftstd::VResult frametech::graphics::Pipeline::create()
 
 ftstd::VResult frametech::graphics::Pipeline::createVertexBuffer() noexcept
 {
-    VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
     VmaAllocator resource_allocator = frametech::Engine::getInstance()->m_allocator;
     if (VK_NULL_HANDLE != m_vertex_buffer)
     {
@@ -537,7 +536,6 @@ ftstd::VResult frametech::graphics::Pipeline::createVertexBuffer() noexcept
 
 ftstd::VResult frametech::graphics::Pipeline::createIndexBuffer() noexcept
 {
-    VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
     VmaAllocator resource_allocator = frametech::Engine::getInstance()->m_allocator;
     if (VK_NULL_HANDLE != m_index_buffer)
     {
