@@ -117,6 +117,10 @@ include_directories("${CMAKE_SOURCE_DIR}/src/engine")
 include_directories("${CMAKE_SOURCE_DIR}/src/ftstd")
 include_directories("${CMAKE_SOURCE_DIR}/src/gameframework")
 
+set(CMAKE_DEFAULT_BUILD_TYPE ${BUILD_NAME}) # Defines default target for build, for Xcode mainly
+set(CMAKE_SUPPRESS_REGENERATION true)       # Removes ZERO_CHECK target
+
+
 #frametech
 add_executable(${BUILD_NAME} "src/main.cpp" "src/application.cpp" "src/application.hpp" "src/project.hpp" ${CMAKE_CURRENT_BINARY_DIR}/shaders/)
 target_compile_features(${BUILD_NAME} PRIVATE cxx_std_17)
