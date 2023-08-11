@@ -147,6 +147,11 @@ void frametech::Engine::initialize()
         m_state = State::ERROR;
         return;
     }
+    if (const auto result = m_render->createDepthImageView(); result.IsError())
+    {
+        m_state = State::ERROR;
+        return;
+    }
     assert(m_graphics_device.isInitialized());
     m_state = State::INITIALIZED;
 }

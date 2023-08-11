@@ -348,7 +348,7 @@ void frametech::Application::drawMeshSelectionImGui()
     {
         if (ImGui::BeginListBox("2D meshes"))
         {
-            const char* items[] = {"Basic triangle", "Basic quad", "None"};
+            const char* items[] = {"Basic triangle", "Basic quad", "Two quads", "None"};
             static int item_current_idx = m_engine->m_render->getGraphicsPipeline()->getMesh().m_type;
             int previously_selected_idx = m_engine->m_render->getGraphicsPipeline()->getMesh().m_type;
             for (int n = 0; n < sizeof(items) / sizeof(items[0]); ++n)
@@ -361,21 +361,7 @@ void frametech::Application::drawMeshSelectionImGui()
                 {
                     previously_selected_idx = item_current_idx;
                     ImGui::SetItemDefaultFocus();
-                    switch (item_current_idx)
-                    {
-                        case 0:
-                            m_engine->m_render->getGraphicsPipeline()->setMesh2D(frametech::graphics::Mesh2D::BASIC_TRIANGLE);
-                            break;
-                        case 1:
-                            m_engine->m_render->getGraphicsPipeline()->setMesh2D(frametech::graphics::Mesh2D::BASIC_QUAD);
-                            break;
-                        case 2:
-                            m_engine->m_render->getGraphicsPipeline()->setMesh2D(frametech::graphics::Mesh2D::NONE);
-                            break;
-                        default:
-                            LogW("item %d cannot be selected in mesh selection view");
-                            break;
-                    }
+                    m_engine->m_render->getGraphicsPipeline()->setMesh2D(frametech::graphics::Mesh2D(item_current_idx));
                 }
             }
             ImGui::EndListBox();

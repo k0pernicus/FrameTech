@@ -14,6 +14,21 @@
 // #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+/// Helper function to find the right format image for the depth image
+static ftstd::Result<VkFormat> findSupportedFormat(const std::vector<VkFormat>& candidates, VkPhysicalDevice physical_device, VkImageTiling tiling, VkFormatFeatureFlags features) {
+    for (VkFormat format : candidates) {
+        VkFormatProperties props;
+        // Check if supported on both macOS and Windows
+        vkGetPhysicalDeviceFormatProperties(physical_device, format, &props);
+        if (VK_IMAGE_TILING_LINEAR == tiling && (props.linearTilingFeatures & features) == features) {
+            return ftstd::Result<VkFormat>::Ok(format);
+        } else if (VK_IMAGE_TILING_OPTIMAL == tiling && (props.optimalTilingFeatures & features) == features) {
+            return ftstd::Result<VkFormat>::Ok(format);
+        }
+    }
+    return ftstd::Result<VkFormat>::Error((char*)"failed to find a supported format for depth image");
+}
+
 frametech::graphics::Render* frametech::graphics::Render::m_instance{nullptr};
 
 frametech::graphics::Render::Render()
@@ -146,7 +161,6 @@ ftstd::VResult frametech::graphics::Render::createImageViews()
     {
         // Create a VkImageView for each VkImage from the swapchain
         VkImageViewCreateInfo image_view_create_info{
-
             .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
             .image = swapchain_images[i],
             // How the image data should be interpreted
@@ -194,6 +208,28 @@ ftstd::VResult frametech::graphics::Render::createImageViews()
         return ftstd::VResult::Error(error_msg);
     }
     return ftstd::VResult::Ok();
+}
+
+ftstd::VResult frametech::graphics::Render::createDepthImageView()
+{
+    ftstd::Result<VkFormat> supported_format_opt = findSupportedFormat({VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
+                                                                   frametech::Engine::getInstance()->m_graphics_device.getPhysicalDevice(),
+                                                                   VK_IMAGE_TILING_OPTIMAL,
+                                                                   VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+    if (supported_format_opt.IsError()) {
+        return ftstd::VResult::Error((char*)supported_format_opt.GetError());
+    }
+    VkFormat supported_format = supported_format_opt.GetValue();
+    bool has_stencil_component = supported_format == VK_FORMAT_D32_SFLOAT_S8_UINT || supported_format == VK_FORMAT_D24_UNORM_S8_UINT;
+    
+    if (m_depth_texture.createImage(frametech::Engine::getInstance()->m_swapchain->getExtent().height,
+                                    frametech::Engine::getInstance()->m_swapchain->getExtent().width,
+                                    supported_format,
+                                    VK_IMAGE_TILING_OPTIMAL,
+                                    VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT).IsError()) {
+        return ftstd::VResult::Error((char*)"cannot create image for depth texture");
+    }
+    return m_depth_texture.createImageView(supported_format, VK_IMAGE_ASPECT_DEPTH_BIT);
 }
 
 ftstd::VResult frametech::graphics::Render::createShaderModule()

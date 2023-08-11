@@ -16,8 +16,6 @@
 #include <vk_mem_alloc.h>
 #include <vulkan/vulkan.h>
 
-#include "../../engine/engine.hpp"
-
 namespace frametech
 {
     namespace engine
@@ -88,8 +86,44 @@ namespace frametech
                 std::string m_tag;
                 Type m_type;
             };
+        
+            /// @brief Handles a depth texture object
+            class DepthTexture
+            {
+            public:
+                DepthTexture();
+                ~DepthTexture();
+                DepthTexture(DepthTexture const&) = delete;
+                DepthTexture operator=(DepthTexture const&) = delete;
+                /// @brief Returns a copy of the registered image view
+                /// @return VkImageView
+                VkImageView getDepthImageView() noexcept { return m_depth_image_view; }
+                /// @brief Setup the data structure - must call before createImage
+                /// @return A VResult type
+                ftstd::VResult createImage(const uint32_t image_height,
+                                           const uint32_t image_width,
+                                           const VkFormat texture_format,
+                                           const VkImageTiling tiling,
+                                           const VkImageUsageFlags usage_flags) noexcept;
+                /// @brief Creates the VkImageView of the current object
+                /// @return As a result
+                ftstd::VResult createImageView(const VkFormat texture_format,
+                                               const VkImageAspectFlags subresource_aspect_masks) noexcept;
+
+            private:
+                /// @brief Height of the texture image
+                int m_height = 0;
+                /// @brief Width of the texture image
+                int m_width = 0;
+                /// @brief Vulkan image object
+                VkImage m_depth_image = VK_NULL_HANDLE;
+                /// @brief Vulkan image view to access the texture for the GPU
+                VkImageView m_depth_image_view = VK_NULL_HANDLE;
+                /// @brief Resource allocation object, required for VMA
+                VmaAllocation m_staging_depth_image_allocation = VK_NULL_HANDLE;
+            };
         } // namespace graphics
-    }     // namespace engine
+    } // namespace engine
 } // namespace frametech
 
 #endif // _texture_hpp

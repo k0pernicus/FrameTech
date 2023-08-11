@@ -79,7 +79,6 @@ namespace frametech
             /// @param allocation Allocation structure (out)
             /// @param image A reference to a VkImage
             /// @param image_create_info Create info structure about the image
-            /// @param buffer_sharing_mode Sharing mode for the image
             /// @return A VResult type to know if the initialization succeeded or not
             static ftstd::VResult initImage(
                 VmaAllocator& resources_allocator,
@@ -90,6 +89,31 @@ namespace frametech
                 VmaAllocationCreateInfo alloc_info = {
                     .flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
                     .usage = VMA_MEMORY_USAGE_AUTO,
+                };
+
+                if (vmaCreateImage(resources_allocator, &image_create_info, &alloc_info, &image, allocation, nullptr) != VK_SUCCESS)
+                {
+                    LogE("vmaCreateImage: cannot initiate the image");
+                    return ftstd::VResult::Error((char*)"vmaCreateImage: cannot initiate the image");
+                }
+                return ftstd::VResult::Ok();
+            }
+            
+            /// @brief Copy the data from the source image to the destination VkImage, only for depth texture
+            /// @param resources_allocator Allocator for the resources
+            /// @param allocation Allocation structure (out)
+            /// @param image A reference to a VkImage
+            /// @param image_create_info Create info structure about the image
+            /// @return A VResult type to know if the initialization succeeded or not
+            static ftstd::VResult initDepthImage(
+                VmaAllocator& resources_allocator,
+                VmaAllocation* allocation,
+                VkImage& image,
+                VkImageCreateInfo& image_create_info) noexcept
+            {
+                VmaAllocationCreateInfo alloc_info = {
+                    .requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT),
+                    .usage = VMA_MEMORY_USAGE_GPU_ONLY,
                 };
 
                 if (vmaCreateImage(resources_allocator, &image_create_info, &alloc_info, &image, allocation, nullptr) != VK_SUCCESS)

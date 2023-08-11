@@ -19,12 +19,17 @@ namespace frametech
         /// @brief Maximum number of characters to name a mesh
         constexpr uint32_t MESH_2D_NAME_LENGTH = 20;
 
-        /// @brief Mesh 2D IDs
+        /// @brief Basic 2D meshes
         enum Mesh2D
         {
+            /// Triangle
             BASIC_TRIANGLE = 0,
+            /// Quad
             BASIC_QUAD = 1,
-            NONE = 2,
+            /// Two quads
+            TWO_QUADS = 2,
+            /// A single point
+            NONE = 3,
         };
 
         /// @brief Stores all information about
@@ -60,13 +65,12 @@ namespace frametech
                         //  Indices
                         std::vector<uint32_t> indices(6);
                         indices = {0, 1, 2, 2, 3, 0};
-                        // Vertices
                         std::vector<frametech::engine::graphics::shaders::Vertex> vertices(4);
                         vertices = {
-                            {{-1.0f, -1.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-                            {{1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-                            {{1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-                            {{-1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}}};
+                            {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+                            {{1.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+                            {{1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+                            {{-1.0f, 1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}}};
                         auto mesh = Mesh{
                             .m_vertices = vertices,
                             .m_indices = indices,
@@ -74,17 +78,39 @@ namespace frametech
                         snprintf(mesh.m_name, MESH_2D_NAME_LENGTH, "basic_quad");
                         return mesh;
                     }
+                    case Mesh2D::TWO_QUADS:
+                    {
+                        //  Indices
+                        std::vector<uint32_t> indices(12);
+                        indices = {0, 1, 2, 2, 3, 0,
+                                   4, 5, 6, 6, 7, 4};
+                        std::vector<frametech::engine::graphics::shaders::Vertex> vertices(8);
+                        vertices = {
+                            {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+                            {{1.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+                            {{1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+                            {{-1.0f, 1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+                            {{-1.0f, -1.0f, -0.4f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+                            {{1.0f, -1.0f, -0.4f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+                            {{1.0f, 1.0f, -0.4f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+                            {{-1.0f, 1.0f, -0.4f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}}};
+                        auto mesh = Mesh{
+                            .m_vertices = vertices,
+                            .m_indices = indices,
+                            .m_type = Mesh2D::TWO_QUADS};
+                        snprintf(mesh.m_name, MESH_2D_NAME_LENGTH, "two_quads");
+                        return mesh;
+                    }
                     case Mesh2D::BASIC_TRIANGLE:
                     {
                         //  Indices
                         std::vector<uint32_t> indices(3);
                         indices = {0, 1, 2};
-                        // Vertices
                         std::vector<frametech::engine::graphics::shaders::Vertex> vertices(3);
                         vertices = {
-                            {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-                            {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-                            {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}}};
+                            {{0.0f, -0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+                            {{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+                            {{-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}}};
                         auto mesh = Mesh{
                             .m_vertices = vertices,
                             .m_indices = indices,
@@ -97,9 +123,8 @@ namespace frametech
                         // Indices
                         std::vector<uint32_t> indices(1);
                         indices = {0};
-                        // Vertices
                         std::vector<frametech::engine::graphics::shaders::Vertex> vertices(0);
-                        vertices = {{{0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}}};
+                        vertices = {{{0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}}};
                         auto mesh = Mesh{
                             .m_vertices = vertices,
                             .m_indices = indices,

@@ -9,6 +9,7 @@
 #include "debug_tools.h"
 #include "memory.hpp"
 #include "vma/vk_mem_alloc.h"
+#include "../engine.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
@@ -262,4 +263,91 @@ inline int frametech::engine::graphics::Texture::getTextureSize() const noexcept
 {
     const int n_a_channels = m_supports_alpha ? 4 : 3;
     return m_height * m_width * n_a_channels;
+}
+
+
+frametech::engine::graphics::DepthTexture::DepthTexture() {}
+
+frametech::engine::graphics::DepthTexture::~DepthTexture()
+{
+    const auto resource_allocator = frametech::Engine::getInstance()->m_allocator;
+    const auto graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+    if (VK_NULL_HANDLE != m_depth_image_view)
+    {
+        Log("< Destroying the depth image view object...");
+        vkDestroyImageView(graphics_device, m_depth_image_view, nullptr);
+        m_depth_image_view = VK_NULL_HANDLE;
+    }
+    if (VK_NULL_HANDLE != m_depth_image)
+    {
+        Log("< Destroying the depth image object...");
+        vmaDestroyImage(resource_allocator, m_depth_image, m_staging_depth_image_allocation);
+        m_depth_image = VK_NULL_HANDLE;
+        m_staging_depth_image_allocation = VK_NULL_HANDLE;
+    }
+}
+
+ftstd::VResult frametech::engine::graphics::DepthTexture::createImage(const uint32_t image_height,
+                                                                      const uint32_t image_width,
+                                                                      const VkFormat texture_format,
+                                                                      const VkImageTiling tiling,
+                                                                      const VkImageUsageFlags usage_flags) noexcept
+{
+    
+    // Now, create the texture image & memory
+    VmaAllocator resource_allocator = frametech::Engine::getInstance()->m_allocator;
+    VkImageCreateInfo create_info{
+        .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+        .imageType = VK_IMAGE_TYPE_2D,
+        .format = texture_format,
+        .extent = {
+            .width = image_width,
+            .height = image_height,
+            .depth = 1,
+        },
+        .mipLevels = 1,
+        .arrayLayers = 1,
+        .samples = VK_SAMPLE_COUNT_1_BIT,  // Related to multisampling
+        .tiling = tiling,
+        .usage = usage_flags,
+        .sharingMode = VK_SHARING_MODE_EXCLUSIVE,   // Used by one queue family, the one that supports graphics
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED, // first transition will discard the texels
+    };
+    
+    if (frametech::graphics::Memory::initDepthImage(
+            resource_allocator,
+            &m_staging_depth_image_allocation,
+            m_depth_image,
+            create_info)
+            .IsError())
+    {
+        return ftstd::VResult::Error((char*)"Failed to initialize memory for the image");
+    }
+    return ftstd::VResult::Ok();
+}
+
+ftstd::VResult frametech::engine::graphics::DepthTexture::createImageView(const VkFormat texture_format,
+                                                                          const VkImageAspectFlags subresource_aspect_masks) noexcept
+{
+    
+    VkImageViewCreateInfo view_info{
+        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .image = m_depth_image,
+        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+        .format = texture_format,
+        .subresourceRange = {
+            .aspectMask = subresource_aspect_masks,
+            .baseMipLevel = 0,
+            .levelCount = 1,
+            .baseArrayLayer = 0,
+            .layerCount = 1,
+        }};
+
+    const VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+
+    if (const auto result = vkCreateImageView(graphics_device, &view_info, nullptr, &m_depth_image_view); VK_SUCCESS != result)
+    {
+        return ftstd::VResult::Error((char*)"Failed to initialize the image view");
+    }
+    return ftstd::VResult::Ok();
 }

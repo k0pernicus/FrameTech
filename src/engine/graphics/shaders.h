@@ -23,11 +23,11 @@ namespace frametech
             {
                 struct Vertex
                 {
-                    /// @brief Vertex position
-                    glm::vec2 m_position;
-                    /// @brief Vertex color
+                    /// @brief Vertex position - 3D mode (XYZ)
+                    glm::vec3 m_position;
+                    /// @brief Vertex color - 3D mode (RGB)
                     glm::vec3 m_color;
-                    /// @brief Vertex color
+                    /// @brief Texture UV - 2D mode (UV)
                     glm::vec2 m_texture_coordinates;
 
                     void setColor(const glm::vec3& new_color)
@@ -35,7 +35,7 @@ namespace frametech
                         m_color = new_color;
                     }
 
-                    void setPosition(const glm::vec2& new_position)
+                    void setPosition(const glm::vec3& new_position)
                     {
                         m_position = new_position;
                     }
@@ -51,7 +51,7 @@ namespace frametech
                 public:
                     [[maybe_unused]] static void toString(char* str, const Vertex& vertex) noexcept
                     {
-                        snprintf(str, 80, "Position: (%.2f,%.2f)\nColor: (%d,%d,%d)", vertex.m_position.x, vertex.m_position.y, static_cast<int>(255.0 * vertex.m_color.r), static_cast<int>(255.0 * vertex.m_color.g), static_cast<int>(255.0 * vertex.m_color.b));
+                        snprintf(str, 80, "Position: (%.2f,%.2f,%.2f)\nColor: (%d,%d,%d)", vertex.m_position.x, vertex.m_position.y, vertex.m_position.z, static_cast<int>(255.0 * vertex.m_color.r), static_cast<int>(255.0 * vertex.m_color.g), static_cast<int>(255.0 * vertex.m_color.b));
                     }
                     /// @brief Returns the binding description of the Vertex structure
                     /// @param index_binding The binding index to set in the description data structure
@@ -71,17 +71,16 @@ namespace frametech
                     {
                         /* Attribute description type of data
                          * ----------------------------------
-                         * float: VK_FORMAT_R32_SFLOAT
-                         * vec2: VK_FORMAT_R32G32_SFLOAT
-                         * vec3: VK_FORMAT_R32G32B32_SFLOAT
-                         * vec4: VK_FORMAT_R32G32B32A32_SFLOAT
+                         * 0 : 3D vertices (XYZ)
+                         * 1 : Colors (RGB)
+                         * 2 : 2D UVs (XY)
                          * */
                         std::array<VkVertexInputAttributeDescription, 3> attribute_descriptions{};
                         // Vertices pos
                         attribute_descriptions[0] = VkVertexInputAttributeDescription{
                             .location = 0,
                             .binding = 0,
-                            .format = VK_FORMAT_R32G32_SFLOAT, // Position -> 2 floats
+                            .format = VK_FORMAT_R32G32B32_SFLOAT, // Position -> 2 floats
                             .offset = offsetof(Vertex, m_position),
                         };
                         // Colors
