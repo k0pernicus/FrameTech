@@ -45,12 +45,16 @@ namespace frametech
                     {
                         m_texture_coordinates = new_coordinates;
                     }
-                    
+                    /// Only to translate objects from objloader to current Vertex struct / class
                     static Vertex fromObjLoaderVertex(const objl::Vertex& v) noexcept {
                         Vertex vertex {
                             .m_position = glm::vec3(v.Position.X, v.Position.Y, v.Position.Z),
                             .m_color = glm::vec3(v.Normal.X, v.Normal.Y, v.Normal.Z),
-                            .m_texture_coordinates = glm::vec2(v.TextureCoordinate.X, v.TextureCoordinate.Y),
+                            // 1.0f - Y : because we are loading from obj, and the
+                            // Y axis begans with OpenGL conventions, which is not compatible
+                            // with Vulkan or even Metal
+                            // To remove with other transforms
+                            .m_texture_coordinates = glm::vec2(v.TextureCoordinate.X, 1.0f - v.TextureCoordinate.Y),
                         };
                         return vertex;
                     }
