@@ -145,6 +145,8 @@ namespace frametech
         frametech::gameframework::World& getCurrentWorld() noexcept;
         /// @brief Key events job manager
         frametech::engine::inputs::EventHandler m_key_events_handler;
+        /// @brief Cursor events job manager
+        frametech::engine::inputs::CursorHandler m_cursor_events_handler;
     };
 
 } // namespace frametech

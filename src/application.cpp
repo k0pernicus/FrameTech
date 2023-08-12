@@ -619,6 +619,14 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
     }
 }
 
+static void cursorCallback(GLFWwindow* window, const double xpos, const double ypos) {
+    frametech::Application::getInstance("")->m_cursor_events_handler.addMove(xpos, ypos);
+#ifdef IMGUI
+    // As ImGui is now using cursor callbacks too, we need to forward
+    ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+#endif
+}
+
 void frametech::Application::run()
 {
 #ifdef IMGUI
@@ -657,13 +665,16 @@ void frametech::Application::run()
 #endif
             // Initialize our world
             m_world.setup();
-            // Initialize the callbacks (key events)
+            // Initialize the key events
             glfwSetKeyCallback(m_app_window, keyCallback);
+            // Initialize the mouse events
+            glfwSetCursorPosCallback(m_app_window, cursorCallback);
             m_state = frametech::Application::State::RUNNING;
             while (!glfwWindowShouldClose(m_app_window) && m_state == frametech::Application::State::RUNNING)
             {
                 glfwPollEvents();
                 m_key_events_handler.poll(false);
+                m_cursor_events_handler.poll(false);
 #ifdef IMGUI
                 // Log(">> Rendering ImGui");
                 // Start the Dear ImGui frame

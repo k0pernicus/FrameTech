@@ -29,7 +29,7 @@ namespace frametech
                 LEFT,
                 RIGHT,
             };
-
+        
             class EventHandler
             {
             public:
@@ -38,6 +38,17 @@ namespace frametech
 
             private:
                 std::deque<Key> m_keys;
+                std::mutex m_lock;
+            };
+        
+            class CursorHandler
+            {
+            public:
+                void poll(bool blank = false) noexcept;
+                void addMove(const double xpos, const double ypos) noexcept;
+
+            private:
+                std::deque<std::tuple<double, double>> m_positions;
                 std::mutex m_lock;
             };
         } // namespace inputs
