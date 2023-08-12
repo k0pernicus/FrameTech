@@ -22,10 +22,10 @@ add_subdirectory("extern/libzip-1.10.0")
 # NOTE: -Wno-implicit-int-conversion is required here as stb_image has issues with
 # integer / float type conversions
 if(WIN32)
-set(CMAKE_CXX_FLAGS_DEBUG "/std:c++17 -Wconversion -Wno-sign-conversion -Werror -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-implicit-int-conversion -Wno-deprecated-declarations -gcodeview -DDEBUG -DIMGUI -DENABLE_EXCEPTIONS -DUNSET_FPS_LIMIT")
+set(CMAKE_CXX_FLAGS_DEBUG "/std:c++17 -Wconversion -Wno-sign-conversion -Werror -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-implicit-int-conversion -Wno-deprecated-declarations -gcodeview -DDEBUG -DPROFILE -DIMGUI -DENABLE_EXCEPTIONS -DUNSET_FPS_LIMIT")
 set(CMAKE_CXX_FLAGS_RELEASE "/std:c++17 -O2 -Wno-sign-conversion -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-implicit-int-conversion -Wno-deprecated-declarations -DNDEBUG -O2 -DNO_AVG_FPS_RECORDS -DIMGUI")
 elseif(APPLE)
-set(CMAKE_CXX_FLAGS_DEBUG "--std=c++17 -Wconversion -Wno-sign-conversion -Werror -Wno-nullability-completeness -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-implicit-int-conversion -Wno-deprecated-declarations -g -DDEBUG -DIMGUI -DENABLE_EXCEPTIONS -DUNSET_FPS_LIMIT")
+set(CMAKE_CXX_FLAGS_DEBUG "--std=c++17 -Wconversion -Wno-sign-conversion -Werror -Wno-nullability-completeness -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-implicit-int-conversion -Wno-deprecated-declarations -g -DDEBUG -DPROFILE -DIMGUI -DENABLE_EXCEPTIONS -DUNSET_FPS_LIMIT")
 set(CMAKE_CXX_FLAGS_RELEASE "--std=c++17 -O2 -Wno-sign-conversion -Wno-nullability-completeness -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-implicit-int-conversion -Wno-deprecated-declarations -DNDEBUG -O2 -DNO_AVG_FPS_RECORDS -DIMGUI")
 endif()
 
@@ -117,7 +117,6 @@ include_directories("${CMAKE_SOURCE_DIR}/src/engine")
 include_directories("${CMAKE_SOURCE_DIR}/src/ftstd")
 include_directories("${CMAKE_SOURCE_DIR}/src/gameframework")
 
-set(CMAKE_DEFAULT_BUILD_TYPE ${BUILD_NAME}) # Defines default target for build, for Xcode mainly
 set(CMAKE_SUPPRESS_REGENERATION true)       # Removes ZERO_CHECK target
 
 

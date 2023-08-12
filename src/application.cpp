@@ -8,6 +8,7 @@
 #include "application.hpp"
 #include "engine/graphics/transform.hpp" // Should be elsewhere
 #include "ftstd/debug_tools.h"
+#include "ftstd/profile_tools.h"
 #include "project.hpp"
 #include "zip.h" // To retrieve all zipped assets
 
@@ -246,6 +247,17 @@ void frametech::Application::drawDebugToolImGui()
             ImGui::TreePop();
             ImGui::Separator();
         }
+#ifdef PROFILE
+        if (ImGui::TreeNode("Timers"))
+        {
+            std::map<std::string, double>::iterator it;
+            for (it = ftstd::profile::s_PROFILE_MARKERS.begin(); it != ftstd::profile::s_PROFILE_MARKERS.end(); ++it) {
+                ImGui::Text("%s => %f ms", it->first.c_str(), it->second);
+            }
+            ImGui::TreePop();
+            ImGui::Separator();
+        }
+#endif
     }
 
     ImGui::Separator();
@@ -535,6 +547,7 @@ void frametech::Application::forceRendererFPSLimit(uint8_t new_limit)
 
 void frametech::Application::drawFrame()
 {
+    ftstd::profile::ScopedProfileMarker scope((char*)"frametech::Application::drawFrame");
     // Update the UBOs
     const uint32_t current_frame_index = m_engine->m_render->getFrameIndex();
     {
@@ -562,7 +575,10 @@ void frametech::Application::drawFrame()
         auto begin_real_rendering_timer = ftstd::Timer();
         m_engine->m_render->getGraphicsPipeline()->acquireImage();
         m_engine->m_render->getGraphicsPipeline()->draw();
-        m_engine->m_render->getGraphicsPipeline()->present();
+        {
+            ftstd::profile::ScopedProfileMarker scope((char*)"graphics::present");
+            m_engine->m_render->getGraphicsPipeline()->present();
+        }
         const auto rendering_time_diff = begin_real_rendering_timer.diff();
 
         recorded_frames[recorded_frames_index] = rendering_time_diff > 0 ? rendering_time_diff : 1;
@@ -588,6 +604,11 @@ void frametech::Application::drawFrame()
 
     m_engine->m_render->updateFrameIndex(m_current_frame);
     ++m_current_frame;
+
+#ifdef PROFILE
+    // Reset the profile data
+    ftstd::profile::s_PROFILE_MARKERS.clear();
+#endif
 }
 
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -660,7 +681,7 @@ void frametech::Application::run()
                     GAME_APPLICATION_SETTINGS->fps_target = monitor_refresh_rate;
                 }
             }
-#ifdef DEBUG
+#if defined(DEBUG) || defined(PROFILE)
             GAME_APPLICATION_SETTINGS->fps_target.has_value() ? Log("> Application is running at %d FPS", GAME_APPLICATION_SETTINGS->fps_target.value()) : Log("> Application is running at unlimited frame");
 #endif
             // Initialize our world
