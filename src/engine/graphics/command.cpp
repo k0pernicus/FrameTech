@@ -13,9 +13,6 @@
 #include "imgui.h"
 #endif
 
-/// @brief Default clear color for the screen
-constexpr VkClearValue CLEAR_COLOR = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
-
 frametech::graphics::Command::Command(){};
 
 frametech::graphics::Command::Command(VkCommandPool command_pool)
@@ -196,6 +193,10 @@ ftstd::VResult frametech::graphics::Command::record()
     {
         return ftstd::VResult::Error((char*)"< The current_frame_index parameter is incorrect: not enough framebuffers");
     }
+    
+    std::array<VkClearValue, 2> clear_values{};
+    clear_values[0] = {{0.0, 0.0, 0.0, 1.0}}; // COLOR
+    clear_values[1] = {1.0, 0};               // DEPTH
 
     VkRenderPassBeginInfo render_pass_begin_info{
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
@@ -205,8 +206,8 @@ ftstd::VResult frametech::graphics::Command::record()
             .offset = {0, 0},
             .extent = frametech::Engine::getInstance()->m_swapchain->getExtent(),
         },
-        .clearValueCount = 1,
-        .pClearValues = &CLEAR_COLOR,
+        .clearValueCount = static_cast<uint32_t>(clear_values.size()),
+        .pClearValues = clear_values.data(),
     };
 
     vkCmdBeginRenderPass(m_buffer, &render_pass_begin_info, VK_SUBPASS_CONTENTS_INLINE);

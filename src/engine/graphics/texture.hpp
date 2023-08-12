@@ -95,6 +95,8 @@ namespace frametech
                 ~DepthTexture();
                 DepthTexture(DepthTexture const&) = delete;
                 DepthTexture operator=(DepthTexture const&) = delete;
+                /// @brief Needed for multiple render passes
+                VkFormat m_depth_image_format;
                 /// @brief Returns a copy of the registered image view
                 /// @return VkImageView
                 VkImageView getDepthImageView() noexcept { return m_depth_image_view; }

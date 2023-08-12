@@ -65,6 +65,8 @@ namespace frametech
             std::shared_ptr<frametech::graphics::Command> getTransfertCommand() const;
             /// @brief Returns the associated Graphics pipeline object if it exists
             std::shared_ptr<frametech::graphics::Pipeline> getGraphicsPipeline() const;
+            /// @brief Returns the depth texture image as a constant reference
+            const frametech::engine::graphics::DepthTexture& getDepthTexture() const;
 
         private:
             /// @brief Constructor

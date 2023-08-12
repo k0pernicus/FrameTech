@@ -349,5 +349,7 @@ ftstd::VResult frametech::engine::graphics::DepthTexture::createImageView(const 
     {
         return ftstd::VResult::Error((char*)"Failed to initialize the image view");
     }
+    
+    m_depth_image_format = texture_format;
     return ftstd::VResult::Ok();
 }

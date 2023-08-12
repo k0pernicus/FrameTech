@@ -137,17 +137,17 @@ void frametech::Engine::initialize()
         m_state = State::ERROR;
         return;
     }
+    if (const auto result = m_render->createDepthImageView(); result.IsError())
+    {
+        m_state = State::ERROR;
+        return;
+    }
     if (const auto result = m_render->createGraphicsPipeline(); result.IsError())
     {
         m_state = State::ERROR;
         return;
     }
     if (const auto result = m_render->createFramebuffers(); result.IsError())
-    {
-        m_state = State::ERROR;
-        return;
-    }
-    if (const auto result = m_render->createDepthImageView(); result.IsError())
     {
         m_state = State::ERROR;
         return;

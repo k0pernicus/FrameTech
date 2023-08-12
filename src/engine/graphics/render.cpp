@@ -115,6 +115,11 @@ VkSurfaceKHR* frametech::graphics::Render::getSurface()
     return &m_surface;
 }
 
+
+const frametech::engine::graphics::DepthTexture& frametech::graphics::Render::getDepthTexture() const {
+    return m_depth_texture;
+}
+
 ftstd::VResult frametech::graphics::Render::createFramebuffers()
 {
     Log("> There are %d framebuffers to create: ", m_image_views.size());
@@ -122,14 +127,16 @@ ftstd::VResult frametech::graphics::Render::createFramebuffers()
     for (int i = 0; i < m_image_views.size(); ++i)
     {
         const auto image_view = m_image_views[i];
-        VkImageView pAttachments[] = {
+        VkImageView p_attachments[] = {
             image_view,
+            m_depth_texture.getDepthImageView(),
         };
+        const int nb_attachments = sizeof(p_attachments) / sizeof(VkImageView);
         VkFramebufferCreateInfo framebuffer_info{};
         framebuffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebuffer_info.renderPass = m_graphics_pipeline->getRenderPass();
-        framebuffer_info.attachmentCount = 1;
-        framebuffer_info.pAttachments = pAttachments;
+        framebuffer_info.attachmentCount = nb_attachments;
+        framebuffer_info.pAttachments = p_attachments;
         framebuffer_info.height = frametech::Engine::getInstance()->m_swapchain->getExtent().height;
         framebuffer_info.width = frametech::Engine::getInstance()->m_swapchain->getExtent().width;
         framebuffer_info.layers = 1;

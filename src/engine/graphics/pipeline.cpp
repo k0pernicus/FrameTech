@@ -222,7 +222,8 @@ ftstd::VResult frametech::graphics::Pipeline::setupRenderPass()
 {
     Log("> Setting up the render pass object of the graphics pipeline");
 
-    const auto NB_ATTACHMENTS = 1;
+    // Two attachments : colors, and depth buffer
+    const auto NB_ATTACHMENTS = 2;
     // Setup the color attachment format & samples
     VkAttachmentDescription attachments[NB_ATTACHMENTS] = {
         VkAttachmentDescription{
@@ -235,6 +236,16 @@ ftstd::VResult frametech::graphics::Pipeline::setupRenderPass()
             .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,     // Don't care what previous layout the image was in
             .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, // Images will be transitioned to the SwapChain for presentation
         },
+        VkAttachmentDescription{
+            .format = frametech::Engine::getInstance()->m_render->getDepthTexture().m_depth_image_format,
+            .samples = VK_SAMPLE_COUNT_1_BIT,        // No multi-sampling: 1 sample
+            .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,   // Before rendering: clear the framebuffer to black before drawing
+            .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE, // After rendering: store in memory to read it again later
+            .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+            .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+            .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,     // Don't care what previous layout the image was in
+            .finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, // No swapchain transition for presentation
+        },
     };
 
     // Subpasses and attachment references, as a render pass
@@ -242,6 +253,10 @@ ftstd::VResult frametech::graphics::Pipeline::setupRenderPass()
     VkAttachmentReference color_attachment_reference{};
     color_attachment_reference.attachment = 0; // Index 0
     color_attachment_reference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    
+    VkAttachmentReference depth_attachment_reference{};
+    depth_attachment_reference.attachment = 1; // Index 1
+    depth_attachment_reference.layout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
 
     const auto NB_SUBPASSES = 1;
     VkSubpassDescription subpasses[NB_SUBPASSES] = {
@@ -249,16 +264,17 @@ ftstd::VResult frametech::graphics::Pipeline::setupRenderPass()
             .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
             .colorAttachmentCount = 1,
             .pColorAttachments = &color_attachment_reference,
+            .pDepthStencilAttachment = &depth_attachment_reference,
         },
     };
 
     VkSubpassDependency dependency{
         .srcSubpass = VK_SUBPASS_EXTERNAL, // Implicit subpass before or after the render pass
         .dstSubpass = 0,                   // our subpass
-        .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+        .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
         .srcAccessMask = 0,
-        .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+        .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
     };
 
     VkRenderPassCreateInfo render_pass_info{
@@ -404,7 +420,9 @@ ftstd::VResult frametech::graphics::Pipeline::create()
     // TODO: Check if needed
     VkPipelineDepthStencilStateCreateInfo depth_stencil_state_create_info{
         .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
-        .depthTestEnable = VK_FALSE,
+        .depthTestEnable = VK_TRUE,
+        .depthWriteEnable = VK_TRUE,
+        .depthCompareOp = VK_COMPARE_OP_LESS,
         .depthBoundsTestEnable = VK_FALSE,
         .stencilTestEnable = VK_FALSE,
     };
