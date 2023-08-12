@@ -7,6 +7,7 @@
 
 #include "command.hpp"
 #include "../engine.hpp"
+#include "../../ftstd/profile_tools.h"
 
 #ifdef IMGUI
 #include "backends/imgui_impl_vulkan.h"
@@ -65,6 +66,7 @@ ftstd::VResult frametech::graphics::Command::createBuffer()
 
 ftstd::VResult frametech::graphics::Command::begin()
 {
+    ftstd::profile::ScopedProfileMarker scope((char*)"frametech::graphics::Command::begin");
     assert(CommandState::S_ENDED == m_state || CommandState::S_UNKNOWN == m_state);
     VkCommandBufferBeginInfo command_buffer_begin_info{
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -81,6 +83,7 @@ ftstd::VResult frametech::graphics::Command::begin()
 
 ftstd::VResult frametech::graphics::Command::end(const VkQueue& queue, const uint32_t submit_count)
 {
+    ftstd::profile::ScopedProfileMarker scope((char*)"frametech::graphics::Command::end");
     assert(CommandState::S_BEGAN == m_state);
     vkEndCommandBuffer(m_buffer);
 
@@ -175,6 +178,7 @@ void frametech::graphics::Command::transition(
 
 ftstd::VResult frametech::graphics::Command::record()
 {
+    ftstd::profile::ScopedProfileMarker scope((char*)"frametech::graphics::Command::record");
     const auto current_frame_index = frametech::Engine::getInstance()->m_render->getFrameIndex();
     VkCommandBufferBeginInfo begin_info{
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
