@@ -358,9 +358,9 @@ void frametech::Application::drawMeshSelectionImGui()
 
     if (ImGui::CollapsingHeader("Available meshes"))
     {
-        if (ImGui::BeginListBox("2D meshes"))
+        if (ImGui::BeginListBox("Meshes"))
         {
-            const char* items[] = {"Basic triangle", "Basic quad", "Two quads", "None"};
+            const char* items[] = {"Basic triangle", "Basic quad", "Two quads", "None", "Viking room"};
             static int item_current_idx = m_engine->m_render->getGraphicsPipeline()->getMesh().m_type;
             int previously_selected_idx = m_engine->m_render->getGraphicsPipeline()->getMesh().m_type;
             for (int n = 0; n < sizeof(items) / sizeof(items[0]); ++n)

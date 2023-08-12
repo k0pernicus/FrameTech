@@ -988,7 +988,11 @@ const frametech::graphics::Mesh& frametech::graphics::Pipeline::getMesh() noexce
 
 void frametech::graphics::Pipeline::setMesh2D(frametech::graphics::Mesh2D new_mesh) noexcept
 {
-    m_mesh = frametech::graphics::MeshUtils::getMesh2D(new_mesh);
+    if (new_mesh == frametech::graphics::Mesh2D::FROM_FILE) {
+        m_mesh = frametech::graphics::MeshUtils::loadFromFile((char*)"viking_room.obj").GetValue();
+    } else {
+        m_mesh = frametech::graphics::MeshUtils::getMesh2D(new_mesh);
+    }
     // Device fence
     vkDeviceWaitIdle(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice());
     // Force recreate the buffers

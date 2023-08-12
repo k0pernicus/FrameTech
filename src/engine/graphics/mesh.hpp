@@ -11,6 +11,7 @@
 
 #include "../../engine/graphics/shaders.h"
 #include <vector>
+#include <objloader/objloader.h>
 
 namespace frametech
 {
@@ -30,6 +31,8 @@ namespace frametech
             TWO_QUADS = 2,
             /// A single point
             NONE = 3,
+            /// Loaded from an object file
+            FROM_FILE = 4
         };
 
         /// @brief Stores all information about
@@ -53,6 +56,25 @@ namespace frametech
         class MeshUtils
         {
         public:
+            static ftstd::Result<Mesh> loadFromFile(const char* const pathfile) noexcept {
+                objl::Loader obj_loader {};
+                if (!obj_loader.LoadFile(pathfile)) {
+                    LogE("cannot load mesh from file '%s'", pathfile);
+                    return ftstd::Result<Mesh>::Error((char*)"cannot load mesh");
+                }
+                std::vector<frametech::engine::graphics::shaders::Vertex> vertices(obj_loader.LoadedVertices.size());
+                for (int vertex_index = 0; vertex_index < obj_loader.LoadedVertices.size(); ++vertex_index) {
+                    vertices[vertex_index] = frametech::engine::graphics::shaders::Vertex::fromObjLoaderVertex(obj_loader.LoadedVertices[vertex_index]);
+                }
+                Mesh mesh {
+                    .m_vertices = vertices,
+                    .m_indices = obj_loader.LoadedIndices,
+                    .m_type = Mesh2D::FROM_FILE,
+                };
+                strncpy(mesh.m_name, pathfile, 19);
+                mesh.m_name[19] = '\0';
+                return ftstd::Result<Mesh>::Ok(mesh);
+            }
             /// @brief Returns a 2D Mesh object, based on the id passed as parameter
             /// @param queried_mesh The 2D Mesh ID to get
             /// @return A Mesh object
@@ -118,7 +140,7 @@ namespace frametech
                         snprintf(mesh.m_name, MESH_2D_NAME_LENGTH, "basic_triangle");
                         return mesh;
                     }
-                    case Mesh2D::NONE:
+                    default:
                     {
                         // Indices
                         std::vector<uint32_t> indices(1);

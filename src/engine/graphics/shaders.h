@@ -11,6 +11,7 @@
 
 #include <array>
 #include <glm/glm.hpp>
+#include <objloader/objloader.h>
 #include <vulkan/vulkan.h>
 
 namespace frametech
@@ -43,6 +44,15 @@ namespace frametech
                     void setTextureCoordinates(const glm::vec2& new_coordinates)
                     {
                         m_texture_coordinates = new_coordinates;
+                    }
+                    
+                    static Vertex fromObjLoaderVertex(const objl::Vertex& v) noexcept {
+                        Vertex vertex {
+                            .m_position = glm::vec3(v.Position.X, v.Position.Y, v.Position.Z),
+                            .m_color = glm::vec3(v.Normal.X, v.Normal.Y, v.Normal.Z),
+                            .m_texture_coordinates = glm::vec2(v.TextureCoordinate.X, v.TextureCoordinate.Y),
+                        };
+                        return vertex;
                     }
                 };
 
