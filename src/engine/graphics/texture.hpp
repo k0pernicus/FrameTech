@@ -55,9 +55,9 @@ namespace frametech
 
             private:
                 /// @brief Height of the texture image
-                int m_height = 0;
+                int m_height;
                 /// @brief Width of the texture image
-                int m_width = 0;
+                int m_width;
                 /// @brief Number of channels in the texture image
                 int m_channels = 0;
                 /// @brief Alpha channel by default

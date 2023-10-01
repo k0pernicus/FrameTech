@@ -14,7 +14,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-frametech::engine::graphics::Texture::Texture() : m_tag("Unknown") {}
+frametech::engine::graphics::Texture::Texture() : m_height(0), m_width(0), m_tag("Unknown") {}
 
 frametech::engine::graphics::Texture::~Texture()
 {
