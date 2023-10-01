@@ -227,7 +227,8 @@ ftstd::VResult frametech::graphics::Render::createDepthImageView()
         return ftstd::VResult::Error((char*)supported_format_opt.GetError());
     }
     VkFormat supported_format = supported_format_opt.GetValue();
-    bool has_stencil_component = supported_format == VK_FORMAT_D32_SFLOAT_S8_UINT || supported_format == VK_FORMAT_D24_UNORM_S8_UINT;
+    // TODO : need to check for stencil component ?
+    // bool has_stencil_component = supported_format == VK_FORMAT_D32_SFLOAT_S8_UINT || supported_format == VK_FORMAT_D24_UNORM_S8_UINT;
     
     if (m_depth_texture.createImage(frametech::Engine::getInstance()->m_swapchain->getExtent().height,
                                     frametech::Engine::getInstance()->m_swapchain->getExtent().width,
