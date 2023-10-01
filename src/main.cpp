@@ -64,9 +64,10 @@ int main(int argc, const char* argv[])
         // require some renderer parts to allocate & init textures and samplers...
         // TODO: find a good solution here to solve this very bad issue !
 
-        app->initEngine();
-        app->loadGameAssets();
-        app->initDescriptorSets();
+        if (app->initEngine()) {
+            app->loadGameAssets();
+            app->initDescriptorSets();
+        }
         app->run();
     }
 #ifdef ENABLE_EXCEPTIONS

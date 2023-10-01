@@ -120,7 +120,8 @@ namespace frametech
         /// @brief Initialize the app window
         ftstd::VResult initWindow();
         /// @brief Initialize the app's engine
-        void initEngine();
+        /// @return A boolean value to indicate if the engine has been initialized or not
+        bool initEngine();
         /// @brief Initialize the app's engine descriptor sets
         void initDescriptorSets();
         /// @brief Load all assets for the game - should be called

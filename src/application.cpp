@@ -464,10 +464,11 @@ void frametech::Application::cleanImGui()
 }
 #endif
 
-void frametech::Application::initEngine()
+bool frametech::Application::initEngine()
 {
     m_engine = std::unique_ptr<frametech::Engine>(frametech::Engine::getInstance());
     m_engine->initialize();
+    return frametech::Engine::State::INITIALIZED == m_engine->getState();
 }
 
 void frametech::Application::initDescriptorSets()
@@ -654,10 +655,6 @@ static void cursorCallback(GLFWwindow* window, const double xpos, const double y
 
 void frametech::Application::run()
 {
-#ifdef IMGUI
-    setupImGui();
-    uploadImGuiFont();
-#endif
     switch (m_engine->getState())
     {
         case frametech::Engine::State::UNINITIALIZED:
@@ -671,6 +668,10 @@ void frametech::Application::run()
         break;
         case frametech::Engine::State::INITIALIZED:
         {
+#ifdef IMGUI
+            setupImGui();
+            uploadImGuiFont();
+#endif
             Log("> Application loop...");
             if (GAME_APPLICATION_SETTINGS->fps_target.has_value() && nullptr != m_monitor.getCurrentProperties().m_current_video_mode)
             {
@@ -714,12 +715,12 @@ void frametech::Application::run()
             }
             Log("< ...Application loop");
             vkDeviceWaitIdle(m_engine->m_graphics_device.getLogicalDevice());
+#ifdef IMGUI
+            cleanImGui();
+#endif
         }
         break;
     }
-#ifdef IMGUI
-    cleanImGui();
-#endif
     m_state = frametech::Application::State::CLOSING;
 }
 

@@ -375,7 +375,7 @@ ftstd::VResult frametech::graphics::Device::createLogicalDevice()
     return ftstd::VResult::Ok();
 }
 
-VkDevice frametech::graphics::Device::getLogicalDevice() const
+const VkDevice& frametech::graphics::Device::getLogicalDevice() const
 {
     return m_logical_device;
 }

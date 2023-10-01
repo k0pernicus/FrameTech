@@ -40,6 +40,7 @@ frametech::graphics::Render::Render()
 
 frametech::graphics::Render::~Render()
 {
+    const VkDevice& logical_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
     if (m_graphics_pipeline != nullptr)
     {
         Log("< Destroying the graphics pipeline...");
@@ -54,29 +55,37 @@ frametech::graphics::Render::~Render()
     if (m_image_views.size() > 0)
     {
         Log("< Destroying the image views...");
-        for (auto image_view : m_image_views)
-            vkDestroyImageView(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), image_view, nullptr);
+        if (logical_device) {
+            for (auto image_view : m_image_views)
+                vkDestroyImageView(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), image_view, nullptr);
+        }
         m_image_views.clear();
     }
     if (m_framebuffers.size() > 0)
     {
         Log("< Destroying the framebuffers...");
-        for (auto framebuffer : m_framebuffers)
-            vkDestroyFramebuffer(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), framebuffer, nullptr);
+        if (logical_device) {
+            for (auto framebuffer : m_framebuffers)
+                vkDestroyFramebuffer(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), framebuffer, nullptr);
+        }
         m_framebuffers.clear();
     }
     if (nullptr != m_graphics_command)
     {
         Log("< Destroying the Command object...");
-        if (nullptr != m_graphics_command->getPool())
-            vkDestroyCommandPool(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), *m_graphics_command->getPool(), nullptr);
+        if (logical_device) {
+            if (nullptr != m_graphics_command->getPool())
+                vkDestroyCommandPool(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), *m_graphics_command->getPool(), nullptr);
+        }
         m_graphics_command = nullptr;
     }
     if (nullptr != m_transfert_command)
     {
         Log("< Destroying the Transfert object...");
-        if (nullptr != m_transfert_command->getPool())
-            vkDestroyCommandPool(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), *m_transfert_command->getPool(), nullptr);
+        if (logical_device) {
+            if (nullptr != m_transfert_command->getPool())
+                vkDestroyCommandPool(frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(), *m_transfert_command->getPool(), nullptr);
+        }
         m_transfert_command = nullptr;
     }
     m_instance = nullptr;
