@@ -88,7 +88,8 @@ namespace frametech
             {
                 VmaAllocationCreateInfo alloc_info = {
                     .flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
-                    .usage = VMA_MEMORY_USAGE_AUTO,
+                    // Windows build : check why VMA_MEMORY_USAGE_AUTO does not work on Windows...
+                    .usage = VMA_MEMORY_USAGE_GPU_ONLY,
                 };
 
                 if (vmaCreateImage(resources_allocator, &image_create_info, &alloc_info, &image, allocation, nullptr) != VK_SUCCESS)
@@ -113,6 +114,7 @@ namespace frametech
             {
                 VmaAllocationCreateInfo alloc_info = {
                     .usage = VMA_MEMORY_USAGE_GPU_ONLY,
+                    // Windows build : check why VMA_MEMORY_USAGE_AUTO does not work on Windows...
                     .requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT),
                 };
 
