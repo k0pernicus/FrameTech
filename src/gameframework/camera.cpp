@@ -75,9 +75,6 @@ const glm::vec3& frametech::gameframework::Camera::getFrontVector() const noexce
 
 void frametech::gameframework::Camera::handleKeyEvent(frametech::engine::inputs::Key& key) noexcept
 {
-    const frametech::gameframework::Camera& world_camera = frametech::Application::getInstance("")->getCurrentWorld().getMainCamera();
-    const glm::vec3 camera_target = world_camera.getTarget();
-    const glm::vec3 camera_position = world_camera.getPosition();
     switch (key)
     {
 //        case frametech::engine::inputs::Key::ALT_RIGHT_COMBINED:

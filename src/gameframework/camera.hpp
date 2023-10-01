@@ -41,9 +41,9 @@ namespace frametech
         public:
             Camera(const glm::vec3 target = DEFAULT_TARGET, glm::vec3 position = DEFAULT_POSITION, const Type camera_type = Type::WORLD) : m_original_target(target),
                   m_target(target),
-                  m_position(position),
                   m_original_position(position),
-                  m_type(camera_type){};
+                    m_position(position),
+                    m_type(camera_type){};
             glm::vec3 getTarget() const noexcept;
             void resetTarget() noexcept;
             void setTarget(const glm::vec3& new_target) noexcept;
