@@ -199,8 +199,8 @@ ftstd::VResult frametech::graphics::Command::record()
     }
     
     std::array<VkClearValue, 2> clear_values{};
-    clear_values[0] = {{0.0, 0.0, 0.0, 1.0}}; // COLOR
-    clear_values[1] = {1.0, 0};               // DEPTH
+    clear_values[0] = {{{0.0, 0.0, 0.0, 1.0}}}; // COLOR
+    clear_values[1] = {{{1.0, 0}}};               // DEPTH
 
     VkRenderPassBeginInfo render_pass_begin_info{
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,

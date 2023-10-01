@@ -112,8 +112,8 @@ namespace frametech
                 VkImageCreateInfo& image_create_info) noexcept
             {
                 VmaAllocationCreateInfo alloc_info = {
-                    .requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT),
                     .usage = VMA_MEMORY_USAGE_GPU_ONLY,
+                    .requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT),
                 };
 
                 if (vmaCreateImage(resources_allocator, &image_create_info, &alloc_info, &image, allocation, nullptr) != VK_SUCCESS)
