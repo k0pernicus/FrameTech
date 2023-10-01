@@ -20,7 +20,7 @@ ModelViewProjection frametech::graphics::computeTransform(
     // Compute the view of the world
     const frametech::gameframework::Camera& world_camera = frametech::Application::getInstance("")->getCurrentWorld().getMainCamera();
     glm::vec3 eye = world_camera.getPosition();
-    glm::vec3 lookat = world_camera.getDirection();
+    glm::vec3 lookat = world_camera.getTarget();
     glm::vec3 up = glm::vec3(0, 1, 0); // Front view
     glm::mat4 view = glm::lookAt(eye, lookat, up);
 

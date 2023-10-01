@@ -284,11 +284,11 @@ void frametech::Application::drawDebugToolImGui()
             ImGui::Text("FOV: %f", main_camera.getFOV());
             ImGui::Text("Type: %s", main_camera.getTypeName().c_str());
             {
-                const auto camera_direction = main_camera.getDirection();
+                const auto camera_direction = main_camera.getTarget();
                 ImGui::Text("Direction: %f,%f,%f", camera_direction.x, camera_direction.y, camera_direction.z);
                 if (ImGui::Button("Reset direction"))
                 {
-                    main_camera.resetDirection();
+                    main_camera.resetTarget();
                 }
             }
             {
