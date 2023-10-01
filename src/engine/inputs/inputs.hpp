@@ -45,10 +45,10 @@ namespace frametech
             {
             public:
                 void poll(bool blank = false) noexcept;
-                void addMove(const double xpos, const double ypos) noexcept;
+                void addMove(const float xpos, const float ypos) noexcept;
 
             private:
-                std::deque<std::tuple<double, double>> m_positions;
+                std::deque<std::tuple<float, float>> m_positions;
                 std::mutex m_lock;
             };
         } // namespace inputs

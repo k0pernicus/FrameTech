@@ -646,7 +646,8 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
 }
 
 static void cursorCallback(GLFWwindow* window, const double xpos, const double ypos) {
-    frametech::Application::getInstance("")->m_cursor_events_handler.addMove(xpos, ypos);
+    frametech::Application::getInstance("")->m_cursor_events_handler.addMove((float)xpos, (float)ypos);
+    // TODO : update camera direction
 #ifdef IMGUI
     // As ImGui is now using cursor callbacks too, we need to forward
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);

@@ -25,6 +25,9 @@ namespace frametech
             /// TODO: check if necessary to set, as parameter, if the input needs to propagate to children / parents
             /// or not
             virtual void handleKeyEvent(frametech::engine::inputs::Key& key) noexcept = 0;
+            /// @brief Handles cursor / mouse / touchable event
+            /// @param mouse_positions The new positions of the mouse / cursor
+            virtual void handleMouseEvent(std::tuple<float, float>& mouse_positions) noexcept = 0;
         };
     } // namespace gameframework
 } // namespace frametech
