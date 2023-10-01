@@ -284,11 +284,11 @@ void frametech::Application::drawDebugToolImGui()
             ImGui::Text("FOV: %f", main_camera.getFOV());
             ImGui::Text("Type: %s", main_camera.getTypeName().c_str());
             {
-                const auto camera_direction = main_camera.getDirection();
+                const auto camera_direction = main_camera.getTarget();
                 ImGui::Text("Direction: %f,%f,%f", camera_direction.x, camera_direction.y, camera_direction.z);
                 if (ImGui::Button("Reset direction"))
                 {
-                    main_camera.resetDirection();
+                    main_camera.resetTarget();
                 }
             }
             {
@@ -646,7 +646,8 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
 }
 
 static void cursorCallback(GLFWwindow* window, const double xpos, const double ypos) {
-    frametech::Application::getInstance("")->m_cursor_events_handler.addMove(xpos, ypos);
+    frametech::Application::getInstance("")->m_cursor_events_handler.addMove((float)xpos, (float)ypos);
+    // TODO : update camera direction
 #ifdef IMGUI
     // As ImGui is now using cursor callbacks too, we need to forward
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
