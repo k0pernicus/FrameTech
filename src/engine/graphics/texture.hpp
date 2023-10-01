@@ -113,10 +113,6 @@ namespace frametech
                                                const VkImageAspectFlags subresource_aspect_masks) noexcept;
 
             private:
-                /// @brief Height of the texture image
-                int m_height = 0;
-                /// @brief Width of the texture image
-                int m_width = 0;
                 /// @brief Vulkan image object
                 VkImage m_depth_image = VK_NULL_HANDLE;
                 /// @brief Vulkan image view to access the texture for the GPU
