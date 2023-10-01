@@ -57,7 +57,7 @@ namespace Project
         /// @brief Targetted FPS
         std::optional<uint8_t> fps_target;
         /// @brief All the asset archives to load
-        std::vector<std::string> asset_archives;
+        std::vector<std::string> asset_folders;
         /// @brief Application version
         ftstd::Version version;
 
@@ -101,7 +101,7 @@ namespace Project
                     if constexpr (toml::is_string<decltype(el)>)
                     {
                         Log("Found asset: %s", (*el).c_str());
-                        this->asset_archives.emplace_back(*el);
+                        this->asset_folders.emplace_back(*el);
                     } });
             }
             return ftstd::VResult::Ok();
