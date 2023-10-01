@@ -173,7 +173,11 @@ frametech::Engine::State frametech::Engine::getState()
 
 ftstd::VResult frametech::Engine::pickPhysicalDevice()
 {
-    return m_graphics_device.listDevices();
+    // TODO: need to setup properly the device options
+    frametech::DeviceOptions options{
+        .supports_integrated_graphics_device = true,
+    };
+    return m_graphics_device.listDevices(options);
 }
 
 ftstd::VResult frametech::Engine::createAllocator()

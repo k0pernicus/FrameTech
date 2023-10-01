@@ -15,6 +15,11 @@
 
 namespace frametech
 {
+    typedef struct DeviceOptions {
+        bool supports_integrated_graphics_device = false;
+        char** supported_device_names = nullptr;
+    } DeviceOptions;
+
     namespace graphics
     {
         /// @brief Stores the state of a Graphics queue
@@ -47,7 +52,7 @@ namespace frametech
             uint32_t getNumberDevices() const;
             /// @brief Lists the devices that **may** be suitable for our needs.
             /// @return `true` if the function founds a suitable physical device, otherwise `false`.
-            ftstd::VResult listDevices();
+            ftstd::VResult listDevices(const frametech::DeviceOptions& options);
             /// @brief Returns if the device is suitable for graphical needs or not.
             /// @param device The device to check.
             /// To be suitable, the device must:

@@ -45,7 +45,7 @@ const char* APPLE_M2_NAME = (char*)"Apple M2";
 /// needs to support geometry shaders
 #define NEEDS_GEOMETRY_SHADER 0
 
-static bool isDeviceSuitable(const VkPhysicalDevice& device)
+static bool isDeviceSuitable(const VkPhysicalDevice& device, const frametech::DeviceOptions& options)
 {
     if (nullptr == device)
     {
@@ -64,6 +64,9 @@ static bool isDeviceSuitable(const VkPhysicalDevice& device)
     const bool is_discrete_gpu = properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
     Log("\t* is discrete gpu? %s", is_discrete_gpu ? "true!" : "false...");
 
+    const bool is_integrated_gpu = VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU;
+    Log("\t* is integrated gpu? %s", is_integrated_gpu ? "true!" : "false...");
+
 #if defined(NEEDS_GEOMETRY_SHADER) && NEEDS_GEOMETRY_SHADER == 1
     VkPhysicalDeviceFeatures features;
     vkGetPhysicalDeviceFeatures(device, &features);
@@ -77,7 +80,7 @@ static bool isDeviceSuitable(const VkPhysicalDevice& device)
 #ifdef __APPLE__
     return is_apple_silicon || is_discrete_gpu;
 #else
-    return is_discrete_gpu;
+    return (options.supports_integrated_graphics_device && is_integrated_gpu) || is_discrete_gpu;
 #endif
 }
 
@@ -142,7 +145,7 @@ uint32_t frametech::graphics::Device::getNumberDevices() const
     return device_count;
 }
 
-ftstd::VResult frametech::graphics::Device::listDevices()
+ftstd::VResult frametech::graphics::Device::listDevices(const frametech::DeviceOptions& options)
 {
     uint32_t device_count{};
     vkEnumeratePhysicalDevices(frametech::Engine::getInstance()->m_graphics_instance, &device_count, nullptr);
@@ -155,7 +158,7 @@ ftstd::VResult frametech::graphics::Device::listDevices()
     vkEnumeratePhysicalDevices(frametech::Engine::getInstance()->m_graphics_instance, &device_count, devices.data());
     for (const auto& device : devices)
     {
-        if (isDeviceSuitable(device))
+        if (isDeviceSuitable(device, options))
         {
             m_physical_device = device;
             Log("\t... is suitable!");
