@@ -531,6 +531,7 @@ ftstd::VResult frametech::Application::loadGameAssets() noexcept
                 m_world.setSelectedTexture(entry_filename.c_str());
             }
 
+            fclose(pFile);
             delete[] contents;
         }
     }
