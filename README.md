@@ -54,7 +54,7 @@ The game settings must be in a file called `game.toml`, and must follow TOML spe
 APPLICATION_NAME = "Example"
 APPLICATION_FPS_TARGET = 60
 APPLICATION_VERSION = "0.1.0"
-APPLICATION_DEPENDENCIES = ["TEXTURES.ZIP", "SOUNDS.ZIP"]
+APPLICATION_DEPENDENCIES = ["TEXTURES", "SOUNDS"]
 ```
 
 The file must be at the root of the executable call.
