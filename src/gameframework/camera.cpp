@@ -72,39 +72,55 @@ const glm::vec3& frametech::gameframework::Camera::getFrontVector() const noexce
     return m_front;
 }
 
+const glm::vec3& frametech::gameframework::Camera::getUpVector() const noexcept {
+    return m_up;
+}
+
 
 void frametech::gameframework::Camera::handleKeyEvent(frametech::engine::inputs::Key& key) noexcept
 {
     switch (key)
     {
-//        case frametech::engine::inputs::Key::ALT_RIGHT_COMBINED:
-//        {
-//            Log("[CAMERA OBJECT] ALT + RIGHT keys have been hit");
-//            m_target = glm::vec3(camera_target.x + glm::radians(CAMERA_ROTATION_STEP), camera_target.y, camera_target.z);
-//        }
-//        break;
-//        case frametech::engine::inputs::Key::ALT_DOWN_COMBINED:
-//        {
-//            Log("[CAMERA OBJECT] ALT + DOWN keys have been hit");
-//            m_target = glm::vec3(camera_target.x, camera_target.y + cos(glm::radians(CAMERA_ROTATION_STEP)), camera_target.z);
-//        }
-//        break;
-//        case frametech::engine::inputs::Key::ALT_LEFT_COMBINED:
-//        {
-//            Log("[CAMERA OBJECT] ALT + LEFT keys have been hit");
-//            m_target = glm::vec3(camera_target.x - cos(glm::radians(CAMERA_ROTATION_STEP)), camera_target.y, camera_target.z);
-//        }
-//        break;
-//        case frametech::engine::inputs::Key::ALT_UP_COMBINED:
-//        {
-//            Log("[CAMERA OBJECT] ALT + UP keys have been hit");
-//            m_target = glm::vec3(camera_target.x, camera_target.y - cos(glm::radians(CAMERA_ROTATION_STEP)), camera_target.z);
-//        }
-//        break;
+        case frametech::engine::inputs::Key::ALT_RIGHT_COMBINED:
+        {
+            Log("[CAMERA OBJECT] ALT + RIGHT keys have been hit");
+            glm::vec3 left = glm::cross(m_up, m_front);
+            const float rotation_degree = 1 * CAMERA_ROTATION_STEP;
+            m_up = m_up * cos(rotation_degree) + left * sin(rotation_degree);
+        }
+        break;
+        case frametech::engine::inputs::Key::ALT_DOWN_COMBINED:
+        {
+            Log("[CAMERA OBJECT] ALT + DOWN keys have been hit");
+            m_pitch += 1;
+            m_target.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+            m_target.y = sin(glm::radians(m_pitch));
+            m_target.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+            m_front = glm::normalize(m_target);
+        }
+        break;
+        case frametech::engine::inputs::Key::ALT_LEFT_COMBINED:
+        {
+            Log("[CAMERA OBJECT] ALT + LEFT keys have been hit");
+            glm::vec3 left = glm::cross(m_up, m_front);
+            const float rotation_degree = -1 * CAMERA_ROTATION_STEP;
+            m_up = m_up * cos(rotation_degree) + left * sin(rotation_degree);
+        }
+        break;
+        case frametech::engine::inputs::Key::ALT_UP_COMBINED:
+        {
+            Log("[CAMERA OBJECT] ALT + UP keys have been hit");
+            m_pitch -= 1;
+            m_target.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+            m_target.y = sin(glm::radians(m_pitch));
+            m_target.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+            m_front = glm::normalize(m_target);
+        }
+        break;
         case frametech::engine::inputs::Key::RIGHT:
         {
             Log("[CAMERA OBJECT] RIGHT key has been hit");
-            m_position += glm::normalize(glm::cross(m_front, frametech::gameframework::Camera::UP)) * CAMERA_MOVE_STEP;
+            m_position += glm::normalize(glm::cross(m_front, m_up)) * CAMERA_MOVE_STEP;
         }
         break;
         case frametech::engine::inputs::Key::DOWN:
@@ -116,7 +132,7 @@ void frametech::gameframework::Camera::handleKeyEvent(frametech::engine::inputs:
         case frametech::engine::inputs::Key::LEFT:
         {
             Log("[CAMERA OBJECT] LEFT key has been hit");
-            m_position -= glm::normalize(glm::cross(m_front, frametech::gameframework::Camera::UP)) * CAMERA_MOVE_STEP;
+            m_position -= glm::normalize(glm::cross(m_front, m_up)) * CAMERA_MOVE_STEP;
         }
         break;
         case frametech::engine::inputs::Key::UP:
@@ -152,7 +168,7 @@ void frametech::gameframework::Camera::handleMouseEvent(std::tuple<float, float>
     
     m_yaw += x_offset;
     m_pitch += y_offset;
-    
+        
     if (m_pitch > 89.0f)  m_pitch =  89.0f;
     if (m_pitch < -89.0f) m_pitch = -89.0f;
     
@@ -160,5 +176,4 @@ void frametech::gameframework::Camera::handleMouseEvent(std::tuple<float, float>
     m_target.y = sin(glm::radians(m_pitch));
     m_target.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
     m_front = glm::normalize(m_target);
-    
 }
