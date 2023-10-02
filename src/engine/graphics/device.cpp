@@ -30,17 +30,6 @@ const std::vector<const char*> REQUIRED_EXTENSIONS = {
 };
 #endif
 
-#ifdef __APPLE__
-/// @brief The name of the Apple M1 chip, which is part of the
-/// exceptions choosing a physical device
-/// TODO: regex instead
-const char* APPLE_M1_NAME = (char*)"Apple M1";
-/// @brief The name of the Apple M1 chip, which is part of the
-/// exceptions choosing a physical device
-/// TODO: regex instead
-const char* APPLE_M2_NAME = (char*)"Apple M2";
-#endif
-
 /// @brief Boolean flag to know if the physical graphical device
 /// needs to support geometry shaders
 #define NEEDS_GEOMETRY_SHADER 0
@@ -56,11 +45,14 @@ static bool isDeviceSuitable(const VkPhysicalDevice& device, const frametech::De
     vkGetPhysicalDeviceProperties(device, &properties);
 
     Log("> Checking device '%s' (with ID '%d')", properties.deviceName, properties.deviceID);
-#ifdef __APPLE__
-    const bool is_apple_silicon = (strcmp(properties.deviceName, APPLE_M1_NAME) == 0 ||
-                                   strcmp(properties.deviceName, APPLE_M2_NAME) == 0);
-    Log("\t* is Apple Silicon? %s", is_apple_silicon ? "true!" : "false...");
-#endif
+    if (!options.supports_device_names.empty()) {
+        for (const std::string& device_name: options.supports_device_names) {
+            if (strcmp(properties.deviceName, device_name.c_str()) == 0) {
+                Log("\t* found device with name '%s'", properties.deviceName);
+                return true;
+            }
+        }
+    }
     const bool is_discrete_gpu = properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
     Log("\t* is discrete gpu? %s", is_discrete_gpu ? "true!" : "false...");
 
@@ -77,11 +69,7 @@ static bool isDeviceSuitable(const VkPhysicalDevice& device, const frametech::De
     return is_apple_silicon || (is_discrete_gpu && supports_geometry_shader);
 #endif
 
-#ifdef __APPLE__
-    return is_apple_silicon || is_discrete_gpu;
-#else
     return (options.supports_integrated_graphics_device && is_integrated_gpu) || is_discrete_gpu;
-#endif
 }
 
 static void listAvailableExtensions(const VkPhysicalDevice& physical_device)

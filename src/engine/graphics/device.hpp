@@ -17,7 +17,7 @@ namespace frametech
 {
     typedef struct DeviceOptions {
         bool supports_integrated_graphics_device = false;
-        char** supported_device_names = nullptr;
+        std::vector<std::string> supports_device_names;
     } DeviceOptions;
 
     namespace graphics

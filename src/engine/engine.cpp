@@ -175,7 +175,11 @@ ftstd::VResult frametech::Engine::pickPhysicalDevice()
 {
     // TODO: need to setup properly the device options
     frametech::DeviceOptions options{
-        .supports_integrated_graphics_device = true,
+        .supports_integrated_graphics_device = true, // Supports integrated graphics device instead of dedicated only
+        .supports_device_names = std::vector<std::string> { // Basic Apple Silicon support
+            "Apple M1",
+            "Apple M2"
+        },
     };
     return m_graphics_device.listDevices(options);
 }
