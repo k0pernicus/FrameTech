@@ -15,13 +15,17 @@
 
 namespace frametech
 {
-    typedef struct DeviceOptions {
-        bool supports_integrated_graphics_device = false;
-        std::vector<std::string> supports_device_names;
-    } DeviceOptions;
-
     namespace graphics
     {
+        /// Basic structure to help in choosing a physical graphics device
+        typedef struct DeviceSupportsOptions {
+            /// Should support or not integrated graphics device
+            /// Check for dedicated graphics device only by default
+            bool supports_integrated_graphics_device = false;
+            /// Graphics device names to support, useful for very specific hardware to support
+            /// like Apple Silicon chips
+            std::vector<char*> supports_device_names;
+        } DeviceSupportsOptions;
         /// @brief Stores the state of a Graphics queue
         enum struct QueueState
         {
@@ -52,7 +56,7 @@ namespace frametech
             uint32_t getNumberDevices() const;
             /// @brief Lists the devices that **may** be suitable for our needs.
             /// @return `true` if the function founds a suitable physical device, otherwise `false`.
-            ftstd::VResult listDevices(const frametech::DeviceOptions& options);
+            ftstd::VResult listDevices(const frametech::graphics::DeviceSupportsOptions& options);
             /// @brief Returns if the device is suitable for graphical needs or not.
             /// @param device The device to check.
             /// To be suitable, the device must:

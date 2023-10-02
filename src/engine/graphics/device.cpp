@@ -34,7 +34,7 @@ const std::vector<const char*> REQUIRED_EXTENSIONS = {
 /// needs to support geometry shaders
 #define NEEDS_GEOMETRY_SHADER 0
 
-static bool isDeviceSuitable(const VkPhysicalDevice& device, const frametech::DeviceOptions& options)
+static bool isDeviceSuitable(const VkPhysicalDevice& device, const frametech::graphics::DeviceSupportsOptions& options)
 {
     if (nullptr == device)
     {
@@ -133,7 +133,7 @@ uint32_t frametech::graphics::Device::getNumberDevices() const
     return device_count;
 }
 
-ftstd::VResult frametech::graphics::Device::listDevices(const frametech::DeviceOptions& options)
+ftstd::VResult frametech::graphics::Device::listDevices(const frametech::graphics::DeviceSupportsOptions& options)
 {
     uint32_t device_count{};
     vkEnumeratePhysicalDevices(frametech::Engine::getInstance()->m_graphics_instance, &device_count, nullptr);
