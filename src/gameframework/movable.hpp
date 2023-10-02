@@ -28,6 +28,9 @@ namespace frametech
             /// @brief Handles cursor / mouse / touchable event
             /// @param mouse_positions The new positions of the mouse / cursor
             virtual void handleMouseEvent(std::tuple<float, float>& mouse_positions) noexcept = 0;
+            
+            /// @brief Boolean value to retrieve and compute mouse position events
+            bool m_first_cursor_pos = true;
         };
     } // namespace gameframework
 } // namespace frametech

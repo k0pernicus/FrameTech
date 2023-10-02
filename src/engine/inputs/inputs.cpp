@@ -44,8 +44,11 @@ void frametech::engine::inputs::CursorHandler::poll(bool blank) noexcept
     if (std::get<0>(cursor_position) >= 0.0f && std::get<1>(cursor_position) >= 0.0f) {
         Log("Cursor moved : x is %f and y is %f", std::get<0>(cursor_position), std::get<1>(cursor_position));
         auto selected_object = frametech::Application::getInstance("")->getCurrentWorld().getSelectedObject();
-        if (nullptr != selected_object)
+        // Handle only when user clicks
+        if (nullptr != selected_object && frametech::Application::getInstance("")->m_left_mouse_pressed)
             selected_object->handleMouseEvent(m_positions.front());
+        else
+            selected_object->m_first_cursor_pos = true; // Reset the position of the cursor
     }
     m_positions.pop_front();
 }

@@ -645,9 +645,15 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
     }
 }
 
+static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    // Only handle left mouse button for now
+    if (GLFW_MOUSE_BUTTON_LEFT != button) return;
+    frametech::Application::getInstance("")->m_left_mouse_pressed = GLFW_PRESS == action;
+    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+}
+
 static void cursorCallback(GLFWwindow* window, const double xpos, const double ypos) {
     frametech::Application::getInstance("")->m_cursor_events_handler.addMove((float)xpos, (float)ypos);
-    // TODO : update camera direction
 #ifdef IMGUI
     // As ImGui is now using cursor callbacks too, we need to forward
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
@@ -694,6 +700,8 @@ void frametech::Application::run()
             m_world.setup();
             // Initialize the key events
             glfwSetKeyCallback(m_app_window, keyCallback);
+            // Mouse buttons events
+            glfwSetMouseButtonCallback(m_app_window, mouseButtonCallback);
             // Initialize the mouse events
             glfwSetCursorPosCallback(m_app_window, cursorCallback);
             m_state = frametech::Application::State::RUNNING;
