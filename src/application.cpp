@@ -646,6 +646,15 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
 }
 
 static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+#ifdef IMGUI
+    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+    
+    auto& io = ImGui::GetIO();
+    if (io.WantCaptureMouse || io.WantCaptureKeyboard) {
+        return;
+    }
+#endif
+    
     // Only handle left mouse button for now
     if (GLFW_MOUSE_BUTTON_LEFT != button) return;
     frametech::Application::getInstance("")->m_left_mouse_pressed = GLFW_PRESS == action;
@@ -657,7 +666,12 @@ static void cursorCallback(GLFWwindow* window, const double xpos, const double y
 #ifdef IMGUI
     // As ImGui is now using cursor callbacks too, we need to forward
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+    auto& io = ImGui::GetIO();
+    if (io.WantCaptureMouse || io.WantCaptureKeyboard) {
+        return;
+    }
 #endif
+    frametech::Application::getInstance("")->m_cursor_events_handler.addMove((float)xpos, (float)ypos);
 }
 
 void frametech::Application::run()
