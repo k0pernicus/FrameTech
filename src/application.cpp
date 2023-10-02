@@ -629,41 +629,43 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
     {
         current_world.getMainCamera().setType(frametech::gameframework::Camera::Type::STATIONARY);
         if (key == GLFW_KEY_UP || key == GLFW_KEY_W)
-            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::ALT_UP_COMBINED);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::KeyMask::ALT_UP_COMBINED);
         if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S)
-            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::ALT_DOWN_COMBINED);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::KeyMask::ALT_DOWN_COMBINED);
         if (key == GLFW_KEY_LEFT || key == GLFW_KEY_A)
-            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::ALT_LEFT_COMBINED);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::KeyMask::ALT_LEFT_COMBINED);
         if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D)
-            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::ALT_RIGHT_COMBINED);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::KeyMask::ALT_RIGHT_COMBINED);
     }
     else
     {
         current_world.getMainCamera().setType(frametech::gameframework::Camera::Type::WORLD);
         if (key == GLFW_KEY_UP || key == GLFW_KEY_W)
-            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::UP);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::KeyMask::UP);
         if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S)
-            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::DOWN);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::KeyMask::DOWN);
         if (key == GLFW_KEY_LEFT || key == GLFW_KEY_A)
-            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::LEFT);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::KeyMask::LEFT);
         if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D)
-            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::Key::RIGHT);
+            frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::KeyMask::RIGHT);
     }
 }
 
 static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 #ifdef IMGUI
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-    
     auto& io = ImGui::GetIO();
     if (io.WantCaptureMouse || io.WantCaptureKeyboard) {
         return;
     }
 #endif
-    
     // Only handle left mouse button for now
-    if (GLFW_MOUSE_BUTTON_LEFT != button) return;
-    frametech::Application::getInstance("")->m_left_mouse_pressed = GLFW_PRESS == action;
+    if (GLFW_MOUSE_BUTTON_LEFT == button)
+        frametech::Application::getInstance("")->m_left_mouse_pressed = GLFW_PRESS == action;
+    else if (GLFW_MOUSE_BUTTON_RIGHT == button)
+        frametech::Application::getInstance("")->m_right_mouse_pressed = GLFW_PRESS == action;
+    else if (GLFW_MOUSE_BUTTON_MIDDLE == button)
+        frametech::Application::getInstance("")->m_middle_mouse_pressed = GLFW_PRESS == action;
 }
 
 static void cursorCallback(GLFWwindow* window, const double xpos, const double ypos) {

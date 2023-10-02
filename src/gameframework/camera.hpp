@@ -53,7 +53,7 @@ namespace frametech
             /// @brief Return a tag associated to the current camera type
             /// @return A tag, as a string, associated to the current camera type setting
             std::string getTypeName() const noexcept;
-            void handleKeyEvent(frametech::engine::inputs::Key& key) noexcept override;
+            void handleKeyEvent(frametech::engine::inputs::KeyMask& mask) noexcept override;
             void handleMouseEvent(std::tuple<float, float>& mouse_positions) noexcept override;
 
         private:

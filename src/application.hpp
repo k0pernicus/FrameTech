@@ -150,6 +150,10 @@ namespace frametech
         frametech::engine::inputs::CursorHandler m_cursor_events_handler;
         /// @brief Local and global variable to know if the left button is pressed or not
         bool m_left_mouse_pressed = false;
+        /// @brief Local and global variable to know if the right button is pressed or not
+        bool m_right_mouse_pressed = false;
+        /// @brief Local and global variable to know if the middle button is pressed or not
+        bool m_middle_mouse_pressed = false;
     };
 
 } // namespace frametech

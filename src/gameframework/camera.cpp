@@ -76,11 +76,11 @@ std::string frametech::gameframework::Camera::getTypeName() const noexcept
     }
 }
 
-void frametech::gameframework::Camera::handleKeyEvent(frametech::engine::inputs::Key& key) noexcept
+void frametech::gameframework::Camera::handleKeyEvent(frametech::engine::inputs::KeyMask& mask) noexcept
 {
-    switch (key)
+    switch (mask)
     {
-        case frametech::engine::inputs::Key::ALT_RIGHT_COMBINED:
+        case frametech::engine::inputs::KeyMask::ALT_RIGHT_COMBINED:
         {
             Log("[CAMERA OBJECT] ALT + RIGHT keys have been hit");
             glm::vec3 left = glm::cross(m_up, m_front);
@@ -88,7 +88,7 @@ void frametech::gameframework::Camera::handleKeyEvent(frametech::engine::inputs:
             m_up = m_up * cos(rotation_degree) + left * sin(rotation_degree);
         }
         break;
-        case frametech::engine::inputs::Key::ALT_DOWN_COMBINED:
+        case frametech::engine::inputs::KeyMask::ALT_DOWN_COMBINED:
         {
             Log("[CAMERA OBJECT] ALT + DOWN keys have been hit");
             m_pitch += 1;
@@ -98,7 +98,7 @@ void frametech::gameframework::Camera::handleKeyEvent(frametech::engine::inputs:
             m_front = glm::normalize(m_target);
         }
         break;
-        case frametech::engine::inputs::Key::ALT_LEFT_COMBINED:
+        case frametech::engine::inputs::KeyMask::ALT_LEFT_COMBINED:
         {
             Log("[CAMERA OBJECT] ALT + LEFT keys have been hit");
             glm::vec3 left = glm::cross(m_up, m_front);
@@ -106,7 +106,7 @@ void frametech::gameframework::Camera::handleKeyEvent(frametech::engine::inputs:
             m_up = m_up * cos(rotation_degree) + left * sin(rotation_degree);
         }
         break;
-        case frametech::engine::inputs::Key::ALT_UP_COMBINED:
+        case frametech::engine::inputs::KeyMask::ALT_UP_COMBINED:
         {
             Log("[CAMERA OBJECT] ALT + UP keys have been hit");
             m_pitch -= 1;
@@ -116,25 +116,25 @@ void frametech::gameframework::Camera::handleKeyEvent(frametech::engine::inputs:
             m_front = glm::normalize(m_target);
         }
         break;
-        case frametech::engine::inputs::Key::RIGHT:
+        case frametech::engine::inputs::KeyMask::RIGHT:
         {
             Log("[CAMERA OBJECT] RIGHT key has been hit");
             m_position += glm::normalize(glm::cross(m_front, m_up)) * CAMERA_MOVE_STEP;
         }
         break;
-        case frametech::engine::inputs::Key::DOWN:
+        case frametech::engine::inputs::KeyMask::DOWN:
         {
             Log("[CAMERA OBJECT] DOWN key has been hit");
             m_position -= CAMERA_MOVE_STEP * m_front;
         }
         break;
-        case frametech::engine::inputs::Key::LEFT:
+        case frametech::engine::inputs::KeyMask::LEFT:
         {
             Log("[CAMERA OBJECT] LEFT key has been hit");
             m_position -= glm::normalize(glm::cross(m_front, m_up)) * CAMERA_MOVE_STEP;
         }
         break;
-        case frametech::engine::inputs::Key::UP:
+        case frametech::engine::inputs::KeyMask::UP:
         {
             Log("[CAMERA OBJECT] UP key has been hit");
             m_position += CAMERA_MOVE_STEP * m_front;

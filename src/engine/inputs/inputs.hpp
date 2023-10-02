@@ -18,26 +18,37 @@ namespace frametech
     {
         namespace inputs
         {
-            enum Key
+            /// We consider here that at most two keys can be hit at same time
+            /// TODO : move from enum to proper constant expressions in a namespace ? -> uint8_t
+            enum class KeyMask
             {
-                ALT_UP_COMBINED,
-                ALT_DOWN_COMBINED,
-                ALT_LEFT_COMBINED,
-                ALT_RIGHT_COMBINED,
-                UP,
-                DOWN,
-                LEFT,
-                RIGHT,
+                ALT_UP_COMBINED     = 0x01,
+                ALT_DOWN_COMBINED   = 0x02,
+                ALT_LEFT_COMBINED   = 0x04,
+                ALT_RIGHT_COMBINED  = 0x08,
+                UP                  = 0x10,
+                DOWN                = 0x20,
+                LEFT                = 0x40,
+                RIGHT               = 0x80,
+            };
+        
+            /// Mask for mouse button in frametech
+            /// TODO : move from enum to proper constant expressions in a namespace ? -> uint8_t
+            enum class MouseButtonMask
+            {
+                LEFT    = 0x01,
+                RIGHT   = 0x02,
+                MIDDLE  = 0x04
             };
         
             class EventHandler
             {
             public:
                 void poll(bool blank = false) noexcept;
-                void addKey(const Key key) noexcept;
+                void addKey(const KeyMask mask) noexcept;
 
             private:
-                std::deque<Key> m_keys;
+                std::deque<KeyMask> m_key_masks;
                 std::mutex m_lock;
             };
         

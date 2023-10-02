@@ -16,18 +16,18 @@ void frametech::engine::inputs::EventHandler::poll(bool blank) noexcept
     if (blank)
         return;
     ftstd::mutex::ScopedMutex guard(&m_lock, (char*)"EventHandler::poll");
-    if (m_keys.empty())
+    if (m_key_masks.empty())
         return;
     auto selected_object = frametech::Application::getInstance("")->getCurrentWorld().getSelectedObject();
     if (nullptr != selected_object)
-        selected_object->handleKeyEvent(m_keys.front());
-    m_keys.pop_front();
+        selected_object->handleKeyEvent(m_key_masks.front());
+    m_key_masks.pop_front();
 }
 
-void frametech::engine::inputs::EventHandler::addKey(const Key key) noexcept
+void frametech::engine::inputs::EventHandler::addKey(const KeyMask mask) noexcept
 {
     ftstd::mutex::ScopedMutex guard(&m_lock, (char*)"EventHandler::addKey");
-    m_keys.push_back(key);
+    m_key_masks.push_back(mask);
 }
 
 void frametech::engine::inputs::CursorHandler::poll(bool blank) noexcept
