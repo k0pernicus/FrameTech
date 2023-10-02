@@ -35,6 +35,14 @@ void frametech::gameframework::Camera::resetPosition() noexcept
     m_position = m_original_position;
 }
 
+void frametech::gameframework::Camera::resetDirectionalVectors() noexcept
+{
+//    m_pitch = DEFAULT_PITCH;
+//    m_yaw = DEFAULT_YAW;
+//    m_front = DEFAULT_FRONT_VECTOR;
+    m_up = DEFAULT_UP_VECTOR;
+}
+
 void frametech::gameframework::Camera::setPosition(const glm::vec3& new_position) noexcept
 {
     m_position = new_position;
@@ -67,15 +75,6 @@ std::string frametech::gameframework::Camera::getTypeName() const noexcept
             return std::string("UNKNOWN");
     }
 }
-
-const glm::vec3& frametech::gameframework::Camera::getFrontVector() const noexcept {
-    return m_front;
-}
-
-const glm::vec3& frametech::gameframework::Camera::getUpVector() const noexcept {
-    return m_up;
-}
-
 
 void frametech::gameframework::Camera::handleKeyEvent(frametech::engine::inputs::Key& key) noexcept
 {
@@ -169,8 +168,9 @@ void frametech::gameframework::Camera::handleMouseEvent(std::tuple<float, float>
     m_yaw += x_offset;
     m_pitch += y_offset;
         
-    if (m_pitch > 89.0f)  m_pitch =  89.0f;
-    if (m_pitch < -89.0f) m_pitch = -89.0f;
+    // Usefull for FPS camera only ?
+//    if (m_pitch > 89.0f)  m_pitch =  89.0f;
+//    if (m_pitch < -89.0f) m_pitch = -89.0f;
     
     m_target.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
     m_target.y = sin(glm::radians(m_pitch));

@@ -299,6 +299,12 @@ void frametech::Application::drawDebugToolImGui()
                     main_camera.resetPosition();
                 }
             }
+            {
+                if (ImGui::Button("Reset directional vectors"))
+                {
+                    main_camera.resetDirectionalVectors();
+                }
+            }
             ImGui::TreePop();
             ImGui::Separator();
         }
@@ -658,11 +664,9 @@ static void mouseButtonCallback(GLFWwindow* window, int button, int action, int 
     // Only handle left mouse button for now
     if (GLFW_MOUSE_BUTTON_LEFT != button) return;
     frametech::Application::getInstance("")->m_left_mouse_pressed = GLFW_PRESS == action;
-    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
 }
 
 static void cursorCallback(GLFWwindow* window, const double xpos, const double ypos) {
-    frametech::Application::getInstance("")->m_cursor_events_handler.addMove((float)xpos, (float)ypos);
 #ifdef IMGUI
     // As ImGui is now using cursor callbacks too, we need to forward
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
