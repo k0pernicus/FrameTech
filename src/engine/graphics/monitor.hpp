@@ -11,7 +11,6 @@
 
 #include "../../ftstd/result.hpp"
 #include <GLFW/glfw3.h>
-#include <cstdint>
 #include <optional>
 #include <utility>
 
@@ -19,7 +18,7 @@ namespace frametech
 {
     namespace graphics
     {
-        constexpr size_t MONITOR_NAME_LEN = 32;
+        constexpr int MONITOR_NAME_LEN = 32;
         /// @brief Stores the properties of the current / used monitor
         /// GLFWmonitor object
         struct MonitorProperties
@@ -34,8 +33,6 @@ namespace frametech
         class Monitor
         {
         private:
-            /// @brief The number of available monitors
-            // uint32_t m_available_monitors_list_count = 0;
             /// @brief The current monitor object
             GLFWmonitor* m_current_monitor = nullptr;
             /// @brief Stores all properties of the current monitor

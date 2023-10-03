@@ -10,6 +10,7 @@
 #define _transform_hpp
 
 #include "../ftstd/debug_tools.h"
+#include "../platform.hpp"
 #include "common.hpp"
 #include <map>
 #include <string>
@@ -42,9 +43,9 @@ namespace frametech
         /// @return A ModelViewProjection structure that contains all the updated data
         ModelViewProjection computeTransform(
             const Transformation transformation_id,
-            const float delta_time,
-            const uint32_t window_height,
-            const uint32_t window_width) noexcept;
+            const f32 delta_time,
+            const uint32 window_height,
+            const uint32 window_width) noexcept;
     } // namespace graphics
 } // namespace frametech
 

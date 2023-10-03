@@ -10,6 +10,7 @@
 #define mesh_h
 
 #include "../../engine/graphics/shaders.h"
+#include "../platform.hpp"
 #include <vector>
 #include <objloader/objloader.h>
 
@@ -17,8 +18,10 @@ namespace frametech
 {
     namespace graphics
     {
+    // TODO : consider all meshes coming from MODELS files
+    // TODO : MODELS files to dict to know which ones are available
         /// @brief Maximum number of characters to name a mesh
-        constexpr uint32_t MESH_2D_NAME_LENGTH = 20;
+        constexpr uint32 MESH_2D_NAME_LENGTH = 20;
 
         /// @brief Basic 2D meshes
         enum Mesh2D
@@ -47,7 +50,7 @@ namespace frametech
             /// 32 bits (unsigned) integers should be more than enough here
             /// Possible optimization: reduce to 16 bits (unsigned) integers if
             /// we are using less than 65536 unique vertices
-            std::vector<uint32_t> m_indices;
+            std::vector<uint32> m_indices;
             /// @brief The type of the Mesh object
             Mesh2D m_type;
         };
@@ -85,7 +88,7 @@ namespace frametech
                     case Mesh2D::BASIC_QUAD:
                     {
                         //  Indices
-                        std::vector<uint32_t> indices(6);
+                        std::vector<uint32> indices(6);
                         indices = {0, 1, 2, 2, 3, 0};
                         std::vector<frametech::engine::graphics::shaders::Vertex> vertices(4);
                         vertices = {
@@ -103,7 +106,7 @@ namespace frametech
                     case Mesh2D::TWO_QUADS:
                     {
                         //  Indices
-                        std::vector<uint32_t> indices(12);
+                        std::vector<uint32> indices(12);
                         indices = {0, 1, 2, 2, 3, 0,
                                    4, 5, 6, 6, 7, 4};
                         std::vector<frametech::engine::graphics::shaders::Vertex> vertices(8);
@@ -126,7 +129,7 @@ namespace frametech
                     case Mesh2D::BASIC_TRIANGLE:
                     {
                         //  Indices
-                        std::vector<uint32_t> indices(3);
+                        std::vector<uint32> indices(3);
                         indices = {0, 1, 2};
                         std::vector<frametech::engine::graphics::shaders::Vertex> vertices(3);
                         vertices = {
@@ -143,7 +146,7 @@ namespace frametech
                     default:
                     {
                         // Indices
-                        std::vector<uint32_t> indices(1);
+                        std::vector<uint32> indices(1);
                         indices = {0};
                         std::vector<frametech::engine::graphics::shaders::Vertex> vertices(0);
                         vertices = {{{0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}}};

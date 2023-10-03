@@ -27,7 +27,7 @@ frametech::graphics::Command::~Command()
     m_buffer = nullptr;
 };
 
-ftstd::VResult frametech::graphics::Command::createPool(const uint32_t family_index)
+ftstd::VResult frametech::graphics::Command::createPool(const uint32 family_index)
 {
     VkCommandPoolCreateInfo pool_create_info{
         .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
@@ -81,7 +81,7 @@ ftstd::VResult frametech::graphics::Command::begin()
     return ftstd::VResult::Error((char*)"> Error calling vkBeginCommandBuffer");
 }
 
-ftstd::VResult frametech::graphics::Command::end(const VkQueue& queue, const uint32_t submit_count)
+ftstd::VResult frametech::graphics::Command::end(const VkQueue& queue, const uint32 submit_count)
 {
     ftstd::profile::ScopedProfileMarker scope((char*)"frametech::graphics::Command::end");
     assert(CommandState::S_BEGAN == m_state);
@@ -110,8 +110,8 @@ void frametech::graphics::Command::transition(
     const VkImage& image,
     const VkImageLayout new_layout,
     const VkImageLayout old_layout,
-    const uint32_t src_queue_family_index,
-    const uint32_t dst_queue_family_index) const noexcept
+    const uint32 src_queue_family_index,
+    const uint32 dst_queue_family_index) const noexcept
 {
     assert(CommandState::S_BEGAN == m_state);
 
@@ -210,7 +210,7 @@ ftstd::VResult frametech::graphics::Command::record()
             .offset = {0, 0},
             .extent = frametech::Engine::getInstance()->m_swapchain->getExtent(),
         },
-        .clearValueCount = static_cast<uint32_t>(clear_values.size()),
+        .clearValueCount = static_cast<uint32>(clear_values.size()),
         .pClearValues = clear_values.data(),
     };
 
@@ -225,8 +225,8 @@ ftstd::VResult frametech::graphics::Command::record()
     VkViewport viewport{
         .x = 0.0f,
         .y = 0.0f,
-        .width = static_cast<float>(frametech::Engine::getInstance()->m_swapchain->getExtent().width),
-        .height = static_cast<float>(frametech::Engine::getInstance()->m_swapchain->getExtent().height),
+        .width = static_cast<f32>(frametech::Engine::getInstance()->m_swapchain->getExtent().width),
+        .height = static_cast<f32>(frametech::Engine::getInstance()->m_swapchain->getExtent().height),
         .minDepth = 0.0f,
         .maxDepth = 1.0f,
     };
@@ -243,9 +243,9 @@ ftstd::VResult frametech::graphics::Command::record()
     // // TODO: check to include this information getting the vertex buffer
     std::vector<VkDeviceSize> memory_offsets(vertex_buffers.size());
     const VkBuffer& index_buffer = frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getIndexBuffer();
-    for (size_t i = 0; i < vertex_buffers.size(); ++i)
+    for (int i = 0; i < vertex_buffers.size(); ++i)
         memory_offsets[i] = i;
-    vkCmdBindVertexBuffers(m_buffer, 0, (uint32_t)vertex_buffers.size(), vertex_buffers.data(), memory_offsets.data());
+    vkCmdBindVertexBuffers(m_buffer, 0, (uint32)vertex_buffers.size(), vertex_buffers.data(), memory_offsets.data());
     vkCmdBindIndexBuffer(m_buffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
 
     // Bind the right descriptor set to the descriptors in the shaders
@@ -263,7 +263,7 @@ ftstd::VResult frametech::graphics::Command::record()
             nullptr);
     }
 
-    uint32_t indices_size = static_cast<uint32_t>(frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getIndices().size());
+    uint32 indices_size = static_cast<uint32>(frametech::Engine::getInstance()->m_render->getGraphicsPipeline()->getIndices().size());
     vkCmdDrawIndexed(m_buffer, indices_size, 1, 0, 0, 0);
 
 #ifdef IMGUI

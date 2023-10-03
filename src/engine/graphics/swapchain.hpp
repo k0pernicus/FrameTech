@@ -10,7 +10,7 @@
 #define swapchain_h
 
 #include "../../ftstd/result.hpp"
-#include <cstdint>
+#include "../platform.hpp"
 #include <vector>
 #include <vulkan/vulkan.h>
 

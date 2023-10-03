@@ -97,7 +97,7 @@ namespace frametech
         uint64_t recorded_frames[FPS_RECORDS];
         /// @brief The index to record the current FPS
         /// record
-        uint8_t recorded_frames_index = 0;
+        uint8 recorded_frames_index = 0;
         /// @brief A private timer
         std::unique_ptr<ftstd::Timer> m_app_timer = nullptr;
         /// @brief The monitor to set / display the application
@@ -139,7 +139,7 @@ namespace frametech
         /// The renderer is not limited by default.
         /// @param new_limit Set `new_limit` to `0` in order to disable the existing limit,
         /// and put it as default state.
-        void forceRendererFPSLimit(uint8_t new_limit);
+        void forceRendererFPSLimit(uint8 new_limit);
         /// @brief Returns the current frame of the application
         uint64_t getCurrentFrame();
         /// @brief Returns the current 2D/3D world of the game

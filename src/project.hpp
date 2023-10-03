@@ -15,15 +15,15 @@
 #include <optional>
 
 /// @brief Limits of 240 FPS
-constexpr uint8_t FPS_LIMIT_240 = 240;
+constexpr uint8 FPS_LIMIT_240 = 240;
 /// @brief Limits of 120 FPS
-constexpr uint8_t FPS_LIMIT_120 = 120;
+constexpr uint8 FPS_LIMIT_120 = 120;
 /// @brief Limits of 60 FPS
-constexpr uint8_t FPS_LIMIT_60 = 60;
+constexpr uint8 FPS_LIMIT_60 = 60;
 /// @brief Limits of 30 FPS
-constexpr uint8_t FPS_LIMIT_30 = 30;
+constexpr uint8 FPS_LIMIT_30 = 30;
 /// @brief No FPS limit
-constexpr std::optional<uint8_t> NO_FPS_LIMIT = std::nullopt;
+constexpr std::optional<uint8> NO_FPS_LIMIT = std::nullopt;
 
 namespace Project
 {
@@ -33,18 +33,18 @@ namespace Project
 
 #ifdef UNSET_FPS_LIMIT
     /// @brief Pause / limit the Application to XXX FPS
-    constexpr std::optional<uint8_t> DEFAULT_APPLICATION_FPS_LIMIT = NO_FPS_LIMIT;
+    constexpr std::optional<uint8> DEFAULT_APPLICATION_FPS_LIMIT = NO_FPS_LIMIT;
 #else
     /// @brief Pause / limit the Application to XXX FPS
-    constexpr std::optional<uint8_t> APPLICATION_FPS_LIMIT = FPS_LIMIT_60;
+    constexpr std::optional<uint8> APPLICATION_FPS_LIMIT = FPS_LIMIT_60;
 #endif
 
     /// @brief Minimum major version number of the Vulkan API
-    constexpr uint8_t const VULKAN_MIN_VERSION_MAJOR = 1;
+    constexpr uint8 const VULKAN_MIN_VERSION_MAJOR = 1;
     /// @brief Minimum minor version number of the Vulkan API
-    constexpr uint8_t const VULKAN_MIN_VERSION_MINOR = 3;
+    constexpr uint8 const VULKAN_MIN_VERSION_MINOR = 3;
     /// @brief Minimum bug fix version number of the Vulkan API
-    constexpr uint8_t const VULKAN_MIN_VERSION_BUGFIX = 211;
+    constexpr uint8 const VULKAN_MIN_VERSION_BUGFIX = 211;
 
     /// @brief The entry file of the game, that describes all the assets & scripts to use for
     constexpr const char* DEFAULT_GAME_DESC_FILENAME = (char*)"game.toml";
@@ -55,7 +55,7 @@ namespace Project
         /// @brief Game project name
         std::string name;
         /// @brief Targetted FPS
-        std::optional<uint8_t> fps_target;
+        std::optional<uint8> fps_target;
         /// @brief All the asset archives to load
         std::vector<std::string> asset_folders;
         /// @brief Application version
@@ -84,7 +84,7 @@ namespace Project
             toml_config = std::move(result).table();
 #endif
             this->name = toml_config["APPLICATION_NAME"].value_or(DEFAULT_APPLICATION_NAME);
-            this->fps_target = toml_config["APPLICATION_FPS_TARGET"].value<uint8_t>();
+            this->fps_target = toml_config["APPLICATION_FPS_TARGET"].value<uint8>();
             if (!this->fps_target.has_value())
                 this->fps_target = DEFAULT_APPLICATION_FPS_LIMIT;
             const std::optional<std::string> raw_version = toml_config["APPLICATION_VERSION"].value<std::string>();

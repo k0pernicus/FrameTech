@@ -335,10 +335,10 @@ void frametech::Application::drawDebugToolImGui()
             if (ImGui::TreeNode("Indices"))
             {
                 const auto indices = m_engine->m_render->getGraphicsPipeline()->getIndices();
-                size_t i = 0;
+                uint32 i = 0;
                 for (const auto index : indices)
                 {
-                    ImGui::Text("%zu: vertex %d", i, index);
+                    ImGui::Text("%u: vertex %d", i, index);
                     ++i;
                 }
                 ImGui::TreePop();
@@ -545,7 +545,7 @@ ftstd::VResult frametech::Application::loadGameAssets() noexcept
     return ftstd::VResult::Error((char*)"Unimplemented loadGameAssets function");
 }
 
-void frametech::Application::forceRendererFPSLimit(uint8_t new_limit)
+void frametech::Application::forceRendererFPSLimit(uint8 new_limit)
 {
     if (GAME_APPLICATION_SETTINGS->fps_target == std::nullopt)
         Log("Setting FPS limit to %d", new_limit);
@@ -553,19 +553,19 @@ void frametech::Application::forceRendererFPSLimit(uint8_t new_limit)
         Log("Replacing FPS limit from %d to %d", GAME_APPLICATION_SETTINGS->fps_target, new_limit);
     else
         Log("Disabling FPS limit");
-    GAME_APPLICATION_SETTINGS->fps_target = new_limit > 0 ? std::optional<uint8_t>(new_limit) : std::nullopt;
+    GAME_APPLICATION_SETTINGS->fps_target = new_limit > 0 ? std::optional<uint8>(new_limit) : std::nullopt;
 }
 
 void frametech::Application::drawFrame()
 {
     ftstd::profile::ScopedProfileMarker scope((char*)"frametech::Application::drawFrame");
     // Update the UBOs
-    const uint32_t current_frame_index = m_engine->m_render->getFrameIndex();
+    const uint32 current_frame_index = m_engine->m_render->getFrameIndex();
     {
         const VkExtent2D& swapchain_extent = m_engine->m_swapchain->getExtent();
         static std::chrono::steady_clock::time_point start_time = std::chrono::high_resolution_clock::now();
         std::chrono::steady_clock::time_point current_time = std::chrono::high_resolution_clock::now();
-        float delta_time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
+        f32 delta_time = std::chrono::duration<f32, std::chrono::seconds::period>(current_time - start_time).count();
 
         ModelViewProjection mvp = frametech::graphics::computeTransform(
             m_engine->m_render->getGraphicsPipeline()->getTransform(),
@@ -677,7 +677,7 @@ static void cursorCallback(GLFWwindow* window, const double xpos, const double y
         return;
     }
 #endif
-    frametech::Application::getInstance("")->m_cursor_events_handler.addMove((float)xpos, (float)ypos);
+    frametech::Application::getInstance("")->m_cursor_events_handler.addMove((f32)xpos, (f32)ypos);
 }
 
 void frametech::Application::run()

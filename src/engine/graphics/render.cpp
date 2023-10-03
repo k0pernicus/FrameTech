@@ -170,10 +170,10 @@ ftstd::VResult frametech::graphics::Render::createFramebuffers()
 ftstd::VResult frametech::graphics::Render::createImageViews()
 {
     const auto swapchain_images = frametech::Engine::getInstance()->m_swapchain->getImages();
-    const size_t nb_swapchain_images = swapchain_images.size();
+    const unsigned long nb_swapchain_images = swapchain_images.size();
     m_image_views.resize(nb_swapchain_images);
     Log("> %d image views to create (for the render object)", nb_swapchain_images);
-    for (size_t i = 0; i < nb_swapchain_images; i++)
+    for (int i = 0; i < nb_swapchain_images; i++)
     {
         // Create a VkImageView for each VkImage from the swapchain
         VkImageViewCreateInfo image_view_create_info{
@@ -271,7 +271,7 @@ ftstd::VResult frametech::graphics::Render::createShaderModule()
         VkShaderModuleCreateInfo shader_module_create_info{
             .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
             .codeSize = c_shader.m_size,
-            .pCode = reinterpret_cast<const uint32_t*>(c_shader.m_code)};
+            .pCode = reinterpret_cast<const uint32*>(c_shader.m_code)};
 
         // Create the shader module in order to create the stage right after
         VkShaderModule shader_module;
@@ -343,7 +343,7 @@ ftstd::VResult frametech::graphics::Render::createShaderModule()
     return ftstd::VResult::Ok();
 }
 
-uint32_t& frametech::graphics::Render::getFrameIndex()
+uint32& frametech::graphics::Render::getFrameIndex()
 {
     return m_frame_index;
 }
@@ -351,7 +351,7 @@ uint32_t& frametech::graphics::Render::getFrameIndex()
 void frametech::graphics::Render::updateFrameIndex(uint64_t current_frame)
 {
     // Log("> Current frame index: %d...", m_frame_index);
-    m_frame_index = (uint32_t)current_frame % (m_framebuffers.size());
+    m_frame_index = (uint32)current_frame % (m_framebuffers.size());
 }
 
 ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()

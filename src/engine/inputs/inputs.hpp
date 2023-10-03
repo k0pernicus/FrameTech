@@ -11,6 +11,7 @@
 
 #include <deque>
 #include <mutex>
+#include "../platform.hpp"
 
 namespace frametech
 {
@@ -19,7 +20,7 @@ namespace frametech
         namespace inputs
         {
             /// We consider here that at most two keys can be hit at same time
-            /// TODO : move from enum to proper constant expressions in a namespace ? -> uint8_t
+            /// TODO : move from enum to proper constant expressions in a namespace ? -> uint8
             enum class KeyMask
             {
                 ALT_UP_COMBINED     = 0x01,
@@ -33,7 +34,7 @@ namespace frametech
             };
         
             /// Mask for mouse button in frametech
-            /// TODO : move from enum to proper constant expressions in a namespace ? -> uint8_t
+            /// TODO : move from enum to proper constant expressions in a namespace ? -> uint8
             enum class MouseButtonMask
             {
                 LEFT    = 0x01,
@@ -56,10 +57,10 @@ namespace frametech
             {
             public:
                 void poll(bool blank = false) noexcept;
-                void addMove(const float xpos, const float ypos) noexcept;
+                void addMove(const f32 xpos, const f32 ypos) noexcept;
 
             private:
-                std::deque<std::tuple<float, float>> m_positions;
+                std::deque<std::tuple<f32, f32>> m_positions;
                 std::mutex m_lock;
             };
         } // namespace inputs

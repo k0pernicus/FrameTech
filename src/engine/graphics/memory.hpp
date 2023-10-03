@@ -22,21 +22,21 @@ namespace frametech
         class Memory
         {
         private:
-            static ftstd::Result<uint32_t> findMemoryType(
+            static ftstd::Result<uint32> findMemoryType(
                 const VkPhysicalDevice& physical_device,
-                const uint32_t type_filter,
+                const uint32 type_filter,
                 const VkMemoryPropertyFlags memory_property_flags) noexcept
             {
                 VkPhysicalDeviceMemoryProperties memory_properties{};
                 vkGetPhysicalDeviceMemoryProperties(physical_device, &memory_properties);
-                for (uint32_t index = 0; index < memory_properties.memoryTypeCount; ++index)
+                for (uint32 index = 0; index < memory_properties.memoryTypeCount; ++index)
                 {
                     if (type_filter & (1 << index) && (memory_properties.memoryTypes[index].propertyFlags & memory_property_flags) == memory_property_flags)
                     {
-                        return ftstd::Result<uint32_t>::Ok(index);
+                        return ftstd::Result<uint32>::Ok(index);
                     }
                 }
-                return ftstd::Result<uint32_t>::Error((char*)"findMemoryType: did not found any memory type with favorite filter / properties");
+                return ftstd::Result<uint32>::Error((char*)"findMemoryType: did not found any memory type with favorite filter / properties");
             }
 
         public:
@@ -49,14 +49,14 @@ namespace frametech
             static ftstd::VResult initBuffer(
                 VmaAllocator& resources_allocator,
                 VmaAllocation* allocation,
-                const size_t buffer_size,
+                const int buffer_size,
                 VkBuffer& buffer,
                 const VkBufferUsageFlags buffer_usage,
                 const VkSharingMode buffer_sharing_mode = VK_SHARING_MODE_EXCLUSIVE) noexcept
             {
                 VkBufferCreateInfo buffer_create_info{
                     .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-                    .size = buffer_size,
+                    .size = static_cast<VkDeviceSize>(buffer_size),
                     .usage = buffer_usage,
                     .sharingMode = buffer_sharing_mode,
                 };
@@ -148,7 +148,7 @@ namespace frametech
                 command_buffer.createBuffer();
                 command_buffer.begin();
 
-                uint32_t submit_count = 0;
+                uint32 submit_count = 0;
 
                 // Build the packet
                 {
@@ -179,15 +179,15 @@ namespace frametech
                 VkImage& dst_image,
                 VkCommandPool* transfert_command_pool,
                 const VkQueue& transfert_queue,
-                const uint32_t image_height,
-                const uint32_t image_width)
+                const uint32 image_height,
+                const uint32 image_width)
             {
 
                 frametech::graphics::Command command_buffer(*transfert_command_pool);
                 command_buffer.createBuffer();
                 command_buffer.begin();
 
-                uint32_t submit_count = 0;
+                uint32 submit_count = 0;
 
                 // Build the packet
                 {

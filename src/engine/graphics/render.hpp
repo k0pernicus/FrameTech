@@ -55,7 +55,7 @@ namespace frametech
             ftstd::VResult createGraphicsPipeline();
             /// @brief Returns a reference to the current frame index, or swap chain index
             /// @return A reference to the current frame index
-            uint32_t& getFrameIndex();
+            uint32& getFrameIndex();
             /// @brief Updates the current frame, or swap chain, index
             /// Should not be called more than once per frame present
             void updateFrameIndex(uint64_t current_frame);
@@ -100,7 +100,7 @@ namespace frametech
             /// @return A Result type to know if the function succeeded or not.
             ftstd::VResult createShaderModule();
             /// @brief The current frame index, or swap chain index
-            uint32_t m_frame_index = 0;
+            uint32 m_frame_index = 0;
         };
     } // namespace graphics
 } // namespace frametech

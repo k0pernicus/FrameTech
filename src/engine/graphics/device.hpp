@@ -10,6 +10,7 @@
 #define device_h
 
 #include "../../ftstd/result.hpp"
+#include "../platform.hpp"
 #include <vector>
 #include <vulkan/vulkan.h>
 
@@ -53,7 +54,7 @@ namespace frametech
             ~Device();
             /// @brief Returns the number of physical devices found in the running computer.
             /// @return The number of physical devices found that **may** be suitable for our needs.
-            uint32_t getNumberDevices() const;
+            uint32 getNumberDevices() const;
             /// @brief Lists the devices that **may** be suitable for our needs.
             /// @return `true` if the function founds a suitable physical device, otherwise `false`.
             ftstd::VResult listDevices(const frametech::graphics::DeviceSupportsOptions& options);
@@ -67,7 +68,7 @@ namespace frametech
             /// @return If the device follows the previously explicited rules.
             bool isInitialized() const;
             /// @brief Find supported queues on the device
-            ftstd::Result<uint32_t> getQueueFamilies();
+            ftstd::Result<uint32> getQueueFamilies();
             /// @brief Creates a logical device based on the setted physical device
             ftstd::VResult createLogicalDevice();
             /// @brief Returns the logical device
@@ -77,11 +78,11 @@ namespace frametech
             /// @brief Clean and destroy the logical device, if it has been set
             void Destroy();
             /// @brief Store the index of the graphics queue family
-            uint32_t m_graphics_queue_family_index = 0;
+            uint32 m_graphics_queue_family_index = 0;
             /// @brief Store the index of the presents queue family
-            uint32_t m_presents_queue_family_index = 0;
+            uint32 m_presents_queue_family_index = 0;
             /// @brief Store the index of the presents queue family
-            uint32_t m_transfert_queue_family_index = 0;
+            uint32 m_transfert_queue_family_index = 0;
             /// @brief Returns the Graphics queue of the logical device
             /// @return The Graphics queue of the logical device
             VkQueue& getGraphicsQueue();
