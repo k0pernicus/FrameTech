@@ -252,7 +252,7 @@ void frametech::Application::drawDebugToolImGui()
 #ifdef PROFILE
         if (ImGui::TreeNode("Timers"))
         {
-            std::map<std::string, double>::iterator it;
+            std::map<std::string, f64>::iterator it;
             for (it = ftstd::profile::s_PROFILE_MARKERS.begin(); it != ftstd::profile::s_PROFILE_MARKERS.end(); ++it) {
                 ImGui::Text("%s => %f ms", it->first.c_str(), it->second);
             }
@@ -578,8 +578,8 @@ void frametech::Application::drawFrame()
 
     if (GAME_APPLICATION_SETTINGS->fps_target != std::nullopt)
     {
-        const double wait_ms = 1000.0f / GAME_APPLICATION_SETTINGS->fps_target.value();
-        double wait_until_ms = ftstd::Timer::get_time_limit(wait_ms);
+        const f64 wait_ms = 1000.0f / GAME_APPLICATION_SETTINGS->fps_target.value();
+        f64 wait_until_ms = ftstd::Timer::get_time_limit(wait_ms);
         // Log("Drawing frame %d...", m_current_frame);
 
         // Real rendering time
@@ -668,7 +668,7 @@ static void mouseButtonCallback(GLFWwindow* window, int button, int action, int 
         frametech::Application::getInstance("")->m_middle_mouse_pressed = GLFW_PRESS == action;
 }
 
-static void cursorCallback(GLFWwindow* window, const double xpos, const double ypos) {
+static void cursorCallback(GLFWwindow* window, const f64 xpos, const f64 ypos) {
 #ifdef IMGUI
     // As ImGui is now using cursor callbacks too, we need to forward
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
