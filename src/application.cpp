@@ -369,13 +369,13 @@ void frametech::Application::drawMeshSelectionImGui()
         if (ImGui::BeginListBox("Meshes"))
         {
             const char* items[] = {"Basic triangle", "Basic quad", "Two quads", "None", "Viking room"};
-            static int item_current_idx = m_engine->m_render->getGraphicsPipeline()->getMesh().m_type;
-            int previously_selected_idx = m_engine->m_render->getGraphicsPipeline()->getMesh().m_type;
+            static frametech::graphics::Mesh2D item_current_idx = m_engine->m_render->getGraphicsPipeline()->getMesh().m_type;
+            frametech::graphics::Mesh2D previously_selected_idx = m_engine->m_render->getGraphicsPipeline()->getMesh().m_type;
             for (int n = 0; n < sizeof(items) / sizeof(items[0]); ++n)
             {
-                const bool is_selected = (item_current_idx == n);
+                const bool is_selected = (item_current_idx == frametech::graphics::Mesh2D(n));
                 if (ImGui::Selectable(items[n], is_selected))
-                    item_current_idx = n;
+                    item_current_idx = frametech::graphics::Mesh2D(n);
                 // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                 if (is_selected && (item_current_idx != previously_selected_idx))
                 {

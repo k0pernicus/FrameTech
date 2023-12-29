@@ -24,7 +24,7 @@ namespace frametech
         constexpr uint32 MESH_2D_NAME_LENGTH = 20;
 
         /// @brief Basic 2D meshes
-        enum Mesh2D
+        enum class Mesh2D
         {
             /// Triangle
             BASIC_TRIANGLE = 0,
@@ -33,7 +33,7 @@ namespace frametech
             /// Two quads
             TWO_QUADS = 2,
             /// A single point
-            NONE = 3,
+            POINT = 3,
             /// Loaded from an object file
             FROM_FILE = 4
         };
@@ -43,7 +43,7 @@ namespace frametech
         struct Mesh
         {
             /// @brief The name / tag of the Mesh object
-            char m_name[20];
+            char m_name[MESH_2D_NAME_LENGTH];
             /// @brief The vertices of the Mesh object
             std::vector<frametech::engine::graphics::shaders::Vertex> m_vertices;
             /// @brief The indices of the Mesh object
@@ -74,8 +74,8 @@ namespace frametech
                     .m_indices = obj_loader.LoadedIndices,
                     .m_type = Mesh2D::FROM_FILE,
                 };
-                strncpy(mesh.m_name, pathfile, 19);
-                mesh.m_name[19] = '\0';
+                strncpy(mesh.m_name, pathfile, MESH_2D_NAME_LENGTH);
+                mesh.m_name[MESH_2D_NAME_LENGTH - 1] = '\0';
                 return ftstd::Result<Mesh>::Ok(mesh);
             }
             /// @brief Returns a 2D Mesh object, based on the id passed as parameter
@@ -153,7 +153,7 @@ namespace frametech
                         auto mesh = Mesh{
                             .m_vertices = vertices,
                             .m_indices = indices,
-                            .m_type = Mesh2D::NONE};
+                            .m_type = Mesh2D::POINT};
                         snprintf(mesh.m_name, MESH_2D_NAME_LENGTH, "none");
                         return mesh;
                     }

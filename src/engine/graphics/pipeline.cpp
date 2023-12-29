@@ -990,7 +990,7 @@ void frametech::graphics::Pipeline::setMesh2D(frametech::graphics::Mesh2D new_me
 {
     // TODO : WTF ???
     if (new_mesh == frametech::graphics::Mesh2D::FROM_FILE) {
-        m_mesh = frametech::graphics::MeshUtils::loadFromFile((char*)"viking_room.obj").GetValue();
+        m_mesh = frametech::graphics::MeshUtils::loadFromFile((char*)"MODELS/viking_room.obj").GetValue();
     } else {
         m_mesh = frametech::graphics::MeshUtils::getMesh2D(new_mesh);
     }
