@@ -34,14 +34,14 @@ namespace ftstd
         public:
             ScopedMutex(std::mutex* mx, const char* scope_label = "scope\0") : m_lk(mx)
             {
-                strncpy(m_label, scope_label, SCOPE_LABEL_MAX_LENGTH - 1);
-                m_label[SCOPE_LABEL_MAX_LENGTH - 1] = '\0';
-                Log("[SCOPE_MUTEX] locking '%s'", m_label);
+//                strncpy(m_label, scope_label, SCOPE_LABEL_MAX_LENGTH - 1);
+//                m_label[SCOPE_LABEL_MAX_LENGTH - 1] = '\0';
+//                Log("[SCOPE_MUTEX] locking '%s'", m_label);
                 m_lk->lock();
             }
             ~ScopedMutex()
             {
-                Log("[SCOPE_MUTEX] unlocking '%s'", m_label);
+//                Log("[SCOPE_MUTEX] unlocking '%s'", m_label);
                 m_lk->unlock();
             }
         };
