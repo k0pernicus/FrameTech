@@ -170,7 +170,7 @@ ftstd::VResult frametech::graphics::Render::createFramebuffers()
 ftstd::VResult frametech::graphics::Render::createImageViews()
 {
     const auto swapchain_images = frametech::Engine::getInstance()->m_swapchain->getImages();
-    const unsigned long nb_swapchain_images = swapchain_images.size();
+    const size_t nb_swapchain_images = swapchain_images.size();
     m_image_views.resize(nb_swapchain_images);
     Log("> %d image views to create (for the render object)", nb_swapchain_images);
     for (int i = 0; i < nb_swapchain_images; i++)

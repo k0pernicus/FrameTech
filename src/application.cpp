@@ -314,7 +314,7 @@ void frametech::Application::drawDebugToolImGui()
         if (ImGui::TreeNode(c_mesh.m_name))
         {
             ImGui::Text("Name: '%s'", c_mesh.m_name);
-            ImGui::Text("%lu vertices", c_mesh.m_vertices.size());
+            ImGui::Text("%llu vertices", c_mesh.m_vertices.size());
             if (ImGui::TreeNode("Vertices"))
             {
                 const auto vertices = m_engine->m_render->getGraphicsPipeline()->getVertices();
@@ -331,7 +331,7 @@ void frametech::Application::drawDebugToolImGui()
                 ImGui::TreePop();
                 ImGui::Separator();
             }
-            ImGui::Text("%lu indices", c_mesh.m_indices.size());
+            ImGui::Text("%llu indices", c_mesh.m_indices.size());
             if (ImGui::TreeNode("Indices"))
             {
                 const auto indices = m_engine->m_render->getGraphicsPipeline()->getIndices();

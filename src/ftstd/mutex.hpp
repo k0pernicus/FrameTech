@@ -29,7 +29,7 @@ namespace ftstd
             std::mutex* m_lk;
             /// @brief A label associated to the ScopedMutex object, for
             /// debugging purposes only
-            char m_label[SCOPE_LABEL_MAX_LENGTH];
+            // char m_label[SCOPE_LABEL_MAX_LENGTH];
 
         public:
             ScopedMutex(std::mutex* mx, const char* scope_label = "scope\0") : m_lk(mx)
