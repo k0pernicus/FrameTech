@@ -41,7 +41,7 @@ else()
 	set(VULKAN_SDK "$ENV{HOME}/Devel/opt/VulkanSDK")
 	endif()
 
-	set(VULKAN_VERSION "1.3.211.0")
+	set(VULKAN_VERSION "1.3.283.0")
 	set(VULKAN_PATH "${VULKAN_SDK}/${VULKAN_VERSION}")
 	message(STATUS "Using manual specified path: ${VULKAN_PATH}")
 
