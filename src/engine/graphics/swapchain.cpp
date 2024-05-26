@@ -151,7 +151,7 @@ ftstd::VResult frametech::graphics::SwapChain::checkDetails()
     {
         return ftstd::VResult::Ok();
     }
-    LogW("< The swapchain only supports between %d and %d images (max)", m_details.capabilities.minImageCount, m_details.capabilities.maxImageCount);
+    LogW("The swapchain only supports between %d and %d images (max)", m_details.capabilities.minImageCount, m_details.capabilities.maxImageCount);
     return ftstd::VResult::Error((char*)"The supported images count is incorrect");
 }
 
