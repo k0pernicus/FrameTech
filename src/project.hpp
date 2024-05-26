@@ -42,11 +42,11 @@ namespace Project
 #endif
 
     /// @brief Minimum major version number of the Vulkan API
-    constexpr u16 const VULKAN_MIN_VERSION_MAJOR = 1;
+    constexpr u32 const VULKAN_MIN_VERSION_MAJOR = 1;
     /// @brief Minimum minor version number of the Vulkan API
-    constexpr u16 const VULKAN_MIN_VERSION_MINOR = 3;
+    constexpr u32 const VULKAN_MIN_VERSION_MINOR = 3;
     /// @brief Minimum bug fix version number of the Vulkan API
-    constexpr u16 const VULKAN_MIN_VERSION_BUGFIX = 288;
+    constexpr u32 const VULKAN_MIN_VERSION_BUGFIX = 288;
 
     /// @brief The entry file of the game, that describes all the assets & scripts to use for
     constexpr const char* DEFAULT_GAME_DESC_FILENAME = (char*)"game.toml";
