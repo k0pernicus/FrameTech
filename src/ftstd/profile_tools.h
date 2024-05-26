@@ -25,7 +25,7 @@ namespace ftstd
         }
         ~ScopedProfileMarker() {
             std::chrono::high_resolution_clock::time_point end_time = std::chrono::high_resolution_clock::now();
-            long long time_spent = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - m_begin_time).count();
+            u64 time_spent = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - m_begin_time).count();
             s_PROFILE_MARKERS.insert({std::string(m_name), time_spent});
         }
         private:

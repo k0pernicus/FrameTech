@@ -14,8 +14,8 @@ constexpr f32 FAR = 100.0f;
 ModelViewProjection frametech::graphics::computeTransform(
     const frametech::graphics::Transformation transformation_id,
     const f32 delta_time,
-    const uint32 window_height,
-    const uint32 window_width) noexcept
+    const u32 window_height,
+    const u32 window_width) noexcept
 {
     // Compute the view of the world
     const frametech::gameframework::Camera& world_camera = frametech::Application::getInstance("")->getCurrentWorld().getMainCamera();

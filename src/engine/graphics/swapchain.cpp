@@ -73,8 +73,8 @@ static ftstd::Result<VkExtent2D> chooseSwapExtent(const VkSurfaceCapabilitiesKHR
     int window_height, window_width;
     glfwGetFramebufferSize(frametech::Application::getInstance(GAME_APPLICATION_SETTINGS->name.c_str())->getWindow(), &window_width, &window_height);
     VkExtent2D final_extent = {
-        static_cast<uint32>(window_width),
-        static_cast<uint32>(window_height),
+        static_cast<u32>(window_width),
+        static_cast<u32>(window_height),
     };
     final_extent.width = std::clamp(final_extent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
     final_extent.height = std::clamp(final_extent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
@@ -122,7 +122,7 @@ void frametech::graphics::SwapChain::queryDetails()
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physical_device, *surface, &support_details.capabilities);
 
     // Get the formats
-    uint32 format_count{};
+    u32 format_count{};
     vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, *surface, &format_count, nullptr);
     if (format_count > 0)
     {
@@ -131,7 +131,7 @@ void frametech::graphics::SwapChain::queryDetails()
     }
 
     // Get the present modes
-    uint32 present_modes_count{};
+    u32 present_modes_count{};
     vkGetPhysicalDeviceSurfacePresentModesKHR(physical_device, *surface, &present_modes_count, nullptr);
     if (present_modes_count > 0)
     {
@@ -144,7 +144,7 @@ void frametech::graphics::SwapChain::queryDetails()
 
 ftstd::VResult frametech::graphics::SwapChain::checkDetails()
 {
-    const uint32 max_frames_count = frametech::Engine::getMaxFramesInFlight();
+    const u32 max_frames_count = frametech::Engine::getMaxFramesInFlight();
     if ((m_details.capabilities.minImageCount <= max_frames_count && m_details.capabilities.maxImageCount >= max_frames_count) &&
         (!m_details.formats.empty() && !m_details.present_modes.empty()) &&
         (m_details.capabilities.minImageCount > 0))
@@ -187,7 +187,7 @@ ftstd::VResult frametech::graphics::SwapChain::create()
         .imageArrayLayers = 1,                             // Always one (except stereoscopic 3D app)
         .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, // color attachment, use VK_IMAGE_USAGE_TRANSFER_DST_BIT instead
     };
-    uint32 indices[3] = {
+    u32 indices[3] = {
         frametech::Engine::getInstance()->m_graphics_device.m_graphics_queue_family_index,
         frametech::Engine::getInstance()->m_graphics_device.m_presents_queue_family_index,
         frametech::Engine::getInstance()->m_graphics_device.m_transfert_queue_family_index,
@@ -221,7 +221,7 @@ ftstd::VResult frametech::graphics::SwapChain::create()
 
     if (result == VK_SUCCESS)
     {
-        uint32 image_count;
+        u32 image_count;
         vkGetSwapchainImagesKHR(
             frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice(),
             m_swapchain,

@@ -53,9 +53,9 @@ ftstd::VResult frametech::engine::graphics::Texture::createImage(
         .imageType = is_1D_texture ? VK_IMAGE_TYPE_1D : VK_IMAGE_TYPE_2D,
         .format = texture_format,
         .extent = {
-            .width = static_cast<uint32>(m_width),
-            .height = static_cast<uint32>(m_height),
-            .depth = is_1D_texture ? static_cast<uint32>(0) : static_cast<uint32>(1), // FIXME !!! Big errors will happen for 3D textures - handle the depth via the image load function,
+            .width = static_cast<u32>(m_width),
+            .height = static_cast<u32>(m_height),
+            .depth = is_1D_texture ? static_cast<u32>(0) : static_cast<u32>(1), // FIXME !!! Big errors will happen for 3D textures - handle the depth via the image load function,
         },
         .mipLevels = 1,
         .arrayLayers = 1,
@@ -217,7 +217,7 @@ ftstd::VResult frametech::engine::graphics::Texture::setup(
     auto transfert_command_buffer = frametech::Engine::getInstance()->m_render->getTransfertCommand();
     VkCommandPool* transfert_command_pool = transfert_command_buffer->getPool();
 
-    const uint32 transfert_queue_family_index = transfert_command_buffer->m_queue_family_index_created_with;
+    const u32 transfert_queue_family_index = transfert_command_buffer->m_queue_family_index_created_with;
 
     {
         frametech::graphics::Command command_buffer(*transfert_command_pool);
@@ -287,8 +287,8 @@ frametech::engine::graphics::DepthTexture::~DepthTexture()
     }
 }
 
-ftstd::VResult frametech::engine::graphics::DepthTexture::createImage(const uint32 image_height,
-                                                                      const uint32 image_width,
+ftstd::VResult frametech::engine::graphics::DepthTexture::createImage(const u32 image_height,
+                                                                      const u32 image_width,
                                                                       const VkFormat texture_format,
                                                                       const VkImageTiling tiling,
                                                                       const VkImageUsageFlags usage_flags) noexcept
