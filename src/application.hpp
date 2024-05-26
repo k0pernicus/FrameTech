@@ -33,9 +33,9 @@
 namespace frametech
 {
     /// @brief The default height, in pixels, of the window application
-    constexpr uint32_t const DEFAULT_WINDOW_HEIGHT = 1080;
+    constexpr uint32_t const DEFAULT_WINDOW_HEIGHT = 720;
     /// @brief The default width, in pixels, of the window application
-    constexpr uint32_t const DEFAULT_WINDOW_WIDTH = 1920;
+    constexpr uint32_t const DEFAULT_WINDOW_WIDTH = 1240;
 
     /// @brief `Application` handles the entire application / engine.
     /// This class is **not** thread-safe!
