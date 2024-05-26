@@ -282,7 +282,6 @@ void frametech::Application::drawDebugToolImGui()
         if (ImGui::TreeNode("Camera"))
         {
             ImGui::Text("FOV: %f", main_camera.getFOV());
-            ImGui::Text("Type: %s", main_camera.getTypeName().c_str());
             {
                 const auto camera_direction = main_camera.getTarget();
                 ImGui::Text("Direction: %f,%f,%f", camera_direction.x, camera_direction.y, camera_direction.z);
@@ -624,10 +623,8 @@ void frametech::Application::drawFrame()
 
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    frametech::gameframework::World& current_world = frametech::Application::getInstance("")->getCurrentWorld();
     if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
     {
-        current_world.getMainCamera().setType(frametech::gameframework::Camera::Type::STATIONARY);
         if (key == GLFW_KEY_UP || key == GLFW_KEY_W)
             frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::KeyMask::ALT_UP_COMBINED);
         if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S)
@@ -639,7 +636,6 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
     }
     else
     {
-        current_world.getMainCamera().setType(frametech::gameframework::Camera::Type::WORLD);
         if (key == GLFW_KEY_UP || key == GLFW_KEY_W)
             frametech::Application::getInstance("")->m_key_events_handler.addKey(frametech::engine::inputs::KeyMask::UP);
         if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S)

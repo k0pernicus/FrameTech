@@ -28,18 +28,10 @@ namespace frametech
         class Camera : public frametech::gameframework::MovableInterface
         {
         public:
-            enum Type
-            {
-                STATIONARY, // Should be renamed in "FPS" ?
-                WORLD,
-            };
-
-        public:
-            Camera(const glm::vec3 target = DEFAULT_TARGET, glm::vec3 position = DEFAULT_POSITION, const Type camera_type = Type::WORLD) : m_original_target(target),
+            Camera(const glm::vec3 target = DEFAULT_TARGET, glm::vec3 position = DEFAULT_POSITION) : m_original_target(target),
                   m_target(target),
                   m_original_position(position),
-                    m_position(position),
-                    m_type(camera_type){};
+                  m_position(position){};
             const glm::vec3& getTarget() const noexcept;
             void resetTarget() noexcept;
             void setTarget(const glm::vec3& new_target) noexcept;
@@ -49,11 +41,6 @@ namespace frametech
             void setPosition(const glm::vec3& new_position) noexcept;
             float getFOV() const noexcept;
             const glm::vec3& getDirection() const noexcept;
-            Type getType() noexcept;
-            void setType(const Type new_type) noexcept;
-            /// @brief Return a tag associated to the current camera type
-            /// @return A tag, as a string, associated to the current camera type setting
-            std::string getTypeName() const noexcept;
             void handleKeyEvent(frametech::engine::inputs::KeyMask& mask) noexcept override;
             void handleMouseEvent(std::tuple<float, float>& mouse_positions) noexcept override;
 
@@ -66,8 +53,6 @@ namespace frametech
             float m_last_x_cursor = 0;
             float m_last_y_cursor = 0;
             float m_fov = DEFAULT_FOV;
-            /// @brief States what is the current type of the camera (check for 'Type' enum)
-            Type m_type = Type::WORLD;
         };
     } // namespace gameframework
 } // namespace frametech

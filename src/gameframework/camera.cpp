@@ -59,29 +59,6 @@ float frametech::gameframework::Camera::getFOV() const noexcept
     return m_fov;
 }
 
-frametech::gameframework::Camera::Type frametech::gameframework::Camera::getType() noexcept
-{
-    return m_type;
-}
-
-void frametech::gameframework::Camera::setType(const Type new_type) noexcept
-{
-    m_type = new_type;
-}
-
-std::string frametech::gameframework::Camera::getTypeName() const noexcept
-{
-    switch (m_type)
-    {
-        case Type::STATIONARY:
-            return std::string("STATIONARY");
-        case Type::WORLD:
-            return std::string("WORLD");
-        default:
-            return std::string("UNKNOWN");
-    }
-}
-
 void frametech::gameframework::Camera::handleKeyEvent(frametech::engine::inputs::KeyMask& mask) noexcept
 {
     switch (mask)
