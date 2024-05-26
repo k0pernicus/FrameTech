@@ -73,7 +73,7 @@ ftstd::VResult frametech::Application::initWindow()
     Log("> Initializing the Application window");
     glfwInit();                                   // Initialize the GLFW library
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // No OpenGL context, as we use Vulkan
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);   // No resizable option for the window
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);   // No resizable option for the window
     // Check for Vulkan support
     if (!glfwVulkanSupported())
     {
