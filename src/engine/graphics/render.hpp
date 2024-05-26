@@ -93,6 +93,7 @@ namespace frametech
             std::shared_ptr<frametech::graphics::Command> m_graphics_command = nullptr;
             /// @brief Transfert command pool
             std::shared_ptr<frametech::graphics::Command> m_transfert_command = nullptr;
+            VkSampler m_sampler = nullptr;
             /// @brief Creates the shader module:
             /// 1. Read the SPIR-V shaders,
             /// 2. Create the shader modules,

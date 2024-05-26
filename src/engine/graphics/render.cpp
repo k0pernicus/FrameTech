@@ -41,6 +41,10 @@ frametech::graphics::Render::Render()
 frametech::graphics::Render::~Render()
 {
     const VkDevice& logical_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
+    if (m_sampler != nullptr) {
+        Log("< Destroying the Render's sampler...");
+        vkDestroySampler(logical_device, m_sampler, nullptr);
+    }
     if (m_graphics_pipeline != nullptr)
     {
         Log("< Destroying the graphics pipeline...");
@@ -367,7 +371,7 @@ ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()
         return result;
     }
     // Should be called **BEFORE** the preconfigure
-    if (const auto result = m_graphics_pipeline->createDescriptorSetLayout(1, VK_SHADER_STAGE_VERTEX_BIT); result.IsError())
+    if (const auto result = m_graphics_pipeline->createDescriptorSetLayout(1, VK_SHADER_STAGE_VERTEX_BIT, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, &m_sampler); result.IsError())
     {
         LogE("< Error creating the descriptor set layout");
         return result;

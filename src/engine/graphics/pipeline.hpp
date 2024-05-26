@@ -135,7 +135,7 @@ namespace frametech
                 const u32 descriptor_count,
                 const VkShaderStageFlags shader_stages,
                 const VkDescriptorType descriptor_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                const VkSampler* samplers = nullptr) noexcept;
+                VkSampler* samplers = nullptr) noexcept;
             /// @brief Updates the registered descriptor sets
             void updateDescriptorSets(bool waitForDeviceIdleState = true) noexcept;
             /// @brief Creates the descriptor sets

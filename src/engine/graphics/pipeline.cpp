@@ -715,7 +715,7 @@ ftstd::VResult frametech::graphics::Pipeline::createDescriptorSetLayout(
     const u32 descriptor_count,
     const VkShaderStageFlags shader_stages,
     const VkDescriptorType descriptor_type,
-    const VkSampler* samplers) noexcept
+    VkSampler* sampler) noexcept
 {
     assert(descriptor_count > 0);
     Log("> Creating a descriptor set layout");
@@ -723,13 +723,34 @@ ftstd::VResult frametech::graphics::Pipeline::createDescriptorSetLayout(
         return ftstd::VResult::Error((char*)"< The number of descriptors should be \"> 0\"");
     auto graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
 
+    // NULL VkSampler is forbidden ?
+    // VALIDATION ERROR from VULKAN
+    // VUID-vkCmdDrawIndexed-None-08114(ERROR / SPEC): msgNum: 1064294454 - Validation Error: [ VUID-vkCmdDrawIndexed-None-08114 ] Object 0: handle = 0xa808d50000000033, type = VK_OBJECT_TYPE_DESCRIPTOR_SET; | MessageID = 0x3f6fd836 | vkCmdDrawIndexed():  the descriptor (VkDescriptorSet 0xa808d50000000033[], binding 1, index 0) is using sampler VkSampler 0x0[] that is invalid or has been destroyed. The Vulkan spec states: Descriptors in each bound descriptor set, specified via vkCmdBindDescriptorSets, must be valid as described by descriptor validity if they are statically used by the VkPipeline bound to the pipeline bind point used by this command and the bound VkPipeline was not created with VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT (https://vulkan.lunarg.com/doc/view/1.3.283.0/windows/1.3-extensions/vkspec.html#VUID-vkCmdDrawIndexed-None-08114)
+    // Objects: 1
+    // [0] 0xa808d50000000033, type : 23, name : NULL
+    if (nullptr == *sampler) {
+        VkSamplerCreateInfo info = {};
+        info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        info.magFilter = VK_FILTER_LINEAR;
+        info.minFilter = VK_FILTER_LINEAR;
+        info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        info.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        info.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        info.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        info.minLod = -1000;
+        info.maxLod = 1000;
+        info.maxAnisotropy = 1.0f;
+        if (VK_SUCCESS != vkCreateSampler(graphics_device, &info, nullptr, sampler))
+            return ftstd::VResult::Error((char*)"< Failed to create the internal sampler for descriptorSetLayouts");
+    }
+
     // Uniform
     VkDescriptorSetLayoutBinding uniform_descriptor_layout_binding{
         .binding = 0, // TODO: should be included as a function parameter maybe
         .descriptorType = descriptor_type,
         .descriptorCount = descriptor_count,
         .stageFlags = shader_stages,
-        .pImmutableSamplers = samplers,
+        .pImmutableSamplers = sampler,
     };
 
     // Sampler(s)
@@ -738,12 +759,13 @@ ftstd::VResult frametech::graphics::Pipeline::createDescriptorSetLayout(
         .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
         .descriptorCount = 1,
         .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
-        .pImmutableSamplers = nullptr,
+        .pImmutableSamplers = sampler,
     };
 
     std::array<VkDescriptorSetLayoutBinding, 2> bindings = {
         uniform_descriptor_layout_binding,
-        sampler_descriptor_layout_binding};
+        sampler_descriptor_layout_binding
+    };
 
     VkDescriptorSetLayoutCreateInfo descriptor_create_info{
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
