@@ -74,7 +74,7 @@ static bool isDeviceSuitable(const VkPhysicalDevice& device, const frametech::gr
 
 static void listAvailableExtensions(const VkPhysicalDevice& physical_device)
 {
-    uint32 available_extensions_count;
+    u32 available_extensions_count;
     vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &available_extensions_count, nullptr);
 
     std::vector<VkExtensionProperties> available_extensions;
@@ -126,16 +126,16 @@ frametech::graphics::Device::~Device()
     Log("< Destroying the physical, and logical, devices...");
 }
 
-uint32 frametech::graphics::Device::getNumberDevices() const
+u32 frametech::graphics::Device::getNumberDevices() const
 {
-    uint32 device_count{};
+    u32 device_count{};
     vkEnumeratePhysicalDevices(frametech::Engine::getInstance()->m_graphics_instance, &device_count, nullptr);
     return device_count;
 }
 
 ftstd::VResult frametech::graphics::Device::listDevices(const frametech::graphics::DeviceSupportsOptions& options)
 {
-    uint32 device_count{};
+    u32 device_count{};
     vkEnumeratePhysicalDevices(frametech::Engine::getInstance()->m_graphics_instance, &device_count, nullptr);
     if (device_count == 0)
     {
@@ -163,20 +163,20 @@ bool frametech::graphics::Device::isInitialized() const
     return VK_NULL_HANDLE != m_physical_device;
 }
 
-ftstd::Result<uint32> frametech::graphics::Device::getQueueFamilies()
+ftstd::Result<u32> frametech::graphics::Device::getQueueFamilies()
 {
     assert(isInitialized());
     if (!isInitialized())
     {
-        return ftstd::Result<uint32>::Error((char*)"The physical device has not been setup");
+        return ftstd::Result<u32>::Error((char*)"The physical device has not been setup");
     }
-    uint32 total_queue_families = 0;
+    u32 total_queue_families = 0;
 
     vkGetPhysicalDeviceQueueFamilyProperties(m_physical_device, &total_queue_families, nullptr);
     if (total_queue_families == 0)
     {
         Log("No queue families for the selected physical device");
-        return ftstd::Result<uint32>::Ok(total_queue_families);
+        return ftstd::Result<u32>::Ok(total_queue_families);
     }
     std::vector<VkQueueFamilyProperties> found_queue_families(total_queue_families);
     m_queue_support.resize((int)total_queue_families);
@@ -184,7 +184,7 @@ ftstd::Result<uint32> frametech::graphics::Device::getQueueFamilies()
     vkGetPhysicalDeviceQueueFamilyProperties(m_physical_device, &total_queue_families, found_queue_families.data());
 
     // Constructs the set of internal queues
-    for (uint32 i = 0; i < total_queue_families; i++)
+    for (u32 i = 0; i < total_queue_families; i++)
     {
         Log("\t> checking queue family %d", i);
 
@@ -225,10 +225,10 @@ ftstd::Result<uint32> frametech::graphics::Device::getQueueFamilies()
     }
     if (!supports_graphics || !supports_present || !supports_transfert)
     {
-        return ftstd::Result<uint32>::Error((char*)"did not found any queue that support our requirements");
+        return ftstd::Result<u32>::Error((char*)"did not found any queue that support our requirements");
     }
 
-    return ftstd::Result<uint32>::Ok(total_queue_families);
+    return ftstd::Result<u32>::Ok(total_queue_families);
 }
 
 ftstd::VResult frametech::graphics::Device::createLogicalDevice()
@@ -255,7 +255,7 @@ ftstd::VResult frametech::graphics::Device::createLogicalDevice()
     // TODO: initialize and set the present queue here
     for (const SupportFeatures supported_flag : supported_flags)
     {
-        uint32 first_index = 0;
+        u32 first_index = 0;
         for (int i = 0; i < m_queue_support.size(); i++)
         {
             first_index = i;
@@ -309,9 +309,9 @@ ftstd::VResult frametech::graphics::Device::createLogicalDevice()
     // Initializes the logical device
     VkDeviceCreateInfo logical_device_create_info{
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-        .queueCreateInfoCount = static_cast<uint32>(queues.size()),
+        .queueCreateInfoCount = static_cast<u32>(queues.size()),
         .pQueueCreateInfos = queues.data(),
-        .enabledExtensionCount = static_cast<uint32>(REQUIRED_EXTENSIONS.size()),
+        .enabledExtensionCount = static_cast<u32>(REQUIRED_EXTENSIONS.size()),
         .ppEnabledExtensionNames = REQUIRED_EXTENSIONS.data(),
         .pEnabledFeatures = &device_features,
     };

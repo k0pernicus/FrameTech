@@ -44,8 +44,8 @@ namespace frametech
         ModelViewProjection computeTransform(
             const Transformation transformation_id,
             const f32 delta_time,
-            const uint32 window_height,
-            const uint32 window_width) noexcept;
+            const u32 window_height,
+            const u32 window_width) noexcept;
     } // namespace graphics
 } // namespace frametech
 

@@ -271,7 +271,7 @@ ftstd::VResult frametech::graphics::Render::createShaderModule()
         VkShaderModuleCreateInfo shader_module_create_info{
             .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
             .codeSize = c_shader.m_size,
-            .pCode = reinterpret_cast<const uint32*>(c_shader.m_code)};
+            .pCode = reinterpret_cast<const u32*>(c_shader.m_code)};
 
         // Create the shader module in order to create the stage right after
         VkShaderModule shader_module;
@@ -343,15 +343,15 @@ ftstd::VResult frametech::graphics::Render::createShaderModule()
     return ftstd::VResult::Ok();
 }
 
-uint32& frametech::graphics::Render::getFrameIndex()
+u32& frametech::graphics::Render::getFrameIndex()
 {
     return m_frame_index;
 }
 
-void frametech::graphics::Render::updateFrameIndex(uint64_t current_frame)
+void frametech::graphics::Render::updateFrameIndex(u64 current_frame)
 {
     // Log("> Current frame index: %d...", m_frame_index);
-    m_frame_index = (uint32)current_frame % (m_framebuffers.size());
+    m_frame_index = (u32)current_frame % (m_framebuffers.size());
 }
 
 ftstd::VResult frametech::graphics::Render::createGraphicsPipeline()

@@ -335,7 +335,7 @@ void frametech::Application::drawDebugToolImGui()
             if (ImGui::TreeNode("Indices"))
             {
                 const auto indices = m_engine->m_render->getGraphicsPipeline()->getIndices();
-                uint32 i = 0;
+                u32 i = 0;
                 for (const auto index : indices)
                 {
                     ImGui::Text("%u: vertex %d", i, index);
@@ -545,7 +545,7 @@ ftstd::VResult frametech::Application::loadGameAssets() noexcept
     return ftstd::VResult::Error((char*)"Unimplemented loadGameAssets function");
 }
 
-void frametech::Application::forceRendererFPSLimit(uint8 new_limit)
+void frametech::Application::forceRendererFPSLimit(u8 new_limit)
 {
     if (GAME_APPLICATION_SETTINGS->fps_target == std::nullopt)
         Log("Setting FPS limit to %d", new_limit);
@@ -553,14 +553,14 @@ void frametech::Application::forceRendererFPSLimit(uint8 new_limit)
         Log("Replacing FPS limit from %d to %d", GAME_APPLICATION_SETTINGS->fps_target, new_limit);
     else
         Log("Disabling FPS limit");
-    GAME_APPLICATION_SETTINGS->fps_target = new_limit > 0 ? std::optional<uint8>(new_limit) : std::nullopt;
+    GAME_APPLICATION_SETTINGS->fps_target = new_limit > 0 ? std::optional<u8>(new_limit) : std::nullopt;
 }
 
 void frametech::Application::drawFrame()
 {
     ftstd::profile::ScopedProfileMarker scope((char*)"frametech::Application::drawFrame");
     // Update the UBOs
-    const uint32 current_frame_index = m_engine->m_render->getFrameIndex();
+    const u32 current_frame_index = m_engine->m_render->getFrameIndex();
     {
         const VkExtent2D& swapchain_extent = m_engine->m_swapchain->getExtent();
         static std::chrono::steady_clock::time_point start_time = std::chrono::high_resolution_clock::now();

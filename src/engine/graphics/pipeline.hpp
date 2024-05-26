@@ -41,7 +41,7 @@ namespace frametech
                 /// @brief The code of the SPIR-V shader.
                 char* m_code;
                 /// @brief The code size.
-                uint32 m_size;
+                u32 m_size;
                 /// @brief The tag of the shader (e.g. its name / filepath).
                 char* m_tag;
                 /// @brief The stage of the shader, or type.
@@ -95,7 +95,7 @@ namespace frametech
             const std::vector<frametech::engine::graphics::shaders::Vertex>& getVertices() noexcept;
             /// @brief Returns the vertices to draw, through their index
             /// @return The indices of the vertices to draw (may be an empty vector)
-            const std::vector<uint32>& getIndices() noexcept;
+            const std::vector<u32>& getIndices() noexcept;
             /// @brief Returns a reference to the current vertex buffer
             /// @return A reference to the current vertex buffer
             const VkBuffer& getVertexBuffer() noexcept;
@@ -120,7 +120,7 @@ namespace frametech
             /// This function should be call every frame to get the latest / current transformation.
             /// @param current_frame_index A uint32 value that represents the current frame index, in order
             /// to update **only** the right array value
-            void updateUniformBuffer(const uint32 current_frame_index, ModelViewProjection& mvp) noexcept;
+            void updateUniformBuffer(const u32 current_frame_index, ModelViewProjection& mvp) noexcept;
             /// @brief Creates a descriptor set layout (data layout) to let the shaders
             /// access to any resource (buffer / image / ...)
             /// @param descriptor_count The number of descriptors to pass (specify 1 for a single data, or X to
@@ -132,7 +132,7 @@ namespace frametech
             /// nullptr by default.
             /// @return A VResult type to know if the function succeeded or not.
             ftstd::VResult createDescriptorSetLayout(
-                const uint32 descriptor_count,
+                const u32 descriptor_count,
                 const VkShaderStageFlags shader_stages,
                 const VkDescriptorType descriptor_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
                 const VkSampler* samplers = nullptr) noexcept;
@@ -151,7 +151,7 @@ namespace frametech
             /// @param index The index to get the descriptor set
             /// @return A descriptor set at index `index` as an optional: nullopt means the index is greater
             /// of the maximum number of frames in flight possible
-            std::optional<VkDescriptorSet*> getDescriptorSet(const uint32 index) noexcept;
+            std::optional<VkDescriptorSet*> getDescriptorSet(const u32 index) noexcept;
             /// @brief Returns the Mesh object stored in the object
             /// @return A reference to the stored Mesh object
             const frametech::graphics::Mesh& getMesh() noexcept;

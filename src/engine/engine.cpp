@@ -51,7 +51,7 @@ static VkApplicationInfo createApplicationInfo()
 
 static void listSupportedExtensions()
 {
-    uint32 supported_extension_count{};
+    u32 supported_extension_count{};
     vkEnumerateInstanceExtensionProperties(nullptr, &supported_extension_count, nullptr);
     if (supported_extension_count == 0)
     {
@@ -203,7 +203,7 @@ ftstd::VResult frametech::Engine::createGraphicsInstance()
 {
     listSupportedExtensions();
     // Get the supported extensions
-    uint32 extension_count = 0;
+    u32 extension_count = 0;
     // Platform specific additions
     const char** extension_names = glfwGetRequiredInstanceExtensions(&extension_count);
 
@@ -228,7 +228,7 @@ ftstd::VResult frametech::Engine::createGraphicsInstance()
         Log("> Enabling %d validation layer(s) for the overall engine:", VALIDATION_LAYERS.size());
         for (int i = 0; i < VALIDATION_LAYERS.size(); i++)
             Log("\t* %s", VALIDATION_LAYERS[i]);
-        create_info.enabledLayerCount = (uint32)VALIDATION_LAYERS.size();
+        create_info.enabledLayerCount = (u32)VALIDATION_LAYERS.size();
         create_info.ppEnabledLayerNames = VALIDATION_LAYERS.data();
     }
 
@@ -308,7 +308,7 @@ ftstd::VResult frametech::Engine::createDescriptorPool()
     pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
     pool_info.maxSets = 1000 * pool_sizes_count;
-    pool_info.poolSizeCount = (uint32)pool_sizes_count;
+    pool_info.poolSizeCount = (u32)pool_sizes_count;
     pool_info.pPoolSizes = pool_sizes;
     if (const auto result_status = vkCreateDescriptorPool(m_graphics_device.getLogicalDevice(), &pool_info, nullptr, &m_descriptor_pool); result_status != VK_SUCCESS)
     {

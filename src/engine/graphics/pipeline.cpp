@@ -170,13 +170,13 @@ ftstd::Result<std::vector<frametech::graphics::Shader::Module>> frametech::graph
     std::vector<frametech::graphics::Shader::Module> shader_modules(
         {frametech::graphics::Shader::Module{
              .m_code = fs_buffer,
-             .m_size = static_cast<uint32>(fs_file_size),
+             .m_size = static_cast<u32>(fs_file_size),
              .m_tag = (char*)fragment_shader_filepath,
              .m_type = frametech::graphics::Shader::Type::FRAGMENT_SHADER,
          },
          frametech::graphics::Shader::Module{
              .m_code = vs_buffer,
-             .m_size = static_cast<uint32>(vs_file_size),
+             .m_size = static_cast<u32>(vs_file_size),
              .m_tag = (char*)vertex_shader_filepath,
              .m_type = frametech::graphics::Shader::Type::VERTEX_SHADER,
          }});
@@ -382,7 +382,7 @@ ftstd::VResult frametech::graphics::Pipeline::create()
         .vertexBindingDescriptionCount = 1,
         .pVertexBindingDescriptions = &vertex_binding_description,
         // Vertex attribute description
-        .vertexAttributeDescriptionCount = static_cast<uint32>(vertex_attribute_descriptions.size()),
+        .vertexAttributeDescriptionCount = static_cast<u32>(vertex_attribute_descriptions.size()),
         .pVertexAttributeDescriptions = vertex_attribute_descriptions.data(),
     };
 
@@ -447,7 +447,7 @@ ftstd::VResult frametech::graphics::Pipeline::create()
 
     VkGraphicsPipelineCreateInfo pipeline_info{
         .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-        .stageCount = (uint32)m_shader_stages.size(),
+        .stageCount = (u32)m_shader_stages.size(),
         .pStages = m_shader_stages.data(),
         .pVertexInputState = &vertex_input_create_info,
         .pInputAssemblyState = &assembly_state_create_info,
@@ -631,7 +631,7 @@ ftstd::VResult frametech::graphics::Pipeline::createIndexBuffer() noexcept
 ftstd::VResult frametech::graphics::Pipeline::createUniformBuffers() noexcept
 {
     VmaAllocator resource_allocator = frametech::Engine::getInstance()->m_allocator;
-    const uint32 max_frames_count = frametech::Engine::getMaxFramesInFlight();
+    const u32 max_frames_count = frametech::Engine::getMaxFramesInFlight();
 
     const VkDeviceSize buffer_size = sizeof(ModelViewProjection);
     m_uniform_buffers = std::vector<VkBuffer>(max_frames_count);
@@ -663,7 +663,7 @@ ftstd::VResult frametech::graphics::Pipeline::createUniformBuffers() noexcept
     return ftstd::VResult::Ok();
 }
 
-void frametech::graphics::Pipeline::updateUniformBuffer(const uint32 current_frame_index, ModelViewProjection& mvp) noexcept
+void frametech::graphics::Pipeline::updateUniformBuffer(const u32 current_frame_index, ModelViewProjection& mvp) noexcept
 {
     // Stop there if we ask a frame index that does not corresponds to any UBO
     if (m_uniform_buffers_data.size() <= current_frame_index)
@@ -712,7 +712,7 @@ ftstd::VResult frametech::graphics::Pipeline::createSyncObjects()
 }
 
 ftstd::VResult frametech::graphics::Pipeline::createDescriptorSetLayout(
-    const uint32 descriptor_count,
+    const u32 descriptor_count,
     const VkShaderStageFlags shader_stages,
     const VkDescriptorType descriptor_type,
     const VkSampler* samplers) noexcept
@@ -747,7 +747,7 @@ ftstd::VResult frametech::graphics::Pipeline::createDescriptorSetLayout(
 
     VkDescriptorSetLayoutCreateInfo descriptor_create_info{
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .bindingCount = static_cast<uint32>(bindings.size()),
+        .bindingCount = static_cast<u32>(bindings.size()),
         .pBindings = bindings.data(),
     };
 
@@ -759,13 +759,13 @@ ftstd::VResult frametech::graphics::Pipeline::createDescriptorSetLayout(
 
 ftstd::VResult frametech::graphics::Pipeline::createDescriptorSets() noexcept
 {
-    const uint32 max_frames_in_flight = frametech::Engine::getMaxFramesInFlight();
+    const u32 max_frames_in_flight = frametech::Engine::getMaxFramesInFlight();
     VkDevice graphics_device = frametech::Engine::getInstance()->m_graphics_device.getLogicalDevice();
     std::vector<VkDescriptorSetLayout> layouts(max_frames_in_flight, m_descriptor_set_layout);
     VkDescriptorSetAllocateInfo allocate_info{};
     allocate_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocate_info.descriptorPool = frametech::Engine::getInstance()->getDescriptorPool();
-    allocate_info.descriptorSetCount = static_cast<uint32>(max_frames_in_flight);
+    allocate_info.descriptorSetCount = static_cast<u32>(max_frames_in_flight);
     allocate_info.pSetLayouts = layouts.data();
 
     m_descriptor_sets.resize(max_frames_in_flight);
@@ -868,7 +868,7 @@ std::vector<VkDescriptorSet>& frametech::graphics::Pipeline::getDescriptorSets()
     return m_descriptor_sets;
 }
 
-std::optional<VkDescriptorSet*> frametech::graphics::Pipeline::getDescriptorSet(const uint32 index) noexcept
+std::optional<VkDescriptorSet*> frametech::graphics::Pipeline::getDescriptorSet(const u32 index) noexcept
 {
     assert(index < frametech::Engine::getMaxFramesInFlight());
     if (index >= frametech::Engine::getMaxFramesInFlight())
@@ -966,7 +966,7 @@ const std::vector<frametech::engine::graphics::shaders::Vertex>& frametech::grap
     return m_mesh.m_vertices;
 }
 
-const std::vector<uint32>& frametech::graphics::Pipeline::getIndices() noexcept
+const std::vector<u32>& frametech::graphics::Pipeline::getIndices() noexcept
 {
     return m_mesh.m_indices;
 }

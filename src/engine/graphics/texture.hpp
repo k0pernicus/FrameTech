@@ -102,8 +102,8 @@ namespace frametech
                 VkImageView getDepthImageView() noexcept { return m_depth_image_view; }
                 /// @brief Setup the data structure - must call before createImage
                 /// @return A VResult type
-                ftstd::VResult createImage(const uint32 image_height,
-                                           const uint32 image_width,
+                ftstd::VResult createImage(const u32 image_height,
+                                           const u32 image_width,
                                            const VkFormat texture_format,
                                            const VkImageTiling tiling,
                                            const VkImageUsageFlags usage_flags) noexcept;

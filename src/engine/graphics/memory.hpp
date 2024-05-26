@@ -22,21 +22,21 @@ namespace frametech
         class Memory
         {
         private:
-            static ftstd::Result<uint32> findMemoryType(
+            static ftstd::Result<u32> findMemoryType(
                 const VkPhysicalDevice& physical_device,
-                const uint32 type_filter,
+                const u32 type_filter,
                 const VkMemoryPropertyFlags memory_property_flags) noexcept
             {
                 VkPhysicalDeviceMemoryProperties memory_properties{};
                 vkGetPhysicalDeviceMemoryProperties(physical_device, &memory_properties);
-                for (uint32 index = 0; index < memory_properties.memoryTypeCount; ++index)
+                for (u32 index = 0; index < memory_properties.memoryTypeCount; ++index)
                 {
                     if (type_filter & (1 << index) && (memory_properties.memoryTypes[index].propertyFlags & memory_property_flags) == memory_property_flags)
                     {
-                        return ftstd::Result<uint32>::Ok(index);
+                        return ftstd::Result<u32>::Ok(index);
                     }
                 }
-                return ftstd::Result<uint32>::Error((char*)"findMemoryType: did not found any memory type with favorite filter / properties");
+                return ftstd::Result<u32>::Error((char*)"findMemoryType: did not found any memory type with favorite filter / properties");
             }
 
         public:
@@ -63,7 +63,7 @@ namespace frametech
 
                 VmaAllocationCreateInfo alloc_info = {
                     .flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
-                    .usage = VMA_MEMORY_USAGE_AUTO,
+                    .usage = VMA_MEMORY_USAGE_CPU_TO_GPU,
                 };
 
                 if (vmaCreateBuffer(resources_allocator, &buffer_create_info, &alloc_info, &buffer, allocation, nullptr) != VK_SUCCESS)
@@ -148,7 +148,7 @@ namespace frametech
                 command_buffer.createBuffer();
                 command_buffer.begin();
 
-                uint32 submit_count = 0;
+                u32 submit_count = 0;
 
                 // Build the packet
                 {
@@ -179,15 +179,15 @@ namespace frametech
                 VkImage& dst_image,
                 VkCommandPool* transfert_command_pool,
                 const VkQueue& transfert_queue,
-                const uint32 image_height,
-                const uint32 image_width)
+                const u32 image_height,
+                const u32 image_width)
             {
 
                 frametech::graphics::Command command_buffer(*transfert_command_pool);
                 command_buffer.createBuffer();
                 command_buffer.begin();
 
-                uint32 submit_count = 0;
+                u32 submit_count = 0;
 
                 // Build the packet
                 {

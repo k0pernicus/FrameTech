@@ -44,7 +44,7 @@ namespace frametech
             /// @brief Creates the command pool
             /// @param family_index The queue family index to bind
             /// @return A VResult type
-            ftstd::VResult createPool(const uint32 family_index);
+            ftstd::VResult createPool(const u32 family_index);
             /// @brief Creates and initialize the internal buffer
             /// @return A VResult type
             ftstd::VResult createBuffer();
@@ -53,20 +53,20 @@ namespace frametech
             ftstd::VResult begin();
             /// @brief Ends the record of the current command buffer
             /// @return A VResult type
-            ftstd::VResult end(const VkQueue& queue, const uint32 submit_count);
+            ftstd::VResult end(const VkQueue& queue, const u32 submit_count);
             /// @brief Transition barrier for an image
             /// @param memory_barrier Image memory barrier for the memory transition
             void transition(
                 const VkImage& image,
                 const VkImageLayout new_layout,
                 const VkImageLayout old_layout = VK_IMAGE_LAYOUT_UNDEFINED,
-                const uint32 src_queue_family_index = VK_QUEUE_FAMILY_IGNORED,
-                const uint32 dst_queue_family_index = VK_QUEUE_FAMILY_IGNORED) const noexcept;
+                const u32 src_queue_family_index = VK_QUEUE_FAMILY_IGNORED,
+                const u32 dst_queue_family_index = VK_QUEUE_FAMILY_IGNORED) const noexcept;
             /// @brief Writes the commands we want to execute into a command buffer
             ftstd::VResult record();
             /// @brief The queue family index the command pool
             /// has been created with
-            uint32 m_queue_family_index_created_with = 0;
+            u32 m_queue_family_index_created_with = 0;
 
         private:
             /// @brief Command should not be cloneable
