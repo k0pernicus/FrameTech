@@ -74,8 +74,10 @@ int main(int argc, const char* argv[])
     catch (const std::exception& e)
     {
         LogE("Exception running %s: %s", Project::DEFAULT_APPLICATION_NAME, e.what());
+        delete GAME_APPLICATION_SETTINGS;
         return EXIT_FAILURE;
     }
 #endif
+    delete GAME_APPLICATION_SETTINGS;
     return EXIT_SUCCESS;
 }
