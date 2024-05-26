@@ -212,9 +212,11 @@ ftstd::VResult frametech::Engine::createGraphicsInstance()
     // Global extensions and validation layers
     VkInstanceCreateInfo create_info{
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+#ifdef __APPLE__
         // For macOS >= 1.3.216
         // https://vulkan.lunarg.com/doc/sdk/1.3.216.0/mac/getting_started.html
         .flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR,
+#endif
         .pApplicationInfo = &application_info,
         .enabledExtensionCount = extension_count,
         .ppEnabledExtensionNames = extension_names,
