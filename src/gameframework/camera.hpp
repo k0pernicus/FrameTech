@@ -40,14 +40,15 @@ namespace frametech
                   m_original_position(position),
                     m_position(position),
                     m_type(camera_type){};
-            glm::vec3 getTarget() const noexcept;
+            const glm::vec3& getTarget() const noexcept;
             void resetTarget() noexcept;
             void setTarget(const glm::vec3& new_target) noexcept;
-            glm::vec3 getPosition() const noexcept;
+            const glm::vec3& getPosition() const noexcept;
             void resetPosition() noexcept;
             void resetDirectionalVectors() noexcept;
             void setPosition(const glm::vec3& new_position) noexcept;
             float getFOV() const noexcept;
+            const glm::vec3& getDirection() const noexcept;
             Type getType() noexcept;
             void setType(const Type new_type) noexcept;
             /// @brief Return a tag associated to the current camera type
@@ -61,6 +62,7 @@ namespace frametech
             glm::vec3 m_target;
             glm::vec3 m_original_position;
             glm::vec3 m_position;
+            glm::vec3 m_direction;
             float m_last_x_cursor = 0;
             float m_last_y_cursor = 0;
             float m_fov = DEFAULT_FOV;

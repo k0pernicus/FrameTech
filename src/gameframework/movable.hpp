@@ -14,8 +14,8 @@
 
 constexpr float DEFAULT_PITCH = 0.0f;
 constexpr float DEFAULT_YAW = -90.0f;
-constexpr glm::vec3 DEFAULT_FRONT_VECTOR = glm::vec3(0.0f, 0.0f, -1.0f);
-constexpr glm::vec3 DEFAULT_UP_VECTOR = glm::vec3(0.0f, 1.0f, 0.0f);
+constexpr glm::vec3 DEFAULT_FRONT_VECTOR = glm::vec3(0.0f, 0.0f, -1.0f); // (_, _, z)
+constexpr glm::vec3 DEFAULT_UP_VECTOR = glm::vec3(0.0f, 1.0f, 0.0f);     // (_, y, _)
 
 namespace frametech
 {
@@ -40,14 +40,16 @@ namespace frametech
             
             /// @brief Boolean value to retrieve and compute mouse position events
             bool m_first_cursor_pos = true;
-            /// @brief Movement pitch
+            /// @brief Movement pitch (up / down)
             float m_pitch = DEFAULT_PITCH;
-            /// @brief Movement yaw
+            /// @brief Movement yaw   (left / right)
             float m_yaw = DEFAULT_YAW;
             /// @brief Front vector
             glm::vec3 m_front = DEFAULT_FRONT_VECTOR;
             /// @brief Up vector
             glm::vec3 m_up = DEFAULT_UP_VECTOR;
+            /// @brief Right vector
+            glm::vec3 m_right = glm::vec3(0.0f, 0.0f, 0.0f);
         };
     } // namespace gameframework
 } // namespace frametech
