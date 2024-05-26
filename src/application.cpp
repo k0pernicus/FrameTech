@@ -725,7 +725,7 @@ void frametech::Application::run()
             // Initialize the mouse events
             glfwSetCursorPosCallback(m_app_window, cursorCallback);
             m_state = frametech::Application::State::RUNNING;
-            while (!glfwWindowShouldClose(m_app_window) && m_state == frametech::Application::State::RUNNING)
+            while (!glfwWindowShouldClose(m_app_window) && (m_state == frametech::Application::State::RUNNING || m_state == frametech::Application::State::PAUSED))
             {
                 glfwPollEvents();
                 m_key_events_handler.poll(false);
@@ -739,8 +739,10 @@ void frametech::Application::run()
                 drawDebugToolImGui();
                 drawMeshSelectionImGui();
 #endif
-                // drawFrame includes the acquisition, draw, and present processes
-                drawFrame();
+                if (m_state == frametech::Application::State::RUNNING) {
+                    // drawFrame includes the acquisition, draw, and present processes
+                    drawFrame();
+                }
             }
             Log("< ...Application loop");
             vkDeviceWaitIdle(m_engine->m_graphics_device.getLogicalDevice());
